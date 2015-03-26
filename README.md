@@ -15,3 +15,15 @@ Notice, you need Python 3.4+ for this steps to work.
 If you are not not in the virtual environment you must change to it.
  
 `python manage.py run`
+
+# Contributing
+This project assumes you have Python 3.4+ installed.
+This project uses [Flask](http://flask.pocoo.org/) as a framework, with the following extensions:
+- [Flask-Login](https://flask-login.readthedocs.org/en/latest/) - handles the common tasks of logging in, logging out, and remembering your users’ sessions over extended periods of time.
+- [Flask-WTF](https://flask-wtf.readthedocs.org/en/latest/) - handles creation/validation and using of forms in the UI.
+- [Flask-SQLAlchemy](http://pythonhosted.org/Flask-SQLAlchemy/) - adds [SQLAlchemy](http://www.sqlalchemy.org/) support, which is an [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping).
+
+On the UI side we use the following technologies/libraries:
+- [jQuery](https://jquery.com/) as a helper library for Javascript
+- [Twitter Bootstrap](http://getbootstrap.com/) for UI elements and components
+- [Jinja2](http://jinja.pocoo.org/) as a template engine (used by default by Flask framework).
