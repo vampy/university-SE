@@ -12,3 +12,5 @@ mail = Mail()
 from flask.ext.login import LoginManager
 
 login_manager = LoginManager()
+
+# this is a test
