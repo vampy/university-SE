@@ -2,81 +2,82 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{% block title %}{{ page_title|default('Project') }}{% endblock %} - Project</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <title>{% block title %}{{ page_title|default('Project') }}{% endblock %} - Project</title>
     <link rel="Shortcut Icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
 
     {% block css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     {% endblock %}
 </head>
 <body>
-    {% block topbar %}
-    <div class='container'>
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="{{ url_for('frontend.index') }}">Home</a>
-                </div>
-                <div id="navbar" class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Home</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                    {% if current_user.is_authenticated() %}
-                        <li><a href="#">Settings</a></li>
-                        <li><a href="#">Log out</a></li>
-                    {% else %}
-                        <li><a href="#"><strong>Sign up</strong></a></li>
-                        <li><a href="#">Sign in</a></li>
-                    {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </div>
-    {% endblock %}
-
-    {% block flash_message %}
-    <div class="container-fluid">
-    {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-        <div class="container-fluid">
-            <div id='flash_message_container'>
-                {% for category, msg in messages %}
-                    <div class="alert alert-{{ category }}">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        {{ msg }}
+<div id="body-wrapper">
+    {% block header %}
+        <header>
+            <nav class="navbar navbar-default navbar-static-top navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                                data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#">School</a>
                     </div>
-                {% endfor %}
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">TODO</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if current_user.is_authenticated() %}
+                                <li><a href="#">Settings</a></li>
+                                <li><a href="#">Log out</a></li>
+                            {% else %}
+                                <li><a href="{{ url_for('frontend.index') }}">Login</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+    {% endblock %}
+    <main class="container">
+        {% block flash_message %}
+            <div class="container-fluid">
+                {% with messages = get_flashed_messages(with_categories=True) %}
+                    {% if messages %}
+                        <div class="container-fluid">
+                            <div id='flash-message-container'>
+                                {% for category, msg in messages %}
+                                    <div class="alert alert-{{ category }}">
+                                        <button type="button" class="close" data-dismiss="alert">×</button>
+                                        {{ msg }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </div>
-        </div>
-        {% endif %}
-    {% endwith %}
-    </div>
-    {% endblock %}
-
-    <div class="container">
-     {% block body %}
-    {% endblock %}
-    </div>
-
+        {% endblock %}
+        {% block body %}
+            <h1>CONTENT BODY NOT SET IN TEMPLATE, PLEASE SET IT!!!</h1>
+        {% endblock %}
+    </main>
     <footer>
+        <p>© System for Managing Academic Information</p>
     </footer>
-
     {% block js %}
-    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% endblock %}
+</div>
 </body>
 </html>
