@@ -12,7 +12,7 @@ Notice, you need Python 3.4+ for this steps to work.
 `pip install -r requirements.txt`
 
 # Running
-If you are not not in the virtual environment you must change to it.
+If you are not in the virtual environment you must change to it.
  
 `python manage.py run`
 
