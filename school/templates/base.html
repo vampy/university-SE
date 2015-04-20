@@ -37,9 +37,9 @@
                         <ul class="nav navbar-nav navbar-right">
                             {% if current_user.is_authenticated() %}
                                 <li><a href="#">Settings</a></li>
-                                <li><a href="#">Log out</a></li>
+                                <li><a href="{{ url_for('frontend.logout') }}">Log out</a></li>
                             {% else %}
-                                <li><a href="{{ url_for('frontend.index') }}">Login</a></li>
+                                <li><a href="{{ url_for('frontend.login') }}">Login</a></li>
                             {% endif %}
                         </ul>
                     </div>

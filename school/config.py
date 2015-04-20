@@ -1,17 +1,32 @@
 # -*- config:utf-8 -*-
+import os
+
+FLASH_ERROR = "danger"
+FLASH_WARNING = "warning"
+FLASH_INFO = "info"
+FLASH_SUCCESS = "success"
 
 
 class Config:
+    # Get app root path, also can use flask.root_path. when in an app context
+    PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
+    # Flask Config
+    # http://flask.pocoo.org/docs/0.10/config/#builtin-configuration-values
+    # http://flask.pocoo.org/docs/quickstart/#sessions
+    SECRET_KEY = 'secret key'
     DEBUG = True
 
-    # listen to 0.0.0.0 for other users in the network to see your server
-    HOST = "0.0.0.0"
+    # SQL ALCHEMY Config
+    # https://pythonhosted.org/Flask-SQLAlchemy/config.html
+    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + PROJECT_ROOT + '/db.sqlite'
 
+    # WTF forms config
+    # https://flask-wtf.readthedocs.org/en/latest/config.html
     # Enable protection agains *Cross-site Request Forgery (CSRF)*
-    CSRF_ENABLED = False
+    WTF_CSRF_ENABLED = False
 
     # disable logging
     LOGIN_DISABLED = False
 
-    # http://flask.pocoo.org/docs/quickstart/#sessions
-    SECRET_KEY = 'secret key'

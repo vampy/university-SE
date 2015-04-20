@@ -58,3 +58,7 @@ target/
 
 # IDE config files
 .idea/
+
+# ignore database files
+*.sqlite
+*.db

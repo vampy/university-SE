@@ -3,6 +3,8 @@ from flask import Flask, render_template, url_for
 from .frontend import frontend
 from .config import Config
 from .extensions import *
+from .user import User, user
+
 import os
 
 
@@ -16,14 +18,16 @@ def create_app():
     db.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
-    # TODO set flask login extra options
+
+    # default login page, see https://flask-login.readthedocs.org/en/latest/#customizing-the-login-process
+    login_manager.login_view = "frontend.login"
 
     @login_manager.user_loader
-    def load_user(id):
-        return object()
+    def load_user(user_id):
+        return User.query.get(int(user_id))
 
     # configure blueprints
-    blueprints = [frontend]
+    blueprints = [frontend, user]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 
