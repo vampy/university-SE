@@ -22,7 +22,7 @@ class User(UserMixin, db.Model):
     username = Column(String(64), unique=True)
     realname = Column(String(128), nullable=True)
     email = Column(String(64), unique=True)
-    password_hash = Column(String(160))
+    password_hash = Column(String(160), nullable=False)
     role_id = Column(SmallInteger, default=Role.STUDENT)
 
     def __init__(self, **kwargs):

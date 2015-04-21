@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 from school import create_app
 from school.user import User
+from school.models import Course, Semester, Group
 from flask.ext.script import Manager
 from school.extensions import db
 
@@ -28,7 +29,10 @@ def init():
         realname="John Doe",
         email="example@example.com"
     )
+    test_group = Group(name="911")
+    db.session.add(test_group)
 
+    test_group.students.append(test_user)
     db.session.add(test_user)
     db.session.commit()
 
