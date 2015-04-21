@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired
 from ..user import User
 from flask import flash
 from school.config import FLASH_ERROR
-from school.utils import RedirectForm
+from school.forms import RedirectForm
 
 
 class LoginForm(RedirectForm):
