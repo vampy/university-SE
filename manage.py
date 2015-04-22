@@ -33,6 +33,9 @@ def init():
     db.session.add(test_group)
 
     test_group.students.append(test_user)
+
+    test_course = Course(name="SE", is_optional=True)
+    db.session.add(test_course)
     db.session.add(test_user)
     db.session.commit()
 
