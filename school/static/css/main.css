@@ -4,6 +4,62 @@
     outline: none;
 }
 
+/*Settings sub-menu*/
+  ul {list-style: none;padding: 0px;margin: 0px;}
+  ul li {display: block;position: relative;float: left;}
+  li ul {display: none;}
+  ul li a {display: block;padding: 5px 10px 5px 10px;text-decoration: none;
+           white-space: nowrap;}
+  ul li a:hover {}
+  li:hover ul {display: block; position: absolute;}
+  li:hover li {float: none;border:1px solid #999999; background: #fff;}
+  li:hover a {}
+  li:hover li a:hover {background: #E7E7E7}
+  #nav.navbar-nav.navbar-right li ul li {border-top: 0px;}
+/*
+.nav.navbar-nav.navbar-right{
+    display:block;
+    clear:both;
+}
+.nav.navbar-nav.navbar-right > li {
+    float:left;
+    display:block;
+    position:relative;
+
+}
+.nav.navbar-nav.navbar-right> li > a {
+    padding:10px 40px;
+    display:block;
+    text-shadow:0px 1px 0px rgba(0,0,0,0.4);
+}
+.sub-menu-settings {
+    padding:5px 0px;
+    position:initial;
+    z-index:-1;
+    opacity:0;
+    transition:opacity linear 0.15s;
+    box-shadow:0px 2px 3px rgba(0,0,0,0.2);
+    background:#2e2728;
+}
+.nav.navbar-nav.navbar-right li:hover .sub-menu {
+    z-index:1;
+    opacity:1;
+}
+
+.sub-menu li {
+    display:block;
+    font-size:10px;
+}
+
+.sub-menu li a {
+    padding:10px 30px;
+    display:block;
+}
+*/
+
+
+/*End of settings sub-menu*/
+
 #body-wrapper {
     width: 100%;
     height: 100%;

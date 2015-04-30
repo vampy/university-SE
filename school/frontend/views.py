@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, url_for, redirect, flash
 from flask.ext.login import login_required, logout_user, current_user, login_user
-from .forms import LoginForm
+from .forms import LoginForm, ChangePasswordForm
 from school.config import FLASH_SUCCESS, FLASH_INFO
 
 frontend = Blueprint('frontend', __name__)
@@ -28,3 +28,21 @@ def logout():
     flash('You have been logged out.', FLASH_INFO)
 
     return redirect(url_for("frontend.login"))
+
+
+@frontend.route('/changepassword', methods=['GET', 'POST'])
+@login_required
+def changepassword():
+    form = ChangePasswordForm()
+    if form.validate():
+
+        flash('Successfully changed password', FLASH_SUCCESS)
+        # TODO controller.changepassword(current_user,form.get_new_password)
+        return form.redirect("user.index")
+
+    return render_template('frontend/changepassword.html', form=form)
+
+
+def settings():
+
+    return

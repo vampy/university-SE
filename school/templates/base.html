@@ -32,11 +32,37 @@
                     </div>
                     <div id="navbar" class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
-                            <li class="active"><a href="#">TODO</a></li>
+{#                            <li class="active"><a href="#"></a></li>#}
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             {% if current_user.is_authenticated() %}
-                                <li><a href="#">Settings</a></li>
+                                <li><a href="#"><b>{{ current_user.get_realname() }}</b> <span class="arrow">&#9660;</span></a>
+
+                                    <ul class="sub-menu-user">
+                                        <li><a href="#{#{{ url_for('frontend.___________') }}#}">See courses</a></li>
+                                        {% if current_user.is_student() %}
+                                            <li><a href="#{#{{ url_for('frontend.___________') }}#}">Choose optional course</a></li>
+                                        {% elif current_user.is_teacher() or current_user.is_chief_department()%}
+                                            <li><a href="#{#{{ url_for('frontend.___________') }}#}">Upload course results</a></li>
+                                            <li><a href="#{#{{ url_for('frontend.___________') }}#}">Establish optional courses</a></li>
+
+                                        {% elif current_user.is_chief_department()%}
+                                            <li><a href="#{#{{ url_for('frontend.___________') }}#}">See statistics</a></li>
+                                        {% endif %}
+                                    </ul>
+                                </li>
+                                <li><a href="#">Settings <span class="arrow">&#9660;</span></a>
+
+                                    <ul class="sub-menu-settings">
+
+                                        <li><a href="{{ url_for('frontend.changepassword') }}">Change password</a></li>
+                                        {% if current_user.is_admin() %}
+                                            <li><a href="#">Edit users</a></li>
+
+                                        {% endif %}
+
+                                    </ul>
+                                </li>
                                 <li><a href="{{ url_for('frontend.logout') }}">Log out</a></li>
                             {% else %}
                                 <li><a href="{{ url_for('frontend.login') }}">Login</a></li>
