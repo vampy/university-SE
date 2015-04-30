@@ -74,7 +74,12 @@ class DegreeType:
 #     Column("semester_id", Integer, ForeignKey("semesters.id"), nullable=False),
 # )
 
+"""
+implement:
+courses
+contracts
 
+"""
 class Degree(db.Model):
     __tablename__ = "degrees"
 
