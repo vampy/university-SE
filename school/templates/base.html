@@ -55,7 +55,7 @@
 
                                     <ul class="sub-menu-settings">
 
-                                        <li><a href="{{ url_for('frontend.changepassword') }}">Change password</a></li>
+                                        <li><a href="{{ url_for('user.changepassword') }}">Change password</a></li>
                                         {% if current_user.is_admin() %}
                                             <li><a href="#">Edit users</a></li>
 

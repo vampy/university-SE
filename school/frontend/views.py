@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, url_for, redirect, flash
 from flask.ext.login import login_required, logout_user, current_user, login_user
-from .forms import LoginForm, ChangePasswordForm
+from .forms import LoginForm
 from school.config import FLASH_SUCCESS, FLASH_INFO, FLASH_WARNING
 
 frontend = Blueprint('frontend', __name__)
@@ -10,7 +10,7 @@ frontend = Blueprint('frontend', __name__)
 def login():
     if current_user.is_authenticated():  # user is already logged in
         flash("You are already logged in", FLASH_WARNING)
-        return redirect(url_for('users.index'))
+        return redirect(url_for('user.index'))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -30,20 +30,3 @@ def logout():
 
     return redirect(url_for("frontend.login"))
 
-
-@frontend.route('/changepassword', methods=['GET', 'POST'])
-@login_required
-def changepassword():
-    form = ChangePasswordForm()
-    if form.validate():
-
-        flash('Successfully changed password', FLASH_SUCCESS)
-        # TODO controller.changepassword(current_user,form.get_new_password)
-        return form.redirect("user.index")
-
-    return render_template('frontend/changepassword.html', form=form)
-
-
-def settings():
-
-    return
