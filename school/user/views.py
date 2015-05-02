@@ -19,7 +19,7 @@ def changepassword():
     form = ChangePasswordForm()
     if form.validate():
 
-        flash('Successfully changed password', FLASH_SUCCESS)
+        flash('Password changed successfully.', FLASH_SUCCESS)
         # TODO controller.changepassword(current_user,form.get_new_password)
         return form.redirect("user.index")
 
