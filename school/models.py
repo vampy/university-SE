@@ -6,6 +6,15 @@ from school.extensions import db
 from sqlalchemy import Column, Integer, String, ForeignKey, \
     Date, SmallInteger, Boolean, PrimaryKeyConstraint
 
+"""
+TODO
+courses
+contracts
+Connections between all types
+maybe add Faculty?
+
+"""
+
 
 class Course(db.Model):
     __tablename__ = "courses"
@@ -68,18 +77,7 @@ class DegreeType:
     UNDERGRADUATE = 1
     GRADUATE = 2
 
-# study_languages = db.Table(
-#     "degree_languages",
-#     Column("degree_id", Integer, ForeignKey("degrees.id"), nullable=False),
-#     Column("semester_id", Integer, ForeignKey("semesters.id"), nullable=False),
-# )
 
-"""
-implement:
-courses
-contracts
-
-"""
 class Degree(db.Model):
     __tablename__ = "degrees"
 
