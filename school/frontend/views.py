@@ -29,4 +29,3 @@ def logout():
     flash('You have been logged out.', FLASH_INFO)
 
     return redirect(url_for("frontend.login"))
-
