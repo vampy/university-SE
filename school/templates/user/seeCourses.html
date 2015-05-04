@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% set page_title = 'See courses' %}
+
+{% block body %}
+<form name="formSeeCourses" >
+    <table cellspacing="0px" cellpadding="0px" style="width:100%">
+        <tbody>
+        <tr><td class="CourseSelector" >
+            <select size="1" >
+                {% for course in courses %}
+                <option value="">{{ course.name }}</option>
+                {% endfor %}
+            </select>
+            <input class="Button" type="submit" style="width:95px" value="Select course">
+        </tr>
+        </tbody>
+    </table>
+
+</form>
+
+<br />
+
+<tbody><tr valign="top">
+          <td style="border: 1px solid black;" >
+            <div style="height: 393px; width: 1182px; overflow: auto;">
+              <table style="border: 1px solid black;" cellspacing="5px" cellpadding="5px" class="Projects">
+                <tbody><tr style="border: 1px solid black;" >
+                  <td class="Header" style="text-align: center; border: 1px solid black;">
+                    Proiect
+                  </td>
+                  <td class="Header" style="text-align: center;border: 1px solid black;">
+                    Deadline
+                  </td>
+                  <td class="Header" style="text-align: center;border: 1px solid black;">
+                    Grade
+                  </td>
+                </tr>
+
+                {% for project in projects %}
+                <tr style="text-align: center;border: 1px solid black;" >
+                    <td style="text-align: center;border: 1px solid black;" >
+                      <a href="">
+                          {{ project.name }}
+                      </a>
+                    </td>
+                    <td style="text-align: center;border: 1px solid black;" >
+                      {{ project.deadline }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid black;">
+                      &nbsp;
+                        {{ project.grade }}
+
+                    </td>
+                  </tr>
+                {% endfor %}
+
+              </tbody></table>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+{% endblock %}

@@ -5,7 +5,7 @@
 <h1 style="text-align:center"><br/> {{ current_user.get_realname() }}</h1>
     <p style="text-align: center"> TODO table with {{ current_user.get_realname() }}'s courses</p>
     {% if current_user.is_student() %}
-     <a href="">My courses</a>
+     <a href="{{ url_for('user.seeCourses') }}">My courses</a>
     {% else %}
     {% endif %}
 
