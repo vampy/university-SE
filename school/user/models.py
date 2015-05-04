@@ -24,14 +24,15 @@ class User(UserMixin, db.Model):
     email = Column(String(64), unique=True)
     password_hash = Column(String(160), nullable=False)
     role_id = Column(SmallInteger, default=Role.STUDENT)
+    enrolled = db.relationship("Enrollment", lazy="dynamic")
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
 
         # invalid role detected
         if self.role_id not in Role.get_roles():
+            print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
-            print("ERROR: INVALID role_id")
 
     def is_student(self):
         return self.role_id == Role.STUDENT

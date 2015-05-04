@@ -35,6 +35,7 @@ class Group(db.Model):
                                backref=db.backref("group", lazy="dynamic"))
 
 
+# TODO maybe every degree has a department type
 # every department can have multiple degrees
 # example: Math and Computer Science department can Have Computer Science in English, Math in Romanian
 department_degrees = db.Table(
@@ -58,7 +59,7 @@ class Department(db.Model):
 class Language(db.Model):
     __tablename__ = "languages"
 
-    id = Column(SmallInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     degrees = db.relationship("Degree", backref="language", lazy="dynamic")
 
@@ -75,7 +76,7 @@ class Degree(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     type_id = Column(SmallInteger, default=DegreeType.UNDERGRADUATE)
-    language_id = Column(SmallInteger, ForeignKey("languages.id"), default=None, nullable=True)
+    language_id = Column(Integer, ForeignKey("languages.id"), default=None, nullable=True)
     courses = db.relationship("Course", backref="degree", lazy="dynamic")
 
     def is_undergraduate(self):
@@ -130,3 +131,8 @@ class Enrollment(db.Model):
     course_id = Column(Integer, ForeignKey("courses.id"), primary_key=True)
     semester_id = Column(Integer, ForeignKey("semesters.id"), primary_key=True)
     grade = Column(Integer, default=0)
+
+    # maybe use lazy dynamic
+    student = db.relationship("User")
+    course = db.relationship("Course")
+    semester = db.relationship("Semester")
