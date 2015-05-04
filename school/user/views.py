@@ -57,6 +57,37 @@ def see_courses():
 
     return render_template("user/see_courses.html", courses=courses, projects=projects)
 
+@user.route('/see_users')
+@login_required
+def see_users():
+
+    projects = [
+        {
+            'name': 'Test 1',
+            'deadline': '2015-03-20',
+            'grade': '10'
+        },
+        {
+            'name': 'Project 1',
+            'deadline': '2015-03-27',
+            'grade': '9'
+        },
+        {
+            'name': 'Exam mid term',
+            'deadline': '2015-04-10',
+            'grade': '8'
+        },
+        {
+            'name': 'Project 2',
+            'deadline': '2015-05-10',
+            'grade': '10'
+        }
+    ]
+
+    courses = [enroll.course for enroll in current_user.enrolled.all()]
+
+    return render_template("user/see_users.html", courses=courses, projects=projects)
+
 @user.route('/uploadresults')
 @login_required
 def uploadresults():
