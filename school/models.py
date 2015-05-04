@@ -75,7 +75,7 @@ class Degree(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     type_id = Column(SmallInteger, default=DegreeType.UNDERGRADUATE)
-    language_id = Column(SmallInteger, ForeignKey("languages.id"))
+    language_id = Column(SmallInteger, ForeignKey("languages.id"), default=None, nullable=True)
     courses = db.relationship("Course", backref="degree", lazy="dynamic")
 
     def is_undergraduate(self):
