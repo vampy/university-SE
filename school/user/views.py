@@ -67,7 +67,7 @@ def seeCourses():
         }
     ]
 
-    return render_template("user/seeCourses.html",courses=courses, projects=projects)
+    return render_template("user/see_courses.html",courses=courses, projects=projects)
 
 # TODO
 def settings():
