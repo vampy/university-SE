@@ -26,9 +26,9 @@ def changepassword():
     return render_template('user/changepassword.html', form=form)
 
 
-@user.route('/seeCourses')
+@user.route('/see_courses')
 @login_required
-def seeCourses():
+def see_courses():
     courses = [
                 {
                     'name': 'Operating system'
@@ -68,6 +68,29 @@ def seeCourses():
     ]
 
     return render_template("user/see_courses.html",courses=courses, projects=projects)
+
+@user.route('/uploadresults')
+@login_required
+def uploadresults():
+    courses = [
+                {
+                    'name': 'Operating system',
+                    'grade': '9'
+                },
+                {
+                    'name': 'Software design',
+                    'grade': '7'
+                },
+                {
+                    'name': 'Software engineering',
+                    'grade': '9'
+                },
+                {
+                    'name': 'Software quality',
+                    'grade': '8'
+                }
+        ]
+    return render_template("user/upload_course_results.html", courses=courses)
 
 # TODO
 def settings():

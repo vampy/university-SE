@@ -46,7 +46,7 @@
 
 
                                     <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#{{ url_for('user.see_courses') }}">See courses</a></li>
+                                        <li><a href="{{ url_for('user.see_courses') }}">See courses</a></li>
                                         {% if current_user.is_student() %}
                                             <li><a href="#{#{{ url_for('frontend.___________') }}#}">Choose optional course</a></li>
                                         {% elif current_user.is_teacher() or current_user.is_chief_department()%}
