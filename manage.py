@@ -23,6 +23,8 @@ def init():
     """
     db.drop_all()
     db.create_all()
+
+    # Add users
     # student
     test_user = User(
         username="test",
@@ -51,7 +53,7 @@ def init():
     test_admin = User(
         username="admin",
         password="admin",
-        realname="admin",
+        realname="Thor",
         email="admin@example.com",
         role_id=Role.ADMIN
     )

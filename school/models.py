@@ -15,24 +15,6 @@ maybe add Faculty?
 
 """
 
-
-class Course(db.Model):
-    __tablename__ = "courses"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(64), nullable=False)
-    is_optional = Column(Boolean, default=False)  # is course optional
-
-
-class Semester(db.Model):
-    __tablename__ = "semesters"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(64), nullable=False)  # human readable semester name
-    year = Column(Integer)  # the semester year, 2014, 2015
-    date_start = Column(Date)  # september 2014
-    date_end = Column(Date)    # june 2015
-
 # keep track of each student in what group, could just keep a column in users table
 # but it would complicate things with roles, as teachers, admins do not have groups associated with it
 group_students = db.Table(
@@ -73,17 +55,28 @@ class Department(db.Model):
                               backref=db.backref("departments", lazy="dynamic"))
 
 
+class Language(db.Model):
+    __tablename__ = "languages"
+
+    id = Column(SmallInteger, primary_key=True)
+    name = Column(String(64), nullable=False)
+    degrees = db.relationship("Degree", backref="language", lazy="dynamic")
+
+
 class DegreeType:
     UNDERGRADUATE = 1
     GRADUATE = 2
 
 
+# each degree has a language, eg: CS English, CS Romanian, etc
 class Degree(db.Model):
     __tablename__ = "degrees"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     type_id = Column(SmallInteger, default=DegreeType.UNDERGRADUATE)
+    language_id = Column(SmallInteger, ForeignKey("languages.id"))
+    courses = db.relationship("Course", backref="degree", lazy="dynamic")
 
     def is_undergraduate(self):
         return self.type_id == DegreeType.UNDERGRADUATE
@@ -92,8 +85,48 @@ class Degree(db.Model):
         return self.type_id == DegreeType.GRADUATE
 
 
-class Language(db.Model):
-    __tablename__ = "languages"
+# TODO add proposed optional courses
+# each course has it's own degree
+class Course(db.Model):
+    __tablename__ = "courses"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
+    is_optional = Column(Boolean, default=False)  # is course optional
+    degree_id = Column(Integer, ForeignKey("degrees.id"))
+
+# each course is part of a semester
+semester_courses = db.Table(
+    "semester_courses",
+    Column("course_id", Integer, ForeignKey("courses.id"), nullable=False),
+    Column("semester_id", Integer, ForeignKey("semesters.id"), nullable=False),
+)
+
+
+# to select all courses of a degree: semester.courses where degree == degree.id
+class Semester(db.Model):
+    __tablename__ = "semesters"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64), nullable=False)  # human readable semester name
+    year = Column(Integer)  # the semester year, 2014, 2015
+    date_start = Column(Date)  # september 2014
+    date_end = Column(Date)  # june 2015
+    courses = db.relationship("Course", secondary=semester_courses, backref=db.backref("semesters", lazy="dynamic"))
+
+
+class Teaches(db.Model):
+    __tablename__ = "teaches"
+
+    teacher_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    course_id = Column(Integer, ForeignKey("courses.id"), primary_key=True)
+    semester_id = Column(Integer, ForeignKey("semesters.id"), primary_key=True)
+
+
+class Enrollment(db.Model):
+    __tablename__ = "enrollment"
+
+    student_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    course_id = Column(Integer, ForeignKey("courses.id"), primary_key=True)
+    semester_id = Column(Integer, ForeignKey("semesters.id"), primary_key=True)
+    grade = Column(Integer, default=0)
