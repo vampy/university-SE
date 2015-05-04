@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, flash
+from flask import Blueprint, render_template, flash, g
 from flask.ext.login import login_required, logout_user, current_user, login_user
 from .forms import ChangePasswordForm
 from school.config import FLASH_SUCCESS
+from school.extensions import get_db, close_connection
 
 user = Blueprint('user', __name__)
 
@@ -29,20 +30,6 @@ def changepassword():
 @user.route('/see_courses')
 @login_required
 def see_courses():
-    courses = [
-                {
-                    'name': 'Operating system'
-                },
-                {
-                    'name': 'Software design'
-                },
-                {
-                    'name': 'Software engineering'
-                },
-                {
-                    'name': 'Software quality'
-                }
-        ]
 
     projects = [
         {
@@ -66,6 +53,10 @@ def see_courses():
             'grade': '10'
         }
     ]
+
+    cur = get_db().execute('select name from courses')
+    courses = [dict(name=row[0]) for row in cur.fetchall()]
+    close_connection()
 
     return render_template("user/see_courses.html",courses=courses, projects=projects)
 
