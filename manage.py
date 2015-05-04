@@ -63,7 +63,9 @@ def init():
     test_group.students.append(test_user)
 
     test_course = Course(name="SE", is_optional=True)
+    test_second_course= Course(name="OS", is_optional=True)
     db.session.add(test_course)
+    db.session.add(test_second_course)
     db.session.add(test_user)
     db.session.add(test_teacher)
     db.session.add(test_chief_department)
