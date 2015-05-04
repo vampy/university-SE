@@ -30,7 +30,7 @@ class User(UserMixin, db.Model):
         super(User, self).__init__(**kwargs)
 
         # invalid role detected
-        if self.role_id not in Role.get_roles():
+        if self.role_id is not None and self.role_id not in Role.get_roles():
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
 
