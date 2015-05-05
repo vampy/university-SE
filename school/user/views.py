@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, flash, g
 from flask.ext.login import login_required, logout_user, current_user, login_user
 from .forms import ChangePasswordForm
+from school.extensions import db
 from school.config import FLASH_SUCCESS
 from school.decorators import role_required
 
@@ -18,10 +19,13 @@ def index():
 @login_required
 def changepassword():
     form = ChangePasswordForm()
-    if form.validate():
-
+    if form.validate_on_submit():
         flash('Password changed successfully.', FLASH_SUCCESS)
-        # TODO controller.changepassword(current_user,form.get_new_password)
+        current_user.password = form.new_password.data
+
+        db.session.add(current_user)
+        db.session.commit()
+
         return form.redirect("user.index")
 
     return render_template('user/changepassword.html', form=form)
