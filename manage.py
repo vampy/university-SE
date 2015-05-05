@@ -33,16 +33,19 @@ def init():
 
     test_course1 = Course(name="SE", is_optional=True)
     test_course2 = Course(name="OS", is_optional=True)
+    test_course3 = Course(name="DBMS", is_optional=True)
 
     test_degree = Degree(name="Computer Science", type_id=DegreeType.UNDERGRADUATE)
-    test_degree.courses.extend([test_course1, test_course2])
+    test_degree.courses.extend([test_course1, test_course2, test_course3])
     test_department.degrees.append(test_degree)
 
     test_semester1 = Semester(name="Autumn 2014", year=2015,
                               date_start=date(2014, 10, 1), date_end=date(2015, 2, 15))
     test_semester1.courses.extend([test_course1, test_course2])
-    test_semester2 = Semester(name="Autumn 2014", year=2015,
+
+    test_semester2 = Semester(name="Spring 2015", year=2015,
                               date_start=date(2015, 2, 20), date_end=date(2015, 6, 15))
+    test_semester2.courses.extend([test_course1, test_course2, test_course3])
 
     db.session.add(test_degree)
     db.session.add(test_department)
@@ -94,8 +97,13 @@ def init():
     # add enrollments
     test_enrollment1 = Enrollment(student=test_user, semester=test_semester1, course=test_course1)
     test_enrollment2 = Enrollment(student=test_user, semester=test_semester1, course=test_course2)
+    test_enrollment3 = Enrollment(student=test_user, semester=test_semester2, course=test_course1)
+    test_enrollment4 = Enrollment(student=test_user, semester=test_semester2, course=test_course3)
+    
     db.session.add(test_enrollment1)
     db.session.add(test_enrollment2)
+    db.session.add(test_enrollment3)
+    db.session.add(test_enrollment4)
 
     # add teaches
     test_teaches1 = Teaches(teacher=test_teacher, semester=test_semester1, course=test_course1)
@@ -103,6 +111,7 @@ def init():
     db.session.add(test_teaches1)
     db.session.add(test_teaches2)
 
+    
     db.session.commit()
 
     # print(test_user.enrolled.all()[0].semester.year)
