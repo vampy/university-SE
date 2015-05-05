@@ -25,6 +25,7 @@
                         <td>
                             <div class="btn-group">
                                 <a class="btn btn-danger" href="{{ url_for('user.delete', user_id=user.id) }}">Delete</a>
+                                <a class="btn btn-primary" href="{{ url_for('user.profile', user_id=user.id) }}">Edit</a>
                             </div>
                         </td>
                     </tr>

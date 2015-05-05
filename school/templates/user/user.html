@@ -1,6 +1,12 @@
+{% from "macros/form.html" import render_form %}
 {% extends 'base.html' %}
 {% set page_title = 'User edit' %}
 
 {% block body %}
-    TODO add buttons, and update user
+    <h1 class="text-center">Edit user {{ user.username }}</h1><hr>
+    <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+            {{ render_form(url_for('user.profile', user_id=user.id), form) }}
+        </div>
+    </div>
 {% endblock %}

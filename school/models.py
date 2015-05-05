@@ -70,6 +70,7 @@ class DegreeType:
     GRADUATE = 2
 
 
+# TODO add degree period, degree <-> student, period_start, period_end, semesters number
 # each degree has a language, eg: CS English, CS Romanian, etc
 class Degree(db.Model):
     __tablename__ = "degrees"

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
 from flask.ext.login import login_required, current_user
-from .forms import ChangePasswordForm
+from .forms import ChangePasswordForm, EditUserForm
 from school.extensions import db
 from school.config import FLASH_SUCCESS, FLASH_ERROR
 from school.decorators import role_required
@@ -64,12 +64,21 @@ def see_courses():
     return render_template("user/see_courses.html", courses=courses, projects=projects)
 
 
-@user.route('/user/<int:user_id>')
+@user.route('/user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 @role_required(admin=True, cd=True)
 def profile(user_id):
     user_instance = User.get_by_id(user_id)
-    return render_template("user/user.html", user=user_instance)
+    form = EditUserForm(obj=user_instance)
+    if form.validate_on_submit():
+        flash("Updated user details", FLASH_SUCCESS)
+
+        form.populate_obj(user_instance)
+
+        db.session.add(user_instance)
+        db.session.commit()
+
+    return render_template("user/user.html", user=user_instance, form=form)
 
 
 @user.route('/user/delete/<int:user_id>')

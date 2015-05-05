@@ -1,8 +1,9 @@
 from flask_wtf import Form
-from wtforms import PasswordField, SubmitField, ValidationError
-from wtforms.validators import DataRequired, EqualTo
+from wtforms import PasswordField, SubmitField, ValidationError, StringField, SelectField
+from wtforms.validators import DataRequired, EqualTo, Email
 from school.forms import RedirectForm
 from flask.ext.login import current_user
+from .models import Role
 
 
 class ChangePasswordForm(RedirectForm):
@@ -12,13 +13,20 @@ class ChangePasswordForm(RedirectForm):
                                        validators=[DataRequired(), EqualTo('new_password', "Confirm password is different from New password field")])
     submit = SubmitField('Update password')
 
-    def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
-        self.user = None
-
     def get_new_password(self):
         return self.new_password.data
 
     def validate_old_password(self, field):
         if not current_user.verify_password(field.data):
             raise ValidationError("Password is wrong.")
+
+
+class EditUserForm(RedirectForm):
+    username = StringField("Username", validators=[DataRequired()])
+    realname = StringField("Real name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    role_id = SelectField("Role", coerce=int, validators=[DataRequired()],
+                          choices=[(Role.STUDENT, "Student"), (Role.TEACHER, "Teacher"),
+                                   (Role.CHIEF_DEPARTMENT, "ChiefDepartment"), (Role.ADMIN, "Admin")])
+
+    submit = SubmitField("Update user")
