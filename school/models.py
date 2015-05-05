@@ -34,6 +34,9 @@ class Group(db.Model):
                                secondary=group_students,
                                backref=db.backref("group", lazy="dynamic"))
 
+    def __repr__(self):
+        return '<Group id={0}, name={1}>'.format(str(self.id), str(self.name))
+
 
 # TODO maybe every degree has a department type
 # every department can have multiple degrees
@@ -55,6 +58,8 @@ class Department(db.Model):
                               secondary=department_degrees,
                               backref=db.backref("departments", lazy="dynamic"))
 
+    def __repr__(self):
+        return '<Departament id={0}, name={1}>'.format(str(self.id), str(self.name))
 
 class Language(db.Model):
     __tablename__ = "languages"
@@ -62,6 +67,9 @@ class Language(db.Model):
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     degrees = db.relationship("Degree", backref="language", lazy="dynamic")
+
+    def __repr__(self):
+        return '<Language id={0}, name={1}>'.format(str(self.id), str(self.name))
 
 
 class DegreeType:
@@ -79,6 +87,11 @@ class Degree(db.Model):
     language_id = Column(Integer, ForeignKey("languages.id"), default=None, nullable=True)
     courses = db.relationship("Course", backref="degree", lazy="dynamic")
 
+    def __repr__(self):
+        return '<Degree id={0}, name={1}, type_id={2}, language_id={3}>'.format(str(self.id), str(self.name),
+                                                                                     str(self.type_id),
+                                                                                     str(self.type_id))
+
     def is_undergraduate(self):
         return self.type_id == DegreeType.UNDERGRADUATE
 
@@ -95,6 +108,11 @@ class Course(db.Model):
     name = Column(String(64), nullable=False)
     is_optional = Column(Boolean, default=False)  # is course optional
     degree_id = Column(Integer, ForeignKey("degrees.id"))
+
+    def __repr__(self):
+        return '<Course id={0}, name={1}, is_optional={2}, degree_id={3}>'.format(str(self.id), str(self.name),
+                                                                                  str(self.is_optional),
+                                                                                  str(self.degree_id))
 
 # each course is part of a semester
 semester_courses = db.Table(
@@ -115,6 +133,13 @@ class Semester(db.Model):
     date_end = Column(Date)  # june 2015
     courses = db.relationship("Course", secondary=semester_courses, backref=db.backref("semesters", lazy="dynamic"))
 
+    def __repr__(self):
+        return '<Semester id={0}, name={1}, year={2}, date_start={3}, date_end={4}>'.format(str(self.id),
+                                                                                            str(self.name),
+                                                                                            str(self.year),
+                                                                                            str(self.date_start),
+                                                                                            str(self.date_end))
+
 
 class Teaches(db.Model):
     __tablename__ = "teaches"
@@ -125,6 +150,10 @@ class Teaches(db.Model):
     teacher = db.relationship("User")
     course = db.relationship("Course")
     semester = db.relationship("Semester")
+
+    def __repr__(self):
+        return '<Teaches tid={0}, cid={1}, sem_id={2}>'.format(str(self.teacher_id), str(self.course_id),
+                                                               str(self.semester_id))
 
 
 class Enrollment(db.Model):
@@ -139,3 +168,7 @@ class Enrollment(db.Model):
     student = db.relationship("User")
     course = db.relationship("Course")
     semester = db.relationship("Semester")
+
+    def __repr__(self):
+        return '<Enrollment sid={0}, cid={1}, sem_id={2}, grade={3}>'.format(str(self.student_id), str(self.course_id),
+                                                                             str(self.semester_id, str(self.grade)))
