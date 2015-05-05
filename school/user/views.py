@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, flash, g
 from flask.ext.login import login_required, logout_user, current_user, login_user
 from .forms import ChangePasswordForm
 from school.config import FLASH_SUCCESS
+from school.decorators import role_required
 
 user = Blueprint('user', __name__)
 
@@ -59,6 +60,7 @@ def see_courses():
 
 @user.route('/users')
 @login_required  # TODO add admin_required
+@role_required(admin=True, cd=True)
 def users():
     return render_template("user/users.html")
 
