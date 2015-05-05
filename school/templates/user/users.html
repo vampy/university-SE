@@ -1,9 +1,15 @@
+{% from "macros/form.html" import render_form %}
 {% extends 'base.html' %}
 {% set page_title = 'Users' %}
 
 {% block body %}
-    <h2 class="text-center">Edit users</h2>
-    <hr>
+    <h2 class="text-center">Add user</h2><hr>
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            {{ render_form(url_for('user.users'), add_form) }}
+        </div>
+    </div>
+    <h2 class="text-center">Edit users</h2><hr>
     <div class="row">
         <div class="col-md-12">
             <table class="table table-striped">

@@ -1,6 +1,6 @@
 from flask.ext.login import login_required, current_user
 from flask import Blueprint, render_template, flash, redirect, url_for, request
-from .forms import ChangePasswordForm, EditUserForm
+from .forms import ChangePasswordForm, EditUserForm, AddUserForm
 from .models import User
 from school.config import FLASH_SUCCESS, FLASH_ERROR
 from school.decorators import role_required
@@ -66,7 +66,6 @@ def see_courses():
         return render_template("user/see_courses.html", courses=courses)
 
 
-
 @user.route('/user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 @role_required(admin=True, cd=True)
@@ -101,14 +100,27 @@ def delete(user_id):
     return redirect(url_for("user.users"))
 
 
-@user.route('/users')
+@user.route('/users', methods=['GET', 'POST'])
 @login_required
 @role_required(admin=True, cd=True)
 def users():
     # CD can edit users only in this department
 
+    form = AddUserForm()
+    if form.validate_on_submit():  # add user
+
+        # update database
+        user_instance = User()
+        form.populate_obj(user_instance)
+        db.session.add(user_instance)
+        db.session.commit()
+
+        # update view
+        form = AddUserForm()
+        flash("User added", FLASH_SUCCESS)
+
     users_list = User.query.all()
-    return render_template("user/users.html", users=users_list)
+    return render_template("user/users.html", users=users_list, add_form=form)
 
 
 @user.route('/uploadresults')

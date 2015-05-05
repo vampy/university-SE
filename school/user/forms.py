@@ -1,4 +1,3 @@
-from flask_wtf import Form
 from wtforms import PasswordField, SubmitField, ValidationError, StringField, SelectField
 from wtforms.validators import DataRequired, EqualTo, Email
 from school.forms import RedirectForm
@@ -30,3 +29,10 @@ class EditUserForm(RedirectForm):
                                    (Role.CHIEF_DEPARTMENT, "ChiefDepartment"), (Role.ADMIN, "Admin")])
 
     submit = SubmitField("Update user")
+
+
+class AddUserForm(EditUserForm):
+    password = PasswordField("Password", validators=[DataRequired()])
+    password_again = PasswordField("Check Password",
+                                   validators=[DataRequired(), EqualTo("password", "Confirm password does not match")])
+    submit = SubmitField("Add user")
