@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, flash, g
-from flask.ext.login import login_required, logout_user, current_user, login_user
+from flask import Blueprint, render_template, flash, redirect, url_for
+from flask.ext.login import login_required, current_user
 from .forms import ChangePasswordForm
 from school.extensions import db
-from school.config import FLASH_SUCCESS
+from school.config import FLASH_SUCCESS, FLASH_ERROR
 from school.decorators import role_required
+from .models import User
 
 user = Blueprint('user', __name__)
 
@@ -62,11 +63,41 @@ def see_courses():
 
     return render_template("user/see_courses.html", courses=courses, projects=projects)
 
+
+@user.route('/user/<int:user_id>')
+@login_required
+@role_required(admin=True, cd=True)
+def profile(user_id):
+    user_instance = User.get_by_id(user_id)
+    return render_template("user/user.html", user=user_instance)
+
+
+@user.route('/user/delete/<int:user_id>')
+@login_required
+@role_required(admin=True, cd=True)
+def delete(user_id):
+    user_instance = User.get_by_id(user_id)
+    if user_instance.id == current_user.id:
+        flash("You can not delete yourself ;)", FLASH_ERROR)
+        return redirect(url_for("user.users"))
+
+    flash("User %s deleted" % user_instance.username, FLASH_SUCCESS)
+
+    db.session.delete(user_instance)
+    db.session.commit()
+
+    return redirect(url_for("user.users"))
+
+
 @user.route('/users')
-@login_required  # TODO add admin_required
+@login_required
 @role_required(admin=True, cd=True)
 def users():
-    return render_template("user/users.html")
+    # CD can edit users only in this department
+
+    users_list = User.query.all()
+    return render_template("user/users.html", users=users_list)
+
 
 @user.route('/uploadresults')
 @login_required
@@ -90,6 +121,7 @@ def uploadresults():
                 }
         ]
     return render_template("user/upload_course_results.html", courses=courses)
+
 
 # TODO
 def settings():

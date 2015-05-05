@@ -24,8 +24,8 @@ class User(UserMixin, db.Model):
     email = Column(String(64), unique=True)
     password_hash = Column(String(160), nullable=False)
     role_id = Column(SmallInteger, default=Role.STUDENT)
-    enrolled = db.relationship("Enrollment", lazy="dynamic")
-    teaches = db.relationship("Teaches", lazy="dynamic")
+    enrolled = db.relationship("Enrollment", lazy="dynamic", cascade="save-update, merge, delete, delete-orphan")
+    teaches = db.relationship("Teaches", lazy="dynamic", cascade="save-update, merge, delete, delete-orphan")
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -34,6 +34,20 @@ class User(UserMixin, db.Model):
         if self.role_id is not None and self.role_id not in Role.get_roles():
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
+
+    @classmethod
+    def get_by_id(cls, user_id):
+        return cls.query.filter_by(id=user_id).first_or_404()
+
+    def role_to_str(self):
+        if self.role_id == Role.STUDENT:
+            return "student"
+        elif self.role_id == Role.TEACHER:
+            return "teacher"
+        elif self.role_id == Role.CHIEF_DEPARTMENT:
+            return "chief_department"
+        elif self.role_id == Role.ADMIN:
+            return "admin"
 
     def is_student(self):
         return self.role_id == Role.STUDENT

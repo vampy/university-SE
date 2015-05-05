@@ -2,5 +2,34 @@
 {% set page_title = 'Users' %}
 
 {% block body %}
-    TODO All users page
+    <h2 class="text-center">Edit users</h2>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped">
+                <tr>
+                    <th>#ID</th>
+                    <th>Username</th>
+                    <th>Real name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+                {% for user in users %}
+                    <tr>
+                        <td><a href="{{ url_for('user.profile', user_id=user.id) }}">{{ user.id }}</a></td>
+                        <td><a href="{{ url_for('user.profile', user_id=user.id) }}">{{ user.username }}</a></td>
+                        <td>{{ user.realname }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role_to_str() }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <a class="btn btn-danger" href="{{ url_for('user.delete', user_id=user.id) }}">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}
