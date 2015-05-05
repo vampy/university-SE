@@ -14,7 +14,6 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        flash('Successfully logged in as %s' % form.user.username, FLASH_SUCCESS)
         login_user(form.user)
 
         return form.redirect("user.index")
