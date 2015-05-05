@@ -2,11 +2,22 @@
 {% set page_title = 'School' %}
 
 {% block body %}
-<h1 style="text-align:center"><br/> {{ current_user.get_realname() }}</h1>
-    <p style="text-align: center"> TODO table with {{ current_user.get_realname() }}'s courses</p>
-    {% if current_user.is_student() %}
-     <a href="{{ url_for('user.see_courses') }}">My courses</a>
-    {% else %}
-    {% endif %}
-
+    <h1 class="text-center">Hi, {{ current_user.get_realname() }}</h1>
+    <hr>
+    <div class="col-md-offset-3 col-md-6">
+        <div class="list-group text-center">
+            {% if current_user.is_student() %}
+                <a href="{{ url_for('user.see_courses') }}" class="list-group-item">My courses</a>
+                <a href="#" class="list-group-item">Choose optional course</a>
+            {% else %}
+                <a href="{{ url_for('user.see_courses') }}" class="list-group-item">See courses</a>
+                <a href="#" class="list-group-item">Upload course results</a>
+                <a href="#" class="list-group-item">Establish optional courses</a>
+                {% if current_user.is_chief_department() or current_user.is_admin() %}
+                    <a href="#" class="list-group-item">See statistics</a>
+                    <a href="{{ url_for('user.users') }}" class="list-group-item">Edit users</a></li>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
