@@ -18,6 +18,7 @@ def create_app():
     db.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
+    toolbar.init_app(app)
 
     # default login page, see https://flask-login.readthedocs.org/en/latest/#customizing-the-login-process
     login_manager.login_view = "frontend.login"

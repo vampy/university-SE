@@ -11,3 +11,7 @@ mail = Mail()
 from flask.ext.login import LoginManager
 
 login_manager = LoginManager()
+
+from flask_debugtoolbar import DebugToolbarExtension
+
+toolbar = DebugToolbarExtension()

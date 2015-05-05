@@ -17,6 +17,10 @@ class Config:
     SECRET_KEY = 'secret key'
     DEBUG = True
 
+    # Debug Toolbar
+    # https://flask-debugtoolbar.readthedocs.org/en/latest/#configuration
+    DEBUG_TB_INTERCEPT_REDIRECTS = False
+
     # SQL ALCHEMY Config
     # https://pythonhosted.org/Flask-SQLAlchemy/config.html
     SQLALCHEMY_ECHO = True
@@ -29,4 +33,6 @@ class Config:
 
     # disable logging
     LOGIN_DISABLED = False
+
+
 
