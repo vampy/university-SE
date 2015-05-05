@@ -6,14 +6,6 @@ from school.extensions import db
 from sqlalchemy import Column, Integer, String, ForeignKey, \
     Date, SmallInteger, Boolean, PrimaryKeyConstraint
 
-"""
-TODO
-courses
-contracts
-Connections between all types
-maybe add Faculty?
-
-"""
 
 # keep track of each student in what group, could just keep a column in users table
 # but it would complicate things with roles, as teachers, admins do not have groups associated with it
@@ -61,6 +53,7 @@ class Department(db.Model):
     def __repr__(self):
         return '<Departament id={0}, name={1}>'.format(str(self.id), str(self.name))
 
+
 class Language(db.Model):
     __tablename__ = "languages"
 
@@ -89,8 +82,8 @@ class Degree(db.Model):
 
     def __repr__(self):
         return '<Degree id={0}, name={1}, type_id={2}, language_id={3}>'.format(str(self.id), str(self.name),
-                                                                                     str(self.type_id),
-                                                                                     str(self.type_id))
+                                                                                str(self.type_id),
+                                                                                str(self.type_id))
 
     def is_undergraduate(self):
         return self.type_id == DegreeType.UNDERGRADUATE
