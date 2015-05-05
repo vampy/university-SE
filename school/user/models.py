@@ -25,6 +25,7 @@ class User(UserMixin, db.Model):
     password_hash = Column(String(160), nullable=False)
     role_id = Column(SmallInteger, default=Role.STUDENT)
     enrolled = db.relationship("Enrollment", lazy="dynamic")
+    teaches = db.relationship("Teaches", lazy="dynamic")
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)

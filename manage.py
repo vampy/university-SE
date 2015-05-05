@@ -3,7 +3,7 @@ from school import create_app
 from school.user import User
 from school.user.models import Role
 from school.models import Course, Semester, Group, \
-    Language, Department, Degree, DegreeType, Enrollment
+    Language, Department, Degree, DegreeType, Enrollment, Teaches
 from flask.ext.script import Manager
 from school.extensions import db
 from datetime import date
@@ -96,6 +96,13 @@ def init():
     test_enrollment2 = Enrollment(student=test_user, semester=test_semester1, course=test_course2)
     db.session.add(test_enrollment1)
     db.session.add(test_enrollment2)
+
+    # add teaches
+    test_teaches1 = Teaches(teacher=test_teacher, semester=test_semester1, course=test_course1)
+    test_teaches2 = Teaches(teacher=test_teacher, semester=test_semester1, course=test_course2)
+    db.session.add(test_teaches1)
+    db.session.add(test_teaches2)
+
     db.session.commit()
 
     # print(test_user.enrolled.all()[0].semester.year)

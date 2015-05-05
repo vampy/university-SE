@@ -122,6 +122,9 @@ class Teaches(db.Model):
     teacher_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     course_id = Column(Integer, ForeignKey("courses.id"), primary_key=True)
     semester_id = Column(Integer, ForeignKey("semesters.id"), primary_key=True)
+    teacher = db.relationship("User")
+    course = db.relationship("Course")
+    semester = db.relationship("Semester")
 
 
 class Enrollment(db.Model):
