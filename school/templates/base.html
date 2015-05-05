@@ -42,34 +42,28 @@
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
                                         <b>{{ current_user.get_realname() }}</b> <span class="caret"></span>
                                     </a>
-
-
-
                                     <ul class="dropdown-menu" role="menu">
                                         <li><a href="{{ url_for('user.see_courses') }}">See courses</a></li>
                                         {% if current_user.is_student() %}
                                             <li><a href="#{#{{ url_for('frontend.___________') }}#}">Choose optional course</a></li>
-                                        {% elif current_user.is_teacher() or current_user.is_chief_department()%}
+                                        {% else %}
                                             <li><a href="#{#{{ url_for('frontend.___________') }}#}">Upload course results</a></li>
                                             <li><a href="#{#{{ url_for('frontend.___________') }}#}">Establish optional courses</a></li>
-                                            {% if current_user.is_chief_department() %}
+                                            {% if current_user.is_chief_department() or current_user.is_admin() %}
                                             <li><a href="#{#{{ url_for('frontend.___________') }}#}">See statistics</a></li>
                                             {% endif %}
                                         {% endif %}
                                     </ul>
                                 </li>
                                 <li role="presentation" class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">Settings<span class="caret"></span>
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                                        Settings<span class="caret"></span>
                                     </a>
-
                                     <ul class="dropdown-menu" role="menu">
-
                                         <li><a href="{{ url_for('user.changepassword') }}">Change password</a></li>
                                         {% if current_user.is_admin() %}
-                                            <li><a href="#">Edit users</a></li>
-
+                                            <li><a href="{{ url_for('user.users') }}">Edit users</a></li>
                                         {% endif %}
-
                                     </ul>
                                 </li>
                                 <li><a href="{{ url_for('frontend.logout') }}">Log out</a></li>
