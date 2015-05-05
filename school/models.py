@@ -156,7 +156,6 @@ class Enrollment(db.Model):
     course_id = Column(Integer, ForeignKey("courses.id"), primary_key=True)
     semester_id = Column(Integer, ForeignKey("semesters.id"), primary_key=True)
     grade = Column(Integer, default=0)
-
     # maybe use lazy dynamic
     student = db.relationship("User")
     course = db.relationship("Course")
