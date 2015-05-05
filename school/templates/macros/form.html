@@ -1,4 +1,11 @@
-{% macro render_checkbox(field) %}
+{% macro _label(field, class_label="") %}
+    <label class="control-label{% if class_label %} {{ class_label }}{% endif %}"
+        for="{{ field.id }}">
+        {{ field.label }}
+    </label>
+{% endmacro %}
+
+{% macro render_checkbox(field, class_label="", class_field_wrapper="") %}
 <div class="checkbox{% if field.errors %} has-error{% endif %}">
     <label for="{{ field.id }}">
         {{ field }}{{ field.label.text }}
@@ -14,10 +21,10 @@
 </div>
 {% endmacro%}
 
-{% macro render_radio(field) %}
+{% macro render_radio(field, class_label="", class_field_wrapper="") %}
 <div class="form-group{% if field.errors %} has-error{% endif %}">
     {{ field.label(class_="control-label") }}
-    <div class="">
+    <div class="{% if class_field_wrapper %}{{ class_field_wrapper }}{% endif %}">
         {% for subfield in field -%}
         <label for="{{ subfield.id }}" class="radio-inline">
             {{ subfield }} {{ subfield.label.text }}
@@ -35,13 +42,10 @@
 </div>
 {% endmacro %}
 
-{% macro render_datepicker(field) %}
+{% macro render_datepicker(field, class_label="", class_field_wrapper="") %}
 <div class="form-group{% if field.errors %} has-error{% endif %}">
-    <label class="control-label"
-        for="{{ field.id }}">
-        {{ field.label }}
-    </label>
-    <div class="">
+    {{ _label(field, class_label) }}
+    <div class="{% if class_field_wrapper %}{{ class_field_wrapper }}{% endif %}">
         {{ field() }}
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
@@ -55,13 +59,10 @@
 </div>
 {% endmacro %}
 
-{% macro render_textarea(field) %}
+{% macro render_textarea(field, class_label="", class_field_wrapper="") %}
 <div class="form-group{% if field.errors %} has-error{% endif %}">
-    <label class="control-label"
-        for="{{ field.id }}">
-        {{ field.label }}
-    </label>
-    <div class="">
+    {{ _label(field, class_label) }}
+    <div class="{% if class_field_wrapper %}{{ class_field_wrapper }}{% endif %}">
         {{ field(class_="form-control", rows="4") }}
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
@@ -75,13 +76,10 @@
 </div>
 {% endmacro %}
 
-{% macro render_file(field) %}
+{% macro render_file(field, class_label="", class_field_wrapper="") %}
 <div class="form-group{% if field.errors %} has-error{% endif %}">
-    <label class="control-label"
-        for="{{ field.id }}">
-        {{ field.label }}
-    </label>
-    <div class="">
+    {{ _label(field, class_label) }}
+    <div class="{% if class_field_wrapper %}{{ class_field_wrapper }}{% endif %}">
         {{ field }}
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
@@ -95,13 +93,10 @@
 </div>
 {% endmacro %}
 
-{% macro render_input(field) %}
+{% macro render_input(field, class_label="", class_field_wrapper="") %}
 <div class="form-group{% if field.errors %} has-error{% endif %}">
-    <label class="control-label"
-        for="{{ field.id }}">
-        {{ field.label }}
-    </label>
-    <div class="">
+    {{ _label(field, class_label) }}
+    <div class="{% if class_field_wrapper %}{{ class_field_wrapper }}{% endif %}">
         {{ field(class_="form-control") }}
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
@@ -123,7 +118,7 @@
 </div>
 {% endmacro %}
 
-{% macro render_form(url, form, horizontal=False, legend=None, confirm_msg=None, formid=None) %}
+{% macro render_form(url, form, horizontal=False, legend=None, confirm_msg=None, formid=None, class_label="", class_field_wrapper="") %}
 {% set idattr = "id=" + formid if formid else "" %}
 <form {{idattr}} class="{% if horizontal %}form-horizontal{% endif %}" method="POST" action="{{ url }}"
     {% if confirm_msg %}onsubmit='return confirm("{{ confirm_msg }}");' {% endif %}
@@ -136,26 +131,26 @@
         {% for field in form %}
             {% if field.type != "HiddenField" and field.type != "CSRFTokenField" %}
                 {% if field.type == "RadioField" %}
-                    {{ render_radio(field) }}
+                    {{ render_radio(field, class_label, class_field_wrapper) }}
                 {% elif field.type == "BooleanField" %}
-                    {{ render_checkbox(field) }}
+                    {{ render_checkbox(field, class_label, class_field_wrapper) }}
                 {% elif field.type == "SubmitField" %}
                     {{ render_action(field) }}
                 {% elif field.type == "TextAreaField" %}
-                    {{ render_textarea(field) }}
+                    {{ render_textarea(field, class_label, class_field_wrapper) }}
                 {% elif field.type == "DateField" %}
-                    {{ render_datepicker(field) }}
+                    {{ render_datepicker(field, class_label, class_field_wrapper) }}
                 {% elif field.type == "FileField" %}
-                    {{ render_file(field) }}
+                    {{ render_file(field, class_label, class_field_wrapper) }}
                 {% elif field.type == "TextField" %}
                     {% if focus %}
-                        {{ render_input(field) }}
+                        {{ render_input(field, class_label, class_field_wrapper) }}
                         {% set focus = False %}
                     {% else %}
-                        {{ render_input(field) }}
+                        {{ render_input(field, class_label, class_field_wrapper) }}
                     {% endif %}
                 {% else %}
-                    {{ render_input(field) }}
+                    {{ render_input(field, class_label, class_field_wrapper) }}
                 {% endif %}
             {% endif %}
         {% endfor %}
