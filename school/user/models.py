@@ -40,7 +40,7 @@ class User(UserMixin, db.Model):
                                                                                           str(self.username),
                                                                                           str(self.realname,
                                                                                           str(self.email)),
-                                                                                          str(self.role_id))
+                                                                                          self.role_to_str())
 
     @classmethod
     def get_by_id(cls, user_id):
