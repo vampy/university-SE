@@ -35,6 +35,13 @@ class User(UserMixin, db.Model):
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
 
+    def __repr__(self):
+        return '<User id={0}, username={1}, realname={2}, email={3}, role_id={4}>'.format(str(self.id),
+                                                                                                 str(self.username),
+                                                                                                 str(self.realname,
+                                                                                                 str(self.email)),
+                                                                                                 str(self.role_id))
+
     @classmethod
     def get_by_id(cls, user_id):
         return cls.query.filter_by(id=user_id).first_or_404()
