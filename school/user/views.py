@@ -46,13 +46,17 @@ def see_courses():
                 seen_semesters.add(enroll.semester)
 
         if request.method == 'POST':
-            courses = []
-            grades = []
-            sem_id = request.form['semester']
-            for enroll in current_user.enrolled.all():
-                if enroll.semester.id == int(sem_id):
-                    courses.append(enroll.course)
-                    grades.append(enroll.grade)
+            if request.form['semester'] == '0':
+                flash("Please choose a semester", FLASH_ERROR)
+                return render_template("user/see_courses.html", semesters=semesters)
+            else:
+                courses = []
+                grades = []
+                sem_id = request.form['semester']
+                for enroll in current_user.enrolled.all():
+                    if enroll.semester.id == int(sem_id):
+                        courses.append(enroll.course)
+                        grades.append(enroll.grade)
 
         else:
             courses = []

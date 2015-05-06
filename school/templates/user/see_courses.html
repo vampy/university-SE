@@ -4,52 +4,54 @@
 {% block body %}
 
 {% if current_user.is_student() %}
-    <form method="post" class="form-group" align="center">
-        <select size="1" name="semester">
-                <option value=0>Choose a semester</option>
-                {% for semester in semesters %}
-                <option value="{{ semester.id }}" >{{ semester.name }}</option>
-                {% endfor %}
-        </select>
-        <br>
-        <INPUT TYPE="submit" value="Change" class="btn btn-default">
-    </form>
-
-
-    <tbody><tr valign="top">
-              <td style="border: 1px solid black;" >
-                <div style="height: 393px; width: 1182px; overflow: auto;">
-                  <table class="table table-responsive">
-                    <tbody><tr style="border: 1px solid black;" >
-                      <td class="Header" style="text-align: center; border: 1px solid black;">
-                        Course
-                      </td>
-                      <td class="Header" style="text-align: center;border: 1px solid black;">
-                        Grade
-                      </td>
-                    </tr>
-
-                    {% for i in range(courses.__len__()) %}
-                    <tr style="text-align: center;border: 1px solid black;" >
-                        <td style="text-align: center;border: 1px solid black;" >
-                            {{ courses[i].name }}
-                        </td>
-                        <td style="text-align: center;border: 1px solid black;" >
-                            {% if grades[i] %}
-                                {{ grades[i] }}
-                            {% else %}
-                                NC
-                            {% endif %}
-                        </td>
-                      </tr>
+<div class="row">
+    <div class="text-center col-md-2 col-md-push-5" >
+        <form method="post" class="form-group">
+            <select size="1" name="semester" class="form-control">
+                    <option value=0>Choose a semester</option>
+                    {% for semester in semesters %}
+                    <option value="{{ semester.id }}" >{{ semester.name }}</option>
                     {% endfor %}
+            </select>
+            <br>
+            <INPUT TYPE="submit" value="choose" class="btn btn-default">
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 col-md-push-3" >
+      <table class="table table-striped table-bordered">
+        <tr>
+          <td class="col-md-5">
+            <strong>Course</strong>
+          </td>
+          <td class="col-md-1">
+            <strong>Grade</strong>
+          </td>
+        </tr>
+        {% for i in range(courses.__len__()) %}
+        <tr>
+            <td class="col-md-4">
+                {{ courses[i].name }}
+            </td>
+            <td class="col-md-1">
+                {% if grades[i] %}
+                    {{ grades[i] }}
+                {% else %}
+                    NC
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+</div>
 
-                  </tbody></table>
 
-                </div>
-              </td>
-            </tr>
-          </tbody>
+
+
+
+
     {% else %}
         <table class="table table-responsive">
         <tr style="border: 1px solid black;" >
