@@ -47,26 +47,60 @@
     </div>
 </div>
 
+{% elif current_user.is_admin() %}
+<div class="col-md-4 col-md-push-4 text-center" >
+  <table class="table table-striped table-bordered">
+    <tr>
+      <td class="col-md-4">
+        <strong>All Courses</strong>
+      </td>
+    </tr>
+    {% for course in courses %}
+    <tr>
+        <td class="col-md-4">
+            {{ course.name }}
+        </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 
+{% elif current_user.is_teacher() %}
+<div class="col-md-4 col-md-push-4 text-center" >
+  <table class="table table-striped table-bordered">
+    <tr>
+      <td class="col-md-4">
+        <strong>All Courses (teacher)</strong>
+      </td>
+    </tr>
+    {% for course in courses %}
+    <tr>
+        <td class="col-md-4">
+            {{ course.name }}
+        </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 
+{% elif current_user.is_chief_department() %}
+<div class="col-md-4 col-md-push-4 text-center" >
+  <table class="table table-striped table-bordered">
+    <tr>
+      <td class="col-md-4">
+        <strong>All Courses (Chief D)</strong>
+      </td>
+    </tr>
+    {% for course in courses %}
+    <tr>
+        <td class="col-md-4">
+            {{ course.name }}
+        </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 
-
-
-    {% else %}
-        <table class="table table-responsive">
-        <tr style="border: 1px solid black;" >
-            <td class="Header" style="text-align: center; border: 1px solid black;">
-                Courses
-            </td>
-        </tr>
-        {% for course in courses %}
-        <tr style="border: 1px solid black;" >
-            <td class="Header" style="text-align: center; border: 1px solid black;">
-                {{ course.name }}
-            </td>
-        </tr>
-        {% endfor %}
-        </table>
-    {% endif %}
+{% endif %}
 
 {% endblock %}

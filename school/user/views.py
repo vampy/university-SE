@@ -65,7 +65,15 @@ def see_courses():
         #courses = [enroll.course for enroll in current_user.enrolled.all()]
 
         return render_template("user/see_courses.html", semesters=semesters, grades=grades, courses=courses)
-    else :
+    elif current_user.is_admin():
+        courses = Course.query.order_by("name").all()
+        return render_template("user/see_courses.html", courses=courses)
+
+    elif current_user.is_teacher():
+        courses = Course.query.all()
+        return render_template("user/see_courses.html", courses=courses)
+
+    elif current_user.is_chief_department():
         courses = Course.query.all()
         return render_template("user/see_courses.html", courses=courses)
 
