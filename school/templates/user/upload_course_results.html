@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% set page_title = 'Upload Course Results' %}
+
+{% block body %}
+
+<form method="post">
+<select size="1" name="course" >
+<option value=0>Choose a course</option>
+    {% for course in allcourses %}
+	<option value="{{ course.id }}" >{{ course.name }}</option>
+    {% endfor %}
+</select>
+<select size="1" name="semester">
+        <option value=0>Choose a semester</option>
+        {% for semester in semesters %}
+        <option value="{{ semester.id }}" >{{ semester.name }}</option>
+        {% endfor %}
+</select>
+<INPUT TYPE="submit" value="Submit">
+</form>
+
+
+<h3>
+<span class="label label-default">{{ thecourse.name }}</span>
+<span class="label label-default">{{ le_semestre.name }}</span>
+</h3>
+
+<table class="table table-bordered">
+   <tr>
+       <th>Name</th>
+       <th>Grade</th>
+       <th>#</th>
+   </tr>
+   {% for i in range(students.__len__()) %}
+   <tr>
+       <td> {{ students[i].realname }}</td>
+       <td> <input type="text" class="form-control" name="{{ students[i].id }}" placeholder="Grade" value={% if grades[i] %} {{ grades[i] }} {% else %} NC {% endif %}></td>
+       <td>
+           <div class="btn-group">
+                <a class="btn btn-primary" href="{{ url_for('user.save_grade', user_id=students[i].id, course_id=thecourse.id, grade=20, semester_id=le_semestre.id) }}">Save</a>
+           </div>
+       </td>
+   </tr>
+   {% endfor %}
+ {#  <tr>
+        <td>Zizou</td>
+        <td><input type="text" class="form-control" placeholder="Grade" value="8"></td>
+   </tr>
+   {% endfor %} #}
+</table>
+
+
+{% endblock %}

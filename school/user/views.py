@@ -123,29 +123,59 @@ def users():
     return render_template("user/users.html", users=users_list, add_form=form)
 
 
-@user.route('/uploadresults')
-@login_required
-def uploadresults():
-    courses = [
-                {
-                    'name': 'Operating system',
-                    'grade': '9'
-                },
-                {
-                    'name': 'Software design',
-                    'grade': '7'
-                },
-                {
-                    'name': 'Software engineering',
-                    'grade': '9'
-                },
-                {
-                    'name': 'Software quality',
-                    'grade': '8'
-                }
-        ]
-    return render_template("user/upload_course_results.html", courses=courses)
 
+@user.route('/upload_course_results', methods=['GET', 'POST'])
+@login_required
+def upload_course_results():
+    le_semestre = ""
+    le_cours = ""
+    semesters = []
+    the_semester = Semester.query.all()
+    for semester in the_semester:
+        semesters.append(semester)
+
+    allcourses = [teach.course for teach in current_user.teaches.all()]
+
+    if request.method == 'POST':
+        val=request.form['course']
+        sem=request.form['semester']
+        students = []
+        grades = []
+
+        le_cours = Course.query.filter_by(id=int(val)).first()
+        le_semestre = Semester.query.filter_by(id=sem).first()
+
+        studentsenrolled = Enrollment.query.filter_by(course_id=int(val),semester_id=int(sem)).all()
+        for student in studentsenrolled:
+            students.append(User.query.filter_by(id=student.student_id).first())
+            grades.append(student.grade)
+
+        return render_template("user/upload_course_results.html",
+                               allcourses=allcourses,
+                               thecourse=le_cours,
+                               students=students,
+                               semesters=semesters,
+                               le_semestre=le_semestre,
+                               grades=grades)
+    else :
+        return render_template("user/upload_course_results.html",allcourses=allcourses,
+                               le_semestre=le_semestre,
+                               semesters=semesters,
+                               thecourse=le_cours)
+
+
+@user.route('/upload_course_results/<int:user_id>,<int:course_id>,<int:grade>,<int:semester_id>')
+@login_required
+@role_required(teacher=True, cd=True)
+def save_grade(user_id,course_id,grade,semester_id):
+    enrollment_instance = Enrollment.query.filter_by(student_id=user_id,course_id=course_id,semester_id=semester_id).first()
+
+    enrollment_instance.grade=grade
+    db.session.add(enrollment_instance)
+    db.session.commit()
+
+    flash("Grade updated", FLASH_SUCCESS)
+    return redirect(url_for("user.upload_course_results"))
 
 # TODO
 def settings():

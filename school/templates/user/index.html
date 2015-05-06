@@ -11,7 +11,7 @@
                 <a href="#" class="list-group-item">Choose optional course</a>
             {% else %}
                 <a href="{{ url_for('user.see_courses') }}" class="list-group-item">See courses</a>
-                <a href="#" class="list-group-item">Upload course results</a>
+                <a href="{{ url_for('user.upload_course_results') }}" class="list-group-item">Upload course results</a>
                 <a href="#" class="list-group-item">Establish optional courses</a>
                 {% if current_user.is_chief_department() or current_user.is_admin() %}
                     <a href="#" class="list-group-item">See statistics</a>
@@ -20,4 +20,7 @@
             {% endif %}
         </div>
     </div>
+<h1 style="text-align:center"><br/> {{ current_user.get_realname() }}</h1>
+    <p style="text-align: center"> TODO table with {{ current_user.get_realname() }}'s courses</p>
+
 {% endblock %}
