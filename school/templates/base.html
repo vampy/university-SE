@@ -42,12 +42,12 @@
                                         <b>{{ current_user.get_realname() }}</b> <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li><a href="{{ url_for('user.see_courses') }}">See courses</a></li>
+                                        <li><a href="{{ url_for('course.see_courses') }}">See courses</a></li>
                                         {% if current_user.is_student() %}
                                             <li><a href="#{#{{ url_for('frontend.___________') }}#}">Choose optional course</a></li>
                                         {% else %}
-                                            <li><a href="#{#{{ url_for('frontend.___________') }}#}">Upload course results</a></li>
-                                            <li><a href="{{ url_for('user.establish_courses') }}">Establish optional courses</a></li>
+                                            <li><a href="{{ url_for('course.upload_course_results') }}">Upload course results</a></li>
+                                            <li><a href="{{ url_for('course.establish_courses') }}">Establish optional courses</a></li>
                                             {% if current_user.is_chief_department() or current_user.is_admin() %}
                                             <li><a href="#{#{{ url_for('frontend.___________') }}#}">See statistics</a></li>
                                             {% endif %}

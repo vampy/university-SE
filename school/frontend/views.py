@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, url_for, redirect, flash
 from flask.ext.login import login_required, logout_user, current_user, login_user
 from .forms import LoginForm
-from school.config import FLASH_SUCCESS, FLASH_INFO, FLASH_WARNING
+from school.config import FLASH_INFO, FLASH_WARNING
 
 frontend = Blueprint('frontend', __name__)
 

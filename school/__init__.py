@@ -4,6 +4,7 @@ from .frontend import frontend
 from .config import Config
 from .extensions import *
 from .user import User, user
+from .course import course
 
 import os
 
@@ -28,7 +29,7 @@ def create_app():
         return User.query.get(int(user_id))
 
     # configure blueprints
-    blueprints = [frontend, user]
+    blueprints = [frontend, user, course]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 
@@ -48,7 +49,7 @@ def create_app():
     # static url cache buster, see http://flask.pocoo.org/snippets/40/
     @app.context_processor
     def override_url_for():
-        return dict(url_for=dated_url_for)
+        return {"url_for": dated_url_for}
 
     def dated_url_for(endpoint, **values):
         if endpoint == 'static':
