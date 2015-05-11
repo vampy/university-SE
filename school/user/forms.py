@@ -37,7 +37,3 @@ class AddUserForm(EditUserForm):
                                    validators=[DataRequired(), EqualTo("password", "Confirm password does not match")])
     submit = SubmitField("Add user")
 
-
-class AddCourse(RedirectForm):
-    pass
-

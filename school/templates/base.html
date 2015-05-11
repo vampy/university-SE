@@ -59,7 +59,7 @@
                                         Settings<span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu" role="menu">
-                                        <li><a href="{{ url_for('user.changepassword') }}">Change password</a></li>
+                                        <li><a href="{{ url_for('user.change_password') }}">Change password</a></li>
                                         {% if current_user.is_admin() %}
                                             <li><a href="{{ url_for('user.users') }}">Edit users</a></li>
                                         {% endif %}

@@ -16,10 +16,9 @@ def index():
     return render_template("user/index.html")
 
 
-# TODO rename
-@user.route('/changepassword', methods=['GET', 'POST'])
+@user.route('/change_password', methods=['GET', 'POST'])
 @login_required
-def changepassword():
+def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
         flash('Password changed successfully.', FLASH_SUCCESS)
@@ -30,7 +29,7 @@ def changepassword():
 
         return form.redirect("user.index")
 
-    return render_template('user/changepassword.html', form=form)
+    return render_template('user/change_password.html', form=form)
 
 
 @user.route('/user/<int:user_id>', methods=['GET', 'POST'])
