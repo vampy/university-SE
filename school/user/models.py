@@ -36,10 +36,10 @@ class User(UserMixin, db.Model):
             self.role_id = Role.STUDENT
 
     def __repr__(self):
-        return '<User id={0}, username={1}, realname={2}, email={3}, role={4}>'.format(str(self.id),
-                                                                                       str(self.username),
-                                                                                       str(self.realname,
-                                                                                       str(self.email)),
+        return '<User id={0}, username={1}, realname={2}, email={3}, role={4}>'.format(self.id,
+                                                                                       self.username,
+                                                                                       self.realname,
+                                                                                       self.email,
                                                                                        self.role_to_str())
 
     @classmethod

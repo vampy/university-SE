@@ -27,7 +27,7 @@ class Group(db.Model):
                                backref=db.backref("group", lazy="dynamic"))
 
     def __repr__(self):
-        return '<Group id={0}, name={1}>'.format(str(self.id), str(self.name))
+        return '<Group id={0}, name={1}>'.format(self.id, self.name)
 
 
 # TODO maybe every degree has a department type
@@ -51,7 +51,7 @@ class Department(db.Model):
                               backref=db.backref("departments", lazy="dynamic"))
 
     def __repr__(self):
-        return '<Departament id={0}, name={1}>'.format(str(self.id), str(self.name))
+        return '<Departament id={0}, name={1}>'.format(self.id, self.name)
 
 
 class Language(db.Model):
@@ -62,7 +62,7 @@ class Language(db.Model):
     degrees = db.relationship("Degree", backref="language", lazy="dynamic")
 
     def __repr__(self):
-        return '<Language id={0}, name={1}>'.format(str(self.id), str(self.name))
+        return '<Language id={0}, name={1}>'.format(self.id, self.name)
 
 
 class DegreeType:
@@ -82,15 +82,33 @@ class Degree(db.Model):
     courses = db.relationship("Course", backref="degree", lazy="dynamic")
 
     def __repr__(self):
-        return '<Degree id={0}, name={1}, type_id={2}, language_id={3}>'.format(str(self.id), str(self.name),
-                                                                                str(self.type_id),
-                                                                                str(self.type_id))
+        return '<Degree id={0}, name={1}, type_id={2}, language_id={3}>'.format(self.id, self.name,
+                                                                                self.type_id,
+                                                                                self.type_id)
 
     def is_undergraduate(self):
         return self.type_id == DegreeType.UNDERGRADUATE
 
     def is_graduate(self):
         return self.type_id == DegreeType.GRADUATE
+
+
+# Each degree can have different periods, Computer science 3 years, Computer Science 4 years, etc
+class DegreePeriod(db.Model):
+    __tablename__ = "degree_period"
+
+    id = Column(Integer, primary_key=True)
+    degree_id = Column(Integer, ForeignKey("degrees.id"))
+    semester_start_id = Column(Integer, ForeignKey("semesters.id"))
+    semester_end_id = Column(Integer, ForeignKey("semesters.id"))
+
+    degree = db.relationship("Degree")
+    semester_start = db.relationship("Semester", foreign_keys=[semester_start_id])
+    semester_end = db.relationship("Semester", foreign_keys=[semester_end_id])
+
+    def __repr__(self):
+        return '<DegreePeriod id={0}, degree_id={1}, semester_start_id={2}, semester_end_id={3}'.format(
+            self.id, self.degree_id, self.semester_start_id, self.semester_end_id)
 
 
 # each course has it's own degree
@@ -114,9 +132,9 @@ class Course(db.Model):
     approved_user = db.relationship("User", foreign_keys=[approved_by])
 
     def __repr__(self):
-        return '<Course id={0}, name={1}, is_optional={2}, degree_id={3}>'.format(str(self.id), str(self.name),
-                                                                                  str(self.is_optional),
-                                                                                  str(self.degree_id))
+        return '<Course id={0}, name={1}, is_optional={2}, degree_id={3}>'.format(self.id, self.name,
+                                                                                  self.is_optional,
+                                                                                  self.degree_id)
 
 # each course is part of a semester
 semester_courses = db.Table(
@@ -138,13 +156,14 @@ class Semester(db.Model):
     courses = db.relationship("Course", secondary=semester_courses, backref=db.backref("semesters", lazy="dynamic"))
 
     def __repr__(self):
-        return '<Semester id={0}, name={1}, year={2}, date_start={3}, date_end={4}>'.format(str(self.id),
-                                                                                            str(self.name),
-                                                                                            str(self.year),
-                                                                                            str(self.date_start),
-                                                                                            str(self.date_end))
+        return '<Semester id={0}, name={1}, year={2}, date_start={3}, date_end={4}>'.format(self.id,
+                                                                                            self.name,
+                                                                                            self.year,
+                                                                                            self.date_start,
+                                                                                            self.date_end)
 
 
+# keeps track of each teacher teaches what course in what semester
 class Teaches(db.Model):
     __tablename__ = "teaches"
 
@@ -156,10 +175,10 @@ class Teaches(db.Model):
     semester = db.relationship("Semester")
 
     def __repr__(self):
-        return '<Teaches tid={0}, cid={1}, sem_id={2}>'.format(str(self.teacher_id), str(self.course_id),
-                                                               str(self.semester_id))
+        return '<Teaches tid={0}, cid={1}, sem_id={2}>'.format(self.teacher_id, self.course_id, self.semester_id)
 
 
+# keeps track each student at what course he is enrolled in, and in what semester
 class Enrollment(db.Model):
     __tablename__ = "enrollment"
 
@@ -167,11 +186,13 @@ class Enrollment(db.Model):
     course_id = Column(Integer, ForeignKey("courses.id"), primary_key=True)
     semester_id = Column(Integer, ForeignKey("semesters.id"), primary_key=True)
     grade = Column(Integer, default=0)
+    date_grade = Column(Date, default=None, nullable=True)  # The date he got the grade
+
     # maybe use lazy dynamic
     student = db.relationship("User")
     course = db.relationship("Course")
     semester = db.relationship("Semester")
 
     def __repr__(self):
-        return '<Enrollment sid={0}, cid={1}, sem_id={2}, grade={3}>'.format(str(self.student_id), str(self.course_id),
-                                                                             str(self.semester_id, str(self.grade)))
+        return '<Enrollment sid={0}, cid={1}, sem_id={2}, grade={3}>'.format(self.student_id, self.course_id,
+                                                                             self.semester_id, self.grade)

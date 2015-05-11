@@ -111,10 +111,8 @@ def init():
     db.session.add(test_teaches1)
     db.session.add(test_teaches2)
 
-    
     db.session.commit()
 
-    # print(test_user.enrolled.all()[0].semester.year)
     print('DB initialized')
 
 if __name__ == "__main__":

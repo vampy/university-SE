@@ -12,7 +12,7 @@
             {% else %}
                 <a href="{{ url_for('course.see_courses') }}" class="list-group-item">See courses</a>
                 <a href="{{ url_for('course.upload_course_results') }}" class="list-group-item">Upload course results</a>
-                <a href="{{ url_for('course.establish_courses') }}" class="list-group-item">Establish optional courses</a>
+                <a href="{{ url_for('course.establish_courses') }}" class="list-group-item">Establish courses</a>
                 {% if current_user.is_chief_department() or current_user.is_admin() %}
                     <a href="#" class="list-group-item">See statistics</a>
                     <a href="{{ url_for('user.users') }}" class="list-group-item">Edit users</a></li>
