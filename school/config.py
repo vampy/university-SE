@@ -33,6 +33,3 @@ class Config:
 
     # disable logging
     LOGIN_DISABLED = False
-
-
-

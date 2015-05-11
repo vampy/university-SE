@@ -93,15 +93,25 @@ class Degree(db.Model):
         return self.type_id == DegreeType.GRADUATE
 
 
-# TODO add proposed optional courses
 # each course has it's own degree
+# If a optional course it is proposed, the entry it is first added to this table
+# along side the Teaches table, to keep track in what semester the optional course is taught
 class Course(db.Model):
     __tablename__ = "courses"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     is_optional = Column(Boolean, default=False)  # is course optional
+
+    # the teacher who proposed the course
+    proposed_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
+
+    # the CD who approved the course
+    approved_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
     degree_id = Column(Integer, ForeignKey("degrees.id"))
+
+    proposed_user = db.relationship("User", foreign_keys=[proposed_by])
+    approved_user = db.relationship("User", foreign_keys=[approved_by])
 
     def __repr__(self):
         return '<Course id={0}, name={1}, is_optional={2}, degree_id={3}>'.format(str(self.id), str(self.name),

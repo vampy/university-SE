@@ -64,7 +64,7 @@ def init():
     test_teacher = User(
         username="teacher",
         password="teacher",
-        realname="Dan Chiorean",
+        realname="Test Teacher",
         email="dan@chiorean.com",
         role_id=Role.TEACHER
     )
@@ -81,7 +81,7 @@ def init():
     test_admin = User(
         username="admin",
         password="admin",
-        realname="Thor",
+        realname="Admin",
         email="admin@example.com",
         role_id=Role.ADMIN
     )
