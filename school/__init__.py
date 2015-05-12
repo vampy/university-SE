@@ -17,9 +17,17 @@ def create_app():
 
     # configure extensions
     db.init_app(app)
+    app.config.update(dict(
+        MAIL_SERVER = 'smtp.gmail.com',
+        MAIL_PORT = 587,
+        MAIL_USE_TLS = True,
+        MAIL_USE_SSL = False,
+        MAIL_USERNAME = 'academicinfo.seproject@gmail.com',
+        MAIL_PASSWORD = 'cldBwFYL',
+    ))
     mail.init_app(app)
     login_manager.init_app(app)
-    toolbar.init_app(app)
+    # toolbar.init_app(app)
 
     # default login page, see https://flask-login.readthedocs.org/en/latest/#customizing-the-login-process
     login_manager.login_view = "frontend.login"

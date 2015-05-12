@@ -2,6 +2,8 @@ from school.extensions import db
 from sqlalchemy import Column, Integer, String, SmallInteger
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature
+from flask import current_app
 
 
 class Role:
@@ -34,6 +36,28 @@ class User(UserMixin, db.Model):
         if self.role_id is not None and self.role_id not in Role.get_roles():
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
+
+    def get_token(self, expiration=86400):
+        # expiration default = 24h
+        s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'], expiration)
+        return s.dumps({'user': self.id}).decode('utf-8')
+
+    @property
+    def is_active(self):
+        return True
+
+    @staticmethod
+    def verify_token(token):
+        s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except BadSignature:
+            return None
+        user_id = data.get('user')
+        if user_id:
+            return User.query.get(user_id)
+        return None
+
 
     def __repr__(self):
         return '<User id={0}, username={1}, realname={2}, email={3}, role={4}>'.format(self.id,

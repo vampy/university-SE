@@ -12,9 +12,6 @@ class ChangePasswordForm(RedirectForm):
                                        validators=[DataRequired(), EqualTo('new_password', "Confirm password is different from New password field")])
     submit = SubmitField('Update password')
 
-    def get_new_password(self):
-        return self.new_password.data
-
     def validate_old_password(self, field):
         if not current_user.verify_password(field.data):
             raise ValidationError("Password is wrong.")
