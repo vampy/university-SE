@@ -28,7 +28,7 @@ class Config:
 
     # WTF forms config
     # https://flask-wtf.readthedocs.org/en/latest/config.html
-    # Enable protection agains *Cross-site Request Forgery (CSRF)*
+    # Enable protection against *Cross-site Request Forgery (CSRF)*
     WTF_CSRF_ENABLED = False
 
     # disable logging

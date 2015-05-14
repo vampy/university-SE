@@ -1,3 +1,4 @@
+from wtforms import Form
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, EqualTo, Email
 from ..user import User
@@ -11,6 +12,7 @@ class LoginForm(RedirectForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')
+    csrf_enabled = True
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -38,6 +40,7 @@ class LoginForm(RedirectForm):
 class PasswordResetForm(RedirectForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Submit')
+    csrf_enabled = False
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -47,6 +50,7 @@ class PasswordResetForm(RedirectForm):
         rv = Form.validate(self)
         if not rv:
             return False
+
         user = User.query.filter_by(email=self.email.data).first()
         if user is None:
             flash("Can't find that email, sorry.", FLASH_ERROR)
@@ -59,5 +63,5 @@ class PasswordResetSubmitForm(RedirectForm):
     new_password = PasswordField('New password', validators=[DataRequired()])
     confirmed_password = PasswordField('Confirm password',
                                        validators=[DataRequired(), EqualTo('new_password', "Confirm password is different from New password field")])
-    submit = SubmitField('Update password')
+    submit = SubmitField('Change password')
 
