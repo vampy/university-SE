@@ -5,6 +5,8 @@ from .models import User
 from school.config import FLASH_SUCCESS, FLASH_ERROR
 from school.decorators import role_required
 from school.models import *
+from school.extensions import mail
+from flask_mail import Message
 
 user = Blueprint('user', __name__)
 
@@ -27,6 +29,9 @@ def change_password():
         db.session.add(current_user)
         db.session.commit()
 
+        msg = Message('Your password has changed', sender='academicinfo.seproject@gmail.com', recipients=[current_user.email])
+        msg.html = render_template('user/changed_password_email.html', user=current_user)
+        mail.send(msg)
         return form.redirect("user.index")
 
     return render_template('user/change_password.html', form=form)

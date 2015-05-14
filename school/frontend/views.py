@@ -39,7 +39,7 @@ def logout():
 
 @frontend.route('/password_reset', methods=["GET", "POST"])
 def password_reset():
-    token = request.args.get('token', None)
+    token = request.args.get('token')
     if token is None:
         password_reset_form = PasswordResetForm(request.form)
         if password_reset_form.validate_on_submit():
@@ -53,6 +53,7 @@ def password_reset():
                 return render_template('frontend/password_reset_confirmation_sent.html')
         return render_template('frontend/password_reset.html', form=password_reset_form)
 
+    token = request.args.get('token', None)
     #a token was given
     verified_result = User.verify_token(token)
 
@@ -64,11 +65,16 @@ def password_reset():
 
     password_submit_form = PasswordResetSubmitForm(request.form)
     if password_submit_form.validate_on_submit():
+        # after you enter the passwords the token will be None and the execution will enter the first if
+        # so this code won't be executed.
         verified_result.password = password_submit_form.new_password.data
         verified_result.is_active = True
         db.session.add(verified_result)
         db.session.commit()
-        flash("password updated successfully")
+        flash("New password set successfully.", FLASH_SUCCESS)
+        msg = Message('Your password has changed', sender='academicinfo.seproject@gmail.com', recipients=[verified_result.email])
+        msg.html = render_template('user/changed_password_email.html', user=verified_result)
+        mail.send(msg)
         return password_submit_form.redirect("user.index")
     return render_template('frontend/password_reset_submit.html', password_submit_form=password_submit_form)
 

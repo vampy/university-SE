@@ -40,7 +40,7 @@ class LoginForm(RedirectForm):
 class PasswordResetForm(RedirectForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Submit')
-    csrf_enabled = True
+    csrf_enabled = False
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -64,4 +64,5 @@ class PasswordResetSubmitForm(RedirectForm):
     confirmed_password = PasswordField('Confirm password',
                                        validators=[DataRequired(), EqualTo('new_password', "Confirm password is different from New password field")])
     submit = SubmitField('Change password')
+    csrf_enabled = False
 
