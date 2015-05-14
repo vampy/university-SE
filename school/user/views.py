@@ -86,22 +86,3 @@ def users():
 
     users_list = User.query.all()
     return render_template("user/users.html", users=users_list, add_form=form)
-
-
-@user.route('/upload_course_results/<int:user_id>,<int:course_id>,<int:grade>,<int:semester_id>')
-@login_required
-@role_required(teacher=True, cd=True)
-def save_grade(user_id,course_id,grade,semester_id):
-    enrollment_instance = Enrollment.query.filter_by(student_id=user_id,course_id=course_id,semester_id=semester_id).first()
-
-    enrollment_instance.grade=grade
-    db.session.add(enrollment_instance)
-    db.session.commit()
-
-    flash("Grade updated", FLASH_SUCCESS)
-    return redirect(url_for("user.upload_course_results"))
-
-# TODO
-def settings():
-    pass
-
