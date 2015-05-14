@@ -12,16 +12,13 @@ frontend = Blueprint('frontend', __name__)
 
 @frontend.route('/login', methods=["GET", "POST"])
 def login():
-
+    form = LoginForm(request.form)
     if current_user.is_authenticated():  # user is already logged in
         flash("You are already logged in", FLASH_WARNING)
         return redirect(url_for('user.index'))
 
-    form = LoginForm()
-
     if form.validate_on_submit():
         if form.remember_me.data:
-            flash("Remember me checked.", FLASH_INFO)
             login_user(form.user, remember=True)
         else:
             login_user(form.user)

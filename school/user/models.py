@@ -42,10 +42,6 @@ class User(UserMixin, db.Model):
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'user': self.id}).decode('utf-8')
 
-    @property
-    def is_active(self):
-        return True
-
     @staticmethod
     def verify_token(token):
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'])

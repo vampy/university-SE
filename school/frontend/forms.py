@@ -12,7 +12,7 @@ class LoginForm(RedirectForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')
-    csrf_enabled = True
+    csrf_enabled = False
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -40,7 +40,7 @@ class LoginForm(RedirectForm):
 class PasswordResetForm(RedirectForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Submit')
-    csrf_enabled = False
+    csrf_enabled = True
 
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
