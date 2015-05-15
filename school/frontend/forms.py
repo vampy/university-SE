@@ -13,7 +13,7 @@ class LoginForm(RedirectForm):
     submit = SubmitField('Login')
 
     def __init__(self, *args, **kwargs):
-        RedirectForm.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.user = None
 
     # custom validation, try validate user credentials
@@ -40,7 +40,7 @@ class PasswordResetForm(RedirectForm):
     submit = SubmitField('Submit')
 
     def __init__(self, *args, **kwargs):
-        RedirectForm.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.user = None
 
     def validate(self):

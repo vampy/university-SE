@@ -29,7 +29,7 @@ class RedirectForm(Form):
     next = HiddenField()
 
     def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         if not self.next.data:
             self.next.data = get_redirect_target() or ''
 

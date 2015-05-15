@@ -41,6 +41,7 @@ def logout():
 def password_reset():
     token = request.args.get('token')
 
+    # display password request form
     if token is None:
         password_reset_form = PasswordResetForm()
         if password_reset_form.validate_on_submit():
@@ -51,9 +52,12 @@ def password_reset():
                 user.active_token = token
                 db.session.add(user)
                 db.session.commit()
+
+                # send mail
                 msg = Message('Reset password', sender='academicinfo.seproject@gmail.com', recipients=[email])
                 msg.html = render_template('emails/password_reset_email.html', user=user, token=token)
                 mail.send(msg)
+
                 return render_template('frontend/password_reset_confirmation_sent.html')
         return render_template('frontend/password_reset.html', form=password_reset_form)
 
@@ -69,17 +73,20 @@ def password_reset():
     # the token is good
     password_submit_form = PasswordResetSubmitForm()
     if password_submit_form.validate_on_submit():
-        verified_result.password = password_submit_form.new_password.data
+
         # we make sure that the token is used only once
+        verified_result.password = password_submit_form.new_password.data
         verified_result.active_token = None
         db.session.add(verified_result)
         db.session.commit()
-        flash("New password set successfully.", FLASH_SUCCESS)
+
+        # send mail
         msg = Message('Your password has changed',
                       sender='academicinfo.seproject@gmail.com', recipients=[verified_result.email])
         msg.html = render_template('emails/changed_password_email.html', user=verified_result)
         mail.send(msg)
 
+        flash("New password set successfully.", FLASH_SUCCESS)
         return password_submit_form.redirect("user.index")
 
     return render_template('frontend/password_reset_submit.html', token=token,

@@ -62,6 +62,7 @@ class User(UserMixin, db.Model):
             return None  # valid token, but expired
         except BadSignature:
             return None  # invalid token
+
         user_id = data.get('user')
         if user_id:
             return User.query.get(user_id)
