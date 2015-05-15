@@ -65,4 +65,3 @@ class PasswordResetSubmitForm(RedirectForm):
                                        validators=[DataRequired(), EqualTo('new_password', "Confirm password is different from New password field")])
     submit = SubmitField('Change password')
     csrf_enabled = False
-

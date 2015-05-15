@@ -30,7 +30,7 @@ def change_password():
         db.session.commit()
 
         msg = Message('Your password has changed', sender='academicinfo.seproject@gmail.com', recipients=[current_user.email])
-        msg.html = render_template('user/changed_password_email.html', user=current_user)
+        msg.html = render_template('emails/changed_password_email.html', user=current_user)
         mail.send(msg)
         return form.redirect("user.index")
 

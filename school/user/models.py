@@ -1,5 +1,5 @@
 from school.extensions import db
-from sqlalchemy import Column, Integer, String, SmallInteger
+from sqlalchemy import Column, Integer, String, SmallInteger, Boolean
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature
@@ -24,6 +24,7 @@ class User(UserMixin, db.Model):
     username = Column(String(64), unique=True)
     realname = Column(String(128), nullable=True)
     email = Column(String(64), unique=True)
+    has_active_token = Column(Boolean, default=False)
     password_hash = Column(String(160), nullable=False)
     role_id = Column(SmallInteger, default=Role.STUDENT)
     enrolled = db.relationship("Enrollment", lazy="dynamic", cascade="save-update, merge, delete, delete-orphan")
@@ -39,6 +40,7 @@ class User(UserMixin, db.Model):
 
     def get_token(self, expiration=86400):
         # expiration default = 24h
+        self.has_active_token = True
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'user': self.id}).decode('utf-8')
 
@@ -53,7 +55,6 @@ class User(UserMixin, db.Model):
         if user_id:
             return User.query.get(user_id)
         return None
-
 
     def __repr__(self):
         return '<User id={0}, username={1}, realname={2}, email={3}, role={4}>'.format(self.id,
@@ -95,12 +96,6 @@ class User(UserMixin, db.Model):
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
-
-    def get_realname(self):
-        return self.realname
-
-    def get_username(self):
-        return self.username
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
