@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, url_for, redirect, flash, request
+from flask import Blueprint, render_template, url_for, redirect, flash, request, current_app
 from flask.ext.login import login_required, logout_user, current_user, login_user
 from .forms import LoginForm, PasswordResetForm, PasswordResetSubmitForm
 from school.config import FLASH_SUCCESS, FLASH_INFO, FLASH_WARNING, FLASH_ERROR
@@ -12,11 +12,11 @@ frontend = Blueprint('frontend', __name__)
 
 @frontend.route('/login', methods=["GET", "POST"])
 def login():
-    form = LoginForm(request.form)
     if current_user.is_authenticated():  # user is already logged in
         flash("You are already logged in", FLASH_WARNING)
         return redirect(url_for('user.index'))
 
+    form = LoginForm()
     if form.validate_on_submit():
         if form.remember_me.data:
             login_user(form.user, remember=True)
@@ -41,7 +41,7 @@ def logout():
 def password_reset():
     token = request.args.get('token')
     if token is None:
-        password_reset_form = PasswordResetForm(request.form)
+        password_reset_form = PasswordResetForm()
         if password_reset_form.validate_on_submit():
             email = password_reset_form.email.data
             user = User.query.filter_by(email=email).first()
@@ -54,16 +54,16 @@ def password_reset():
         return render_template('frontend/password_reset.html', form=password_reset_form)
 
     token = request.args.get('token', None)
-    #a token was given
+    # a token was given
     verified_result = User.verify_token(token)
 
-    #given token is not valid
+    # given token is not valid
     if verified_result is None:
         flash("It looks like you clicked on an invalid password reset link. Please try again.", FLASH_ERROR)
-        password_reset_form = PasswordResetForm(request.form)
+        password_reset_form = PasswordResetForm()
         return render_template('frontend/password_reset.html', form=password_reset_form)
 
-    password_submit_form = PasswordResetSubmitForm(request.form)
+    password_submit_form = PasswordResetSubmitForm()
     if password_submit_form.validate_on_submit():
         # after you enter the passwords the token will be None and the execution will enter the first if
         # so this code won't be executed.

@@ -1,4 +1,3 @@
-from wtforms import Form
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, EqualTo, Email
 from ..user import User
@@ -12,15 +11,14 @@ class LoginForm(RedirectForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')
-    csrf_enabled = False
 
     def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
+        RedirectForm.__init__(self, *args, **kwargs)
         self.user = None
 
     # custom validation, try validate user credentials
     def validate(self):
-        rv = Form.validate(self)
+        rv = RedirectForm.validate(self)
         if not rv:
             return False
 
@@ -40,14 +38,13 @@ class LoginForm(RedirectForm):
 class PasswordResetForm(RedirectForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Submit')
-    csrf_enabled = False
 
     def __init__(self, *args, **kwargs):
-        Form.__init__(self, *args, **kwargs)
+        RedirectForm.__init__(self, *args, **kwargs)
         self.user = None
 
     def validate(self):
-        rv = Form.validate(self)
+        rv = RedirectForm.validate(self)
         if not rv:
             return False
 
@@ -64,5 +61,4 @@ class PasswordResetSubmitForm(RedirectForm):
     confirmed_password = PasswordField('Confirm password',
                                        validators=[DataRequired(), EqualTo('new_password', "Confirm password is different from New password field")])
     submit = SubmitField('Change password')
-    csrf_enabled = False
 
