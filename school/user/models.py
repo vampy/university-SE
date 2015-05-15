@@ -5,6 +5,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature, SignatureExpired
 from flask import current_app
 
+from school.config import FLASH_ERROR
+from flask import flash
 
 class Role:
     STUDENT = 1
@@ -48,8 +50,8 @@ class User(UserMixin, db.Model):
     def get_token(self, expiration=86400):
         # expiration default = 24h
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'], expiration)
-        self.active_token = s.dumps({'user': self.id}).decode('utf-8')
-        return self.active_token
+        return s.dumps({'user': self.id}).decode('utf-8')
+
 
     @staticmethod
     def verify_token(token):

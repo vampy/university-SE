@@ -48,6 +48,9 @@ def password_reset():
             user = User.query.filter_by(email=email).first()
             if user is not None:
                 token = user.get_token()
+                user.active_token = token
+                db.session.add(user)
+                db.session.commit()
                 msg = Message('Reset password', sender='academicinfo.seproject@gmail.com', recipients=[email])
                 msg.html = render_template('emails/password_reset_email.html', user=user, token=token)
                 mail.send(msg)
@@ -58,14 +61,8 @@ def password_reset():
     verified_result = User.verify_token(token)
 
     # given token is not valid
-    if verified_result is None:
+    if verified_result is None or verified_result.active_token is None:
         flash("It looks like you clicked on an invalid password reset link. Please try again.", FLASH_ERROR)
-        password_reset_form = PasswordResetForm()
-        return render_template('frontend/password_reset.html', form=password_reset_form)
-
-    # it is not the first time the token is used
-    if not verified_result.has_active_token:
-        flash("This token is no longer valid. A token can be used only once.", FLASH_ERROR)
         password_reset_form = PasswordResetForm()
         return render_template('frontend/password_reset.html', form=password_reset_form)
 
