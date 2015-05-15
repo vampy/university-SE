@@ -85,8 +85,11 @@ def init():
         email="admin@example.com",
         role_id=Role.ADMIN
     )
+
+    # add additional options to each user
     test_group = Group(name="911")
     test_group.students.append(test_user)
+    test_chief_department.department.append(test_department)
 
     db.session.add(test_group)
     db.session.add(test_user)

@@ -36,17 +36,54 @@ def see_courses():
         else:
             courses = []
             grades = []
-        # grades = [enroll.grade for enroll in current_user.enrolled.all()]
+        #grades = [enroll.grade for enroll in current_user.enrolled.all()]
         #courses = [enroll.course for enroll in current_user.enrolled.all()]
 
         return render_template("course/see_courses.html", semesters=semesters, grades=grades, courses=courses)
-    else:
-        if current_user.is_admin():
-            courses = Course.query.order_by("name").all()
-        elif current_user.is_teacher() or current_user.is_chief_department():
-            courses = Course.query.all()
+    elif current_user.is_admin():
+
+        departments = Department.query.order_by("name").all()
+
+        seen_depts = set()
+        depts = []
+        courses_depts = []
+
+        for department in departments:
+            if department.name not in seen_depts:
+                seen_depts.add(department.name)
+                depts.append(department.name)
+            for degree in department.degrees:
+                for course in degree.courses:
+                    dico = dict()
+                    dico["course"] = course.name
+                    dico["department"] = department.name
+                    courses_depts.append(dico)
+
+        return render_template("course/see_courses.html", total=courses_depts, depts=depts )
+
+    elif current_user.is_teacher():
+
+        courses = []
+        for teach in current_user.teaches.all():
+                courses.append(teach.course)
 
         return render_template("course/see_courses.html", courses=courses)
+
+    elif current_user.is_chief_department():
+
+        name_dp = "Math/Computer Science"
+        department = Department.query.filter_by(name=name_dp).first()
+
+        courses_depts = []
+
+        for degree in department.degrees:
+            for course in degree.courses:
+                dico = dict()
+                dico["course"] = course.name
+                dico["department"] = department.name
+                courses_depts.append(dico)
+
+        return render_template("course/see_courses.html", total=courses_depts, dp=department )
 
 
 

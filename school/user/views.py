@@ -10,7 +10,6 @@ from flask_mail import Message
 
 user = Blueprint('user', __name__)
 
-
 # the root of our website
 @user.route('/')
 @login_required

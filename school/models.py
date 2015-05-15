@@ -4,7 +4,7 @@ These may get moved to a blueprint/package at any time
 """
 from school.extensions import db
 from sqlalchemy import Column, Integer, String, ForeignKey, \
-    Date, SmallInteger, Boolean, PrimaryKeyConstraint
+    Date, SmallInteger, Boolean, PrimaryKeyConstraint, UniqueConstraint
 
 
 # keep track of each student in what group, could just keep a column in users table
@@ -30,14 +30,21 @@ class Group(db.Model):
         return '<Group id={0}, name={1}>'.format(self.id, self.name)
 
 
-# TODO maybe every degree has a department type
-# every department can have multiple degrees
+# every department can have multiple degrees, and every degree can be part of multiple departments?
 # example: Math and Computer Science department can Have Computer Science in English, Math in Romanian
 department_degrees = db.Table(
     "departments_degrees",
     Column("department_id", Integer, ForeignKey("departments.id"), nullable=False),
     Column("degree_id", Integer, ForeignKey("degrees.id"), nullable=False),
     PrimaryKeyConstraint('department_id', 'degree_id')
+)
+
+# every department has chiefs, aka admins for that department
+department_chiefs = db.Table(
+    "departments_chiefs",
+    Column("chief_id", Integer, ForeignKey("users.id"), nullable=False),
+    Column("department_id", Integer, ForeignKey("departments.id"), nullable=False),
+    PrimaryKeyConstraint('chief_id'),  # a user can be only part of one department
 )
 
 
@@ -49,6 +56,9 @@ class Department(db.Model):
     degrees = db.relationship("Degree",
                               secondary=department_degrees,
                               backref=db.backref("departments", lazy="dynamic"))
+    chiefs = db.relationship("User",
+                             secondary=department_chiefs,
+                             backref=db.backref("department", lazy="dynamic"))
 
     def __repr__(self):
         return '<Departament id={0}, name={1}>'.format(self.id, self.name)
@@ -80,6 +90,7 @@ class Degree(db.Model):
     type_id = Column(SmallInteger, default=DegreeType.UNDERGRADUATE)
     language_id = Column(Integer, ForeignKey("languages.id"), default=None, nullable=True)
     courses = db.relationship("Course", backref="degree", lazy="dynamic")
+    # has back reference 'language' from Language Model
 
     def __repr__(self):
         return '<Degree id={0}, name={1}, type_id={2}, language_id={3}>'.format(self.id, self.name,
@@ -124,6 +135,7 @@ class Course(db.Model):
     # the teacher who proposed the course
     proposed_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
 
+    # TODO change this because it is not optimal
     # the CD who approved the course
     approved_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
     degree_id = Column(Integer, ForeignKey("degrees.id"))
