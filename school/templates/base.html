@@ -28,7 +28,8 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="{{ url_for('user.index') }}">School</a>
+{#                        <a class="navbar-brand" href="{{ url_for('user.index') }}"><img src="{{ url_for('static', filename='favicon.png') }}" class="img-responsive" width="8%" height="8%"></a>#}
+                           <a class="navbar-brand" href="{{ url_for('user.index') }}">AcademicInfo</a>
                     </div>
                     <div id="navbar" class="navbar-collapse collapse">
                         <ul class="nav navbar-nav">
@@ -39,7 +40,7 @@
                             {% if current_user.is_authenticated() %}
                                 <li role="presentation" class="dropdown">
                                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                                        <b>{{ current_user.get_realname() }}</b> <span class="caret"></span>
+                                        <b>{{ current_user.realname }}</b> <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu" role="menu">
                                         <li><a href="{{ url_for('course.see_courses') }}">See courses</a></li>

@@ -58,8 +58,7 @@ def init():
         username="test",
         password="test",
         realname="John Doe",
-        # email="example@example.com"
-        email="danbutum@yahoo.com"
+        email="example@example.com"
     )
     # teacher
     test_teacher = User(

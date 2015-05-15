@@ -61,4 +61,3 @@ class PasswordResetSubmitForm(RedirectForm):
     confirmed_password = PasswordField('Confirm password',
                                        validators=[DataRequired(), EqualTo('new_password', "Confirm password is different from New password field")])
     submit = SubmitField('Change password')
-
