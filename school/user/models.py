@@ -1,8 +1,8 @@
 from school.extensions import db
-from sqlalchemy import Column, Integer, String, SmallInteger, Boolean
+from sqlalchemy import Column, Integer, String, SmallInteger
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature
+from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature, SignatureExpired
 from flask import current_app
 
 
@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
     username = Column(String(64), unique=True)
     realname = Column(String(128), nullable=True)
     email = Column(String(64), unique=True)
-    has_active_token = Column(Boolean, default=False)
+    active_token = Column(String(125), nullable=True, default=None)
     password_hash = Column(String(160), nullable=False)
     role_id = Column(SmallInteger, default=Role.STUDENT)
 
@@ -47,17 +47,19 @@ class User(UserMixin, db.Model):
 
     def get_token(self, expiration=86400):
         # expiration default = 24h
-        self.has_active_token = True
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'], expiration)
-        return s.dumps({'user': self.id}).decode('utf-8')
+        self.active_token = s.dumps({'user': self.id}).decode('utf-8')
+        return self.active_token
 
     @staticmethod
     def verify_token(token):
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
+        except SignatureExpired:
+            return None  # valid token, but expired
         except BadSignature:
-            return None
+            return None  # invalid token
         user_id = data.get('user')
         if user_id:
             return User.query.get(user_id)

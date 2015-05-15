@@ -63,9 +63,9 @@ def password_reset():
         password_reset_form = PasswordResetForm()
         return render_template('frontend/password_reset.html', form=password_reset_form)
 
-    # given token has been used before
+    # it is not the first time the token is used
     if not verified_result.has_active_token:
-        flash("This token has been used before.", FLASH_ERROR)
+        flash("This token is no longer valid. A token can be used only once.", FLASH_ERROR)
         password_reset_form = PasswordResetForm()
         return render_template('frontend/password_reset.html', form=password_reset_form)
 
@@ -74,7 +74,7 @@ def password_reset():
     if password_submit_form.validate_on_submit():
         verified_result.password = password_submit_form.new_password.data
         # we make sure that the token is used only once
-        verified_result.has_active_token = False
+        verified_result.active_token = None
         db.session.add(verified_result)
         db.session.commit()
         flash("New password set successfully.", FLASH_SUCCESS)
