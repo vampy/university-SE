@@ -24,8 +24,15 @@ class User(UserMixin, db.Model):
     email = Column(String(64), unique=True)
     password_hash = Column(String(160), nullable=False)
     role_id = Column(SmallInteger, default=Role.STUDENT)
+
+    # student
+    # TODO try to use backref
     enrolled = db.relationship("Enrollment", lazy="dynamic", cascade="save-update, merge, delete, delete-orphan")
+    # has back reference 'group' from Groups Model
+
+    # teacher or cd
     teaches = db.relationship("Teaches", lazy="dynamic", cascade="save-update, merge, delete, delete-orphan")
+    # has back reference 'department' from Department Model for CD
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
