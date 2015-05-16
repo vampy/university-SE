@@ -1,3 +1,4 @@
+from flask_wtf import Form
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, EqualTo, Email
 from ..user import User
@@ -18,7 +19,7 @@ class LoginForm(RedirectForm):
 
     # custom validation, try validate user credentials
     def validate(self):
-        rv = RedirectForm.validate(self)
+        rv = super().validate()
         if not rv:
             return False
 
@@ -35,7 +36,7 @@ class LoginForm(RedirectForm):
         return True
 
 
-class PasswordResetForm(RedirectForm):
+class PasswordResetForm(Form):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Submit')
 
@@ -44,7 +45,7 @@ class PasswordResetForm(RedirectForm):
         self.user = None
 
     def validate(self):
-        rv = RedirectForm.validate(self)
+        rv = super().validate()
         if not rv:
             return False
 
@@ -56,7 +57,7 @@ class PasswordResetForm(RedirectForm):
         return True
 
 
-class PasswordResetSubmitForm(RedirectForm):
+class PasswordResetSubmitForm(Form):
     new_password = PasswordField('New password', validators=[DataRequired()])
     confirmed_password = PasswordField('Confirm password',
                                        validators=[DataRequired(), EqualTo('new_password', "Confirm password is different from New password field")])

@@ -6,7 +6,6 @@ from school.user.models import User
 from school.extensions import *
 from flask.ext.mail import Message
 
-
 frontend = Blueprint('frontend', __name__)
 
 
@@ -46,8 +45,15 @@ def password_reset():
         password_reset_form = PasswordResetForm()
         if password_reset_form.validate_on_submit():
             email = password_reset_form.email.data
-            user = User.query.filter_by(email=email).first()
+            user = password_reset_form.user
             if user is not None:
+
+                # user has already a token present
+                if User.verify_token(user.active_token):
+                    flash("This email has a active reset password link still active. Please check your email spam folder.", FLASH_ERROR)
+                    return render_template('frontend/password_reset.html', form=password_reset_form)
+
+                # generate new token
                 token = user.get_token()
                 user.active_token = token
                 db.session.add(user)
@@ -73,7 +79,6 @@ def password_reset():
     # the token is good
     password_submit_form = PasswordResetSubmitForm()
     if password_submit_form.validate_on_submit():
-
         # we make sure that the token is used only once
         verified_result.password = password_submit_form.new_password.data
         verified_result.active_token = None
@@ -87,8 +92,7 @@ def password_reset():
         mail.send(msg)
 
         flash("New password set successfully.", FLASH_SUCCESS)
-        return password_submit_form.redirect("user.index")
+        return redirect(url_for("frontend.login"))
 
     return render_template('frontend/password_reset_submit.html', token=token,
                            password_submit_form=password_submit_form)
-

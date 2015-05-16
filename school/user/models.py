@@ -5,9 +5,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature, SignatureExpired
 from flask import current_app
 
-from school.config import FLASH_ERROR
-from flask import flash
-
 class Role:
     STUDENT = 1
     TEACHER = 2
@@ -52,9 +49,12 @@ class User(UserMixin, db.Model):
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'user': self.id}).decode('utf-8')
 
-
     @staticmethod
     def verify_token(token):
+        if not token:
+            return None
+
+        # verify token integrity
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
@@ -63,9 +63,14 @@ class User(UserMixin, db.Model):
         except BadSignature:
             return None  # invalid token
 
+        # verify token against user
         user_id = data.get('user')
         if user_id:
-            return User.query.get(user_id)
+            user = User.query.get(user_id)
+            if user.active_token != token:  # token does not match database
+                return None
+            return user
+
         return None
 
     def __repr__(self):
