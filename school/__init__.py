@@ -5,6 +5,7 @@ from .config import Config
 from .extensions import *
 from .user import User, user
 from .course import course
+from .admin import admin
 
 import os
 
@@ -37,7 +38,7 @@ def create_app():
         return User.query.get(int(user_id))
 
     # configure blueprints
-    blueprints = [frontend, user, course]
+    blueprints = [frontend, user, course, admin]
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 
