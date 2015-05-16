@@ -148,6 +148,7 @@ class Course(db.Model):
     # the CD who approved the course
     approved_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
     degree_id = Column(Integer, ForeignKey("degrees.id"))
+    # has back reference 'degree' from Degree model
 
     proposed_user = db.relationship("User", foreign_keys=[proposed_by])
     approved_user = db.relationship("User", foreign_keys=[approved_by])
