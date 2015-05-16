@@ -11,7 +11,9 @@ Notice, you need Python 3.4+ for this steps to work.
 3. Install required dependencies
 `pip install -r requirements.txt`
 
-4. Init the database data (this will create all the database tables)
+4. Copy `school/config.EXAMPLE.py` to `school/config.py`, and edit the config if you want something different from the default
+
+5. Init the database data (this will create all the database tables)
 `python manage.py init`
 
 # Running
@@ -19,7 +21,7 @@ If you are not in the virtual environment you must change to it.
  
 `python manage.py run`
 
-You can log in with the username `test` and password `test` (if you did init the database using the instructions from step 4, as described above). 
+You can log in with the username `test` and password `test` (if you did init the database using the instructions from step 5, as described above). 
 
 # Contributing
 This project uses [Flask](http://flask.pocoo.org/) as a framework ([general documentation](http://flask.pocoo.org/docs/0.10/)), with the following extensions:

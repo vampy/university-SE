@@ -63,3 +63,6 @@ target/
 # ignore database files
 *.sqlite
 *.db
+
+# ignore config file
+school/config.py
