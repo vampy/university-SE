@@ -1,5 +1,5 @@
 from school.extensions import db
-from school.models import degrees_period_students
+from school.models import degrees_period_students, Semester
 from sqlalchemy import Column, Integer, String, SmallInteger
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -42,7 +42,7 @@ class User(UserMixin, db.Model):
     # has back reference 'department' from Department Model for CD
 
     def __init__(self, **kwargs):
-        super(User, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
         # invalid role detected
         if self.role_id is not None and self.role_id not in Role.get_roles():
@@ -52,6 +52,14 @@ class User(UserMixin, db.Model):
     # only one department per CD
     def get_department(self):
         return self.department.first()
+
+    @staticmethod
+    def get_semesters_for_period(degree_period):
+        return Semester.get_semesters(degree_period.semester_start.date_start, degree_period.semester_end.date_end)
+
+    # get the default degree period, this should be smarter and check what degree period is in the current year
+    def get_default_period(self):
+        return self.degree_periods.first()
 
     def get_token(self, expiration=86400):
         # expiration default = 24h

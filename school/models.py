@@ -4,7 +4,7 @@ These may get moved to a blueprint/package at any time
 """
 from school.extensions import db
 from sqlalchemy import Column, Integer, String, ForeignKey, \
-    Date, SmallInteger, Boolean, PrimaryKeyConstraint, UniqueConstraint
+    Date, SmallInteger, Boolean, PrimaryKeyConstraint, and_
 
 
 # keep track of each student in what group, could just keep a column in users table
@@ -176,6 +176,11 @@ class Semester(db.Model):
     date_start = Column(Date)  # september 2014
     date_end = Column(Date)  # june 2015
     courses = db.relationship("Course", secondary=semester_courses, backref=db.backref("semesters", lazy="dynamic"))
+
+    @staticmethod
+    def get_semesters(date_start, date_end):
+        return Semester.query.filter(and_(Semester.date_start >= date_start, Semester.date_end <= date_end))\
+            .order_by(Semester.year.asc(), Semester.date_start.asc()).all()
 
     def __repr__(self):
         return '<Semester id={0}, name={1}, year={2}, date_start={3}, date_end={4}>'.format(self.id,
