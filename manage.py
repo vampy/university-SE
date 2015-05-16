@@ -2,8 +2,7 @@
 from school import create_app
 from school.user import User
 from school.user.models import Role
-from school.models import Course, Semester, Group, \
-    Language, Department, Degree, DegreeType, Enrollment, Teaches
+from school.models import *
 from flask.ext.script import Manager
 from school.extensions import db
 from datetime import date
@@ -47,10 +46,16 @@ def init():
                               date_start=date(2015, 2, 20), date_end=date(2015, 6, 15))
     test_semester2.courses.extend([test_course1, test_course2, test_course3])
 
+    test_dperiod1 = DegreePeriod()
+    test_dperiod1.degree = test_degree
+    test_dperiod1.semester_start = test_semester1
+    test_dperiod1.semester_end = test_semester2
+
     db.session.add(test_degree)
     db.session.add(test_department)
     db.session.add(test_semester1)
     db.session.add(test_semester2)
+    db.session.add(test_dperiod1)
 
     # Add users
     # student
@@ -90,6 +95,7 @@ def init():
     test_group = Group(name="911")
     test_group.students.append(test_user)
     test_chief_department.department.append(test_department)
+    test_user.degree_periods.append(test_dperiod1)
 
     db.session.add(test_group)
     db.session.add(test_user)
@@ -116,6 +122,7 @@ def init():
 
     db.session.commit()
 
+    # print(test_user.degree_periods.first().degree)
     print('DB initialized')
 
 if __name__ == "__main__":

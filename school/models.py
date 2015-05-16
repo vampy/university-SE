@@ -81,7 +81,6 @@ class DegreeType:
     GRADUATE = 2
 
 
-# TODO degree_period <-> student
 # See DegreePeriod for language
 class Degree(db.Model):
     __tablename__ = "degrees"
@@ -103,9 +102,17 @@ class Degree(db.Model):
         return self.type_id == DegreeType.GRADUATE
 
 
+# Connection between degree and student
+degrees_period_students = db.Table(
+    "degrees_period_students",
+    Column("student_id", Integer, ForeignKey("users.id"), nullable=False),
+    Column("degree_period_id", Integer, ForeignKey("degree_periods.id"), nullable=False),
+    PrimaryKeyConstraint('student_id', 'degree_period_id')
+)
+
 # Each degree can have different periods, Computer science 3 years English, Computer Science 4 years German, etc
 class DegreePeriod(db.Model):
-    __tablename__ = "degree_period"
+    __tablename__ = "degree_periods"
 
     id = Column(Integer, primary_key=True)
     degree_id = Column(Integer, ForeignKey("degrees.id"))
@@ -117,9 +124,10 @@ class DegreePeriod(db.Model):
     semester_start = db.relationship("Semester", foreign_keys=[semester_start_id])
     semester_end = db.relationship("Semester", foreign_keys=[semester_end_id])
     # has back reference 'language' from Language Model
+    # has back reference 'students' from User Model
 
     def __repr__(self):
-        return '<DegreePeriod id={0}, degree_id={1}, semester_start_id={2}, semester_end_id={3}'.format(
+        return '<DegreePeriod id={0}, degree_id={1}, semester_start_id={2}, semester_end_id={3}>'.format(
             self.id, self.degree_id, self.semester_start_id, self.semester_end_id)
 
 

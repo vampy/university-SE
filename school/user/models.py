@@ -1,9 +1,11 @@
 from school.extensions import db
+from school.models import degrees_period_students
 from sqlalchemy import Column, Integer, String, SmallInteger
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature, SignatureExpired
 from flask import current_app
+
 
 class Role:
     STUDENT = 1
@@ -28,8 +30,11 @@ class User(UserMixin, db.Model):
     role_id = Column(SmallInteger, default=Role.STUDENT)
 
     # student
-    # TODO try to use backref
     enrolled = db.relationship("Enrollment", lazy="dynamic", cascade="save-update, merge, delete, delete-orphan")
+    degree_periods = db.relationship("DegreePeriod",
+                                     lazy="dynamic",
+                                     secondary=degrees_period_students,
+                                     backref=db.backref("students", lazy="dynamic"))
     # has back reference 'group' from Groups Model
 
     # teacher or cd
