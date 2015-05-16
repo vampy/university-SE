@@ -44,6 +44,10 @@ class User(UserMixin, db.Model):
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
 
+    # only one department per CD
+    def get_department(self):
+        return self.department.first()
+
     def get_token(self, expiration=86400):
         # expiration default = 24h
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'], expiration)

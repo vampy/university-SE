@@ -24,6 +24,7 @@ class Group(db.Model):
     name = Column(String(64), nullable=False)  # 911, G922
     students = db.relationship("User",
                                secondary=group_students,
+                               lazy="dynamic",
                                backref=db.backref("group", lazy="dynamic"))
 
     def __repr__(self):
@@ -69,7 +70,7 @@ class Language(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
-    degrees = db.relationship("Degree", backref="language", lazy="dynamic")
+    degrees = db.relationship("DegreePeriod", backref="language", lazy="dynamic")
 
     def __repr__(self):
         return '<Language id={0}, name={1}>'.format(self.id, self.name)
@@ -80,17 +81,15 @@ class DegreeType:
     GRADUATE = 2
 
 
-# TODO add degree period, degree <-> student, period_start, period_end, semesters number
-# each degree has a language, eg: CS English, CS Romanian, etc
+# TODO degree_period <-> student
+# See DegreePeriod for language
 class Degree(db.Model):
     __tablename__ = "degrees"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     type_id = Column(SmallInteger, default=DegreeType.UNDERGRADUATE)
-    language_id = Column(Integer, ForeignKey("languages.id"), default=None, nullable=True)
     courses = db.relationship("Course", backref="degree", lazy="dynamic")
-    # has back reference 'language' from Language Model
 
     def __repr__(self):
         return '<Degree id={0}, name={1}, type_id={2}, language_id={3}>'.format(self.id, self.name,
@@ -104,18 +103,20 @@ class Degree(db.Model):
         return self.type_id == DegreeType.GRADUATE
 
 
-# Each degree can have different periods, Computer science 3 years, Computer Science 4 years, etc
+# Each degree can have different periods, Computer science 3 years English, Computer Science 4 years German, etc
 class DegreePeriod(db.Model):
     __tablename__ = "degree_period"
 
     id = Column(Integer, primary_key=True)
     degree_id = Column(Integer, ForeignKey("degrees.id"))
+    language_id = Column(Integer, ForeignKey("languages.id"), default=None, nullable=True)
     semester_start_id = Column(Integer, ForeignKey("semesters.id"))
     semester_end_id = Column(Integer, ForeignKey("semesters.id"))
 
     degree = db.relationship("Degree")
     semester_start = db.relationship("Semester", foreign_keys=[semester_start_id])
     semester_end = db.relationship("Semester", foreign_keys=[semester_end_id])
+    # has back reference 'language' from Language Model
 
     def __repr__(self):
         return '<DegreePeriod id={0}, degree_id={1}, semester_start_id={2}, semester_end_id={3}'.format(

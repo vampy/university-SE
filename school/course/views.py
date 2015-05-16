@@ -65,7 +65,7 @@ def see_courses():
 
         courses = []
         for teach in current_user.teaches.all():
-                courses.append(teach.course)
+            courses.append(teach.course)
 
         return render_template("course/see_courses.html", courses=courses)
 
