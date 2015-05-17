@@ -50,7 +50,7 @@ class User(UserMixin, db.Model):
             self.role_id = Role.STUDENT
 
     # only one department per CD
-    def get_department(self):
+    def get_department_cd(self):
         return self.department.first()
 
     @staticmethod

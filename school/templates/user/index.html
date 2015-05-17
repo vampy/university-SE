@@ -2,13 +2,12 @@
 {% set page_title = 'School' %}
 
 {% block body %}
-    <h1 class="text-center">Hi, {{ current_user.realname }}</h1>
-    <hr>
+    <h1 class="text-center">Hi, {{ current_user.realname }}</h1><hr>
     <div class="col-md-offset-3 col-md-6">
         <div class="list-group text-center">
             {% if current_user.is_student() %}
                 <a href="{{ url_for('course.see_courses') }}" class="list-group-item">My courses</a>
-                <a href="#" class="list-group-item">Choose optional course</a>
+                <a href="{{ url_for('course.establish_courses') }}" class="list-group-item">Choose courses (contract)</a>
             {% else %}
                 <a href="{{ url_for('course.see_courses') }}" class="list-group-item">See courses</a>
                 <a href="{{ url_for('course.upload_course_results') }}" class="list-group-item">Upload course results</a>

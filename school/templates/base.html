@@ -33,10 +33,6 @@
                            <a class="navbar-brand" href="{{ url_for('user.index') }}">AcademicInfo</a>
                     </div>
                     <div id="navbar" class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            {#                            <li class="active"><a href="#"></a></li>#}
-                        </ul>
-
                         <ul class="nav navbar-nav navbar-right">
                             {% if current_user.is_authenticated() %}
                                 <li role="presentation" class="dropdown">
@@ -46,7 +42,7 @@
                                     <ul class="dropdown-menu" role="menu">
                                         <li><a href="{{ url_for('course.see_courses') }}">See courses</a></li>
                                         {% if current_user.is_student() %}
-                                            <li><a href="#{#{{ url_for('frontend.___________') }}#}">Choose optional course</a></li>
+                                            <li><a href="{{ url_for('course.establish_courses') }}">Choose courses (contract)</a></li>
                                         {% else %}
                                             <li><a href="{{ url_for('course.upload_course_results') }}">Upload course results</a></li>
                                             <li><a href="{{ url_for('course.establish_courses') }}">Establish courses</a></li>
@@ -107,6 +103,7 @@
         <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/bootstrap-datepicker.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/util.js') }}"></script>
         <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% endblock %}
 </div>
