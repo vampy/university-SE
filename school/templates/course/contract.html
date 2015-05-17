@@ -1,0 +1,45 @@
+{% from "macros/form.html" import render_form %}
+{% extends 'base.html' %}
+{% set page_title = 'Contract' %}
+
+{% block body %}
+    <h1 class="text-center">Contract</h1><hr>
+
+    <div class="row">
+        <div class="col-md-offset-5 col-md-3">
+            TODO display faculty/degree
+        </div>
+    </div><hr>
+    <div class="col-md-2">
+        <div class="btn-group" id="semesters-pick">
+            {% for semester in semesters %}
+                <a data-id="{{ semester.id }}" href="{{ url_for('course.contract', semester_id=semester.id) }}"
+                    class="btn btn-default{% if selected_semester.id == semester.id %} active{% endif %}">
+                    Semester {{ loop.index }}, Year {{ semester.year }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-10">
+        <table class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th>Code</th>
+                <th>Name Course</th>
+                <th>Grade</th>
+            </tr>
+            {%  for enrolled, course in courses_enrolled %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ course.degree.name[:3].upper() }}{{ '{0:02d}'.format(course.id) }}</td>
+                    <td>{{ course.name }}</td>
+                    <td>{{ enrolled.grade }}</td>
+                </tr>
+            {%  endfor %}
+        </table>
+    </div>
+{% endblock %}
+{% block js %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/courses.js') }}"></script>
+{% endblock %}

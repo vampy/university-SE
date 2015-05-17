@@ -5,6 +5,7 @@ These may get moved to a blueprint/package at any time
 from school.extensions import db
 from sqlalchemy import Column, Integer, String, ForeignKey, \
     Date, SmallInteger, Boolean, PrimaryKeyConstraint, and_
+from datetime import date
 
 
 # keep track of each student in what group, could just keep a column in users table
@@ -29,7 +30,6 @@ class Group(db.Model):
 
     def __repr__(self):
         return '<Group id={0}, name={1}>'.format(self.id, self.name)
-
 
 # every department can have multiple degrees, and every degree can be part of multiple departments?
 # example: Math and Computer Science department can Have Computer Science in English, Math in Romanian
@@ -101,7 +101,6 @@ class Degree(db.Model):
     def is_graduate(self):
         return self.type_id == DegreeType.GRADUATE
 
-
 # Connection between degree and student
 degrees_period_students = db.Table(
     "degrees_period_students",
@@ -139,16 +138,18 @@ class Course(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
+    degree_id = Column(Integer, ForeignKey("degrees.id"))
+    # has back reference 'degree' from Degree model
+    # has back reference 'semesters' from Semester model
+
+    # optional course
     is_optional = Column(Boolean, default=False)  # is course optional
 
     # the teacher who proposed the course
     proposed_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
 
-    # TODO change this because it is not optimal
     # the CD who approved the course
     approved_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
-    degree_id = Column(Integer, ForeignKey("degrees.id"))
-    # has back reference 'degree' from Degree model
 
     proposed_user = db.relationship("User", foreign_keys=[proposed_by])
     approved_user = db.relationship("User", foreign_keys=[approved_by])
@@ -158,12 +159,32 @@ class Course(db.Model):
                                                                                   self.is_optional,
                                                                                   self.degree_id)
 
-# each course is part of a semester
+# each course is part of a semester, from this list a student will choose the obligatory courses
+# and the optional ones
 semester_courses = db.Table(
     "semester_courses",
     Column("course_id", Integer, ForeignKey("courses.id"), nullable=False),
     Column("semester_id", Integer, ForeignKey("semesters.id"), nullable=False),
 )
+
+# Mark a semester as signed in the contract, students are not allowed to modify enrollment
+# Each contract is a unique per student/semester/degree, I added degree because the student
+# may be at 2 degrees in the same semester
+class ContractSemester(db.Model):
+    __tablename__ = "contract_semesters"
+
+    student_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    degree_id = Column(Integer, ForeignKey("degrees.id"), primary_key=True)
+    semester_id = Column(Integer, ForeignKey("semesters.id"), primary_key=True)
+    date_sign = Column(Date, default=date.today())
+
+    student = db.relationship("User")
+    semester = db.relationship("Semester")
+    degree = db.relationship("Degree")
+
+    def __repr__(self):
+        return "<ContractSemester student_id={0}, degree_id={1}, semester_id={2}, date_sign={3}>".format(
+            self.student_id, self.degree_id, self.semester_id, self.date_sign)
 
 
 # to select all courses of a degree: semester.courses where degree == degree.id
@@ -179,8 +200,12 @@ class Semester(db.Model):
 
     @staticmethod
     def get_semesters(date_start, date_end):
-        return Semester.query.filter(and_(Semester.date_start >= date_start, Semester.date_end <= date_end))\
+        return Semester.query.filter(and_(Semester.date_start >= date_start, Semester.date_end <= date_end)) \
             .order_by(Semester.year.asc(), Semester.date_start.asc()).all()
+
+    @classmethod
+    def get_by_id(cls, semester_id):
+        return cls.query.filter_by(id=semester_id).first_or_404()
 
     def __repr__(self):
         return '<Semester id={0}, name={1}, year={2}, date_start={3}, date_end={4}>'.format(self.id,
@@ -206,6 +231,7 @@ class Teaches(db.Model):
 
 
 # keeps track each student at what course he is enrolled in, and in what semester
+# If there is an entry in the contract with this semester and student, users should not be allowed to modify enrollment
 class Enrollment(db.Model):
     __tablename__ = "enrollment"
 

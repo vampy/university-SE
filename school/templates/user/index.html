@@ -7,7 +7,7 @@
         <div class="list-group text-center">
             {% if current_user.is_student() %}
                 <a href="{{ url_for('course.see_courses') }}" class="list-group-item">My courses</a>
-                <a href="{{ url_for('course.establish_courses') }}" class="list-group-item">Choose courses (contract)</a>
+                <a href="{{ url_for('course.contract') }}" class="list-group-item">Choose courses (contract)</a>
             {% else %}
                 <a href="{{ url_for('course.see_courses') }}" class="list-group-item">See courses</a>
                 <a href="{{ url_for('course.upload_course_results') }}" class="list-group-item">Upload course results</a>

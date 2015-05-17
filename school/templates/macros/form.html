@@ -44,7 +44,7 @@
 {% macro render_datepicker(field, class_label="", class_field_wrapper="") %}
 <div class="form-group{% if field.errors %} has-error{% endif %}">
     {{ _label(field, class_label) }}
-    <div class="{% if class_field_wrapper %} {{ class_field_wrapper }}{% endif %}">
+    <div class="{% if class_field_wrapper %}{{ class_field_wrapper }}{% endif %}">
         {{ field(class="datepicker") }}
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}

@@ -3,5 +3,9 @@
 {% set page_title = 'Establish Courses' %}
 
 {% block body %}
-<h1 class="text-center">Establish Courses</h1>
+    <h1 class="text-center">Establish Courses</h1><hr>
+{% endblock %}
+{% block js %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/courses.js') }}"></script>
 {% endblock %}

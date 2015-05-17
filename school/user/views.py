@@ -4,8 +4,7 @@ from .forms import ChangePasswordForm, EditUserForm, AddUserForm
 from .models import User
 from school.config import FLASH_SUCCESS, FLASH_ERROR
 from school.decorators import role_required
-from school.models import *
-from school.extensions import mail
+from school.extensions import db, mail
 from flask_mail import Message
 
 user = Blueprint('user', __name__)

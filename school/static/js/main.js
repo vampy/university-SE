@@ -1,6 +1,6 @@
 $(document).ready(function () {
     "use strict";
-    console.log("loaded");
+    console.log("main loaded");
 
     // set datepicker options
     $('.datepicker').datepicker({

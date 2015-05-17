@@ -42,7 +42,7 @@
                                     <ul class="dropdown-menu" role="menu">
                                         <li><a href="{{ url_for('course.see_courses') }}">See courses</a></li>
                                         {% if current_user.is_student() %}
-                                            <li><a href="{{ url_for('course.establish_courses') }}">Choose courses (contract)</a></li>
+                                            <li><a href="{{ url_for('course.contract') }}">Choose courses (contract)</a></li>
                                         {% else %}
                                             <li><a href="{{ url_for('course.upload_course_results') }}">Upload course results</a></li>
                                             <li><a href="{{ url_for('course.establish_courses') }}">Establish courses</a></li>

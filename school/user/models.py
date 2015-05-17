@@ -1,6 +1,5 @@
-from school.extensions import db
-from school.models import degrees_period_students, Semester
-from sqlalchemy import Column, Integer, String, SmallInteger
+from school.models import *
+from sqlalchemy import Column, Integer, String, SmallInteger, and_
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature, SignatureExpired
@@ -49,25 +48,68 @@ class User(UserMixin, db.Model):
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
 
-    # only one department per CD
     def get_department_cd(self):
+        """
+        Get the department administered by the current CD.
+        Assumes that the current user is a chief of department
+        :return: Department
+        """
+        assert self.is_chief_department()
         return self.department.first()
+
+    def get_default_period(self):
+        """
+        Get the default degree period, this should be smarter and check what degree period is in the current year
+        :return: DegreePeriod
+        """
+        return self.degree_periods.first()
+
+    def get_courses_enrolled_semester(self, semester):
+        """
+        Get all the course the current has enrolled in a semester
+        :param semester: of type Semester
+        :return: a list of tuples, the tuple if of the form (Enrollment, Course)
+        """
+        # join with join(Course.semesters) to verify that the courses exist also in the semester, besides enrolled
+        return db.session.query(Enrollment, Course).join(Course)\
+            .filter(and_(Enrollment.semester_id == semester.id, Enrollment.student_id == self.id))\
+            .all()
+
+    def has_contract_signed(self, semester, degree):
+        """
+        Check if student has a contract signed corresponding to a degree and semester
+        :param semester: of type Semester
+        :param degree: of type Degree
+        :return:
+        """
+        return ContractSemester.query.filter(
+            and_(ContractSemester.student_id == self.id,
+                 ContractSemester.degree_id == degree.id,
+                 ContractSemester.semester_id == semester.id)).first() is not None
 
     @staticmethod
     def get_semesters_for_period(degree_period):
+        if not degree_period:
+            return []
+
         return Semester.get_semesters(degree_period.semester_start.date_start, degree_period.semester_end.date_end)
 
-    # get the default degree period, this should be smarter and check what degree period is in the current year
-    def get_default_period(self):
-        return self.degree_periods.first()
-
     def get_token(self, expiration=86400):
-        # expiration default = 24h
+        """
+        Generate token for user that expires by default in 24
+        :param expiration: time in seconds
+        :return: a string representing the token
+        """
         s = TJSONWebSigSerializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'user': self.id}).decode('utf-8')
 
     @staticmethod
     def verify_token(token):
+        """
+        Check if a token is valid
+        :param token:
+        :return: None if token is invalid, otherwise return the user the token is valid for
+        """
         if not token:
             return None
 

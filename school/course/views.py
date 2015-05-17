@@ -142,8 +142,33 @@ def save_grade(user_id, course_id, grade, semester_id):
     return redirect(url_for("course.upload_course_results"))
 
 
+@course.route('/contract/', methods=["GET"])
+@course.route('/contract/<int:semester_id>', methods=["GET", "POST"])
+@login_required
+@role_required(student=True)
+def contract(semester_id=None):
+    # all the semesters for the default degree
+    period = current_user.get_default_period()
+    semesters = User.get_semesters_for_period(period)
+
+    if semester_id is None:  # use default semester
+        semester = semesters[0]
+    else:  # has semester from url
+        semester = Semester.get_by_id(semester_id)
+
+    has_contract = current_user.has_contract_signed(semester, period.degree)
+    courses_enrolled = current_user.get_courses_enrolled_semester(semester)
+
+    return render_template("course/contract.html",
+                           semesters=semesters,
+                           has_contract=has_contract,
+                           courses_enrolled=courses_enrolled,
+                           selected_semester=semester)
+
+
 @course.route('/establish_courses')
 @login_required
-@role_required(admin=True, cd=True)
+@role_required(teacher=True, cd=True)
 def establish_courses():
     return render_template("course/establish_courses.html")
+
