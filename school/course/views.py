@@ -9,37 +9,29 @@ course = Blueprint('course', __name__)
 
 
 @course.route('/see_courses', methods=['GET', 'POST'])
+@course.route('/see_courses/<int:semester_id>', methods=['GET', 'POST'])
 @login_required
-def see_courses():
+def see_courses(semester_id=None):
     if current_user.is_student():
 
-        seen_semesters = set()
-        semesters = []
-        for enroll in current_user.enrolled.all():
-            if enroll.semester not in seen_semesters:
-                semesters.append(enroll.semester)
-                seen_semesters.add(enroll.semester)
+        period = current_user.get_default_period()
+        degree = period.degree
+        semesters = User.get_semesters_for_period(period)
 
-        if request.method == 'POST':
-            if request.form['semester'] == '0':
-                flash("Please choose a semester", FLASH_ERROR)
-                return render_template("course/see_courses.html", semesters=semesters)
-            else:
-                courses = []
-                grades = []
-                sem_id = request.form['semester']
-                for enroll in current_user.enrolled.all():
-                    if enroll.semester.id == int(sem_id):
-                        courses.append(enroll.course)
-                        grades.append(enroll.grade)
+        if semester_id is None:  # use default, all semesters, enrolled with contract
+            semester = None
+            courses_enrolled = current_user.get_courses_enrolled(degree)
+        else:  # has semester from url
+            semester = Semester.get_by_id(semester_id)
+            has_contract = current_user.has_contract_signed(semester, degree)
+            courses_enrolled = []
+            if has_contract:  # only display signed contracts for that semester
+                courses_enrolled = current_user.get_courses_enrolled_semester(semester, degree)
 
-        else:
-            courses = []
-            grades = []
-        #grades = [enroll.grade for enroll in current_user.enrolled.all()]
-        #courses = [enroll.course for enroll in current_user.enrolled.all()]
-
-        return render_template("course/see_courses.html", semesters=semesters, grades=grades, courses=courses)
+        return render_template("course/see_courses.html",
+                               semesters=semesters,
+                               courses_enrolled=courses_enrolled,
+                               selected_semester=semester)
     elif current_user.is_admin():
 
         departments = Department.query.order_by("name").all()
@@ -59,7 +51,7 @@ def see_courses():
                     dico["department"] = department.name
                     courses_depts.append(dico)
 
-        return render_template("course/see_courses.html", total=courses_depts, depts=depts )
+        return render_template("course/see_courses.html", total=courses_depts, depts=depts)
 
     elif current_user.is_teacher():
 
@@ -83,8 +75,7 @@ def see_courses():
                 dico["department"] = department.name
                 courses_depts.append(dico)
 
-        return render_template("course/see_courses.html", total=courses_depts, dp=department )
-
+        return render_template("course/see_courses.html", total=courses_depts, dp=department)
 
 
 @course.route('/upload_course_results', methods=['GET', 'POST'])
@@ -149,6 +140,7 @@ def save_grade(user_id, course_id, grade, semester_id):
 def contract(semester_id=None):
     # all the semesters for the default degree
     period = current_user.get_default_period()
+    degree = period.degree
     semesters = User.get_semesters_for_period(period)
 
     if semester_id is None:  # use default semester
@@ -156,8 +148,8 @@ def contract(semester_id=None):
     else:  # has semester from url
         semester = Semester.get_by_id(semester_id)
 
-    has_contract = current_user.has_contract_signed(semester, period.degree)
-    courses_enrolled = current_user.get_courses_enrolled_semester(semester)
+    has_contract = current_user.has_contract_signed(semester, degree)
+    courses_enrolled = current_user.get_courses_enrolled_semester(semester, degree)
 
     return render_template("course/contract.html",
                            semesters=semesters,
@@ -171,4 +163,3 @@ def contract(semester_id=None):
 @role_required(teacher=True, cd=True)
 def establish_courses():
     return render_template("course/establish_courses.html")
-

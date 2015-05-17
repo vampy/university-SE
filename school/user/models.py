@@ -64,15 +64,30 @@ class User(UserMixin, db.Model):
         """
         return self.degree_periods.first()
 
-    def get_courses_enrolled_semester(self, semester):
+    def get_courses_enrolled(self, degree):
+        """
+        Get all the courses that the user is enrolled in and has contract signed
+        :param degree: of type Degree
+        :return: a list of tuples, the tuple if of the form (Enrollment, Course)
+        """
+        return db.session.query(Enrollment, Course).join(Course).join(Course.semesters) \
+            .join(ContractSemester) \
+            .filter(and_(Enrollment.student_id == self.id, Course.degree_id == degree.id)) \
+            .order_by(Semester.year.asc(), Semester.date_start.asc()) \
+            .all()
+
+    def get_courses_enrolled_semester(self, semester, degree):
         """
         Get all the course the current has enrolled in a semester
         :param semester: of type Semester
+        :param degree: of type Degree
         :return: a list of tuples, the tuple if of the form (Enrollment, Course)
         """
         # join with join(Course.semesters) to verify that the courses exist also in the semester, besides enrolled
-        return db.session.query(Enrollment, Course).join(Course)\
-            .filter(and_(Enrollment.semester_id == semester.id, Enrollment.student_id == self.id))\
+        return db.session.query(Enrollment, Course).join(Course) \
+            .filter(and_(Enrollment.semester_id == semester.id,
+                         Enrollment.student_id == self.id,
+                         Course.degree_id == degree.id)) \
             .all()
 
     def has_contract_signed(self, semester, degree):
@@ -89,6 +104,11 @@ class User(UserMixin, db.Model):
 
     @staticmethod
     def get_semesters_for_period(degree_period):
+        """
+        Get all the semesters that are in the range of the period
+        :param degree_period:
+        :return: a list of semesters
+        """
         if not degree_period:
             return []
 
@@ -133,11 +153,8 @@ class User(UserMixin, db.Model):
         return None
 
     def __repr__(self):
-        return '<User id={0}, username={1}, realname={2}, email={3}, role={4}>'.format(self.id,
-                                                                                       self.username,
-                                                                                       self.realname,
-                                                                                       self.email,
-                                                                                       self.role_to_str())
+        return '<User id={0}, username={1}, realname={2}, email={3}, role={4}>'.format(
+            self.id, self.username, self.realname, self.email, self.role_to_str())
 
     @classmethod
     def get_by_id(cls, user_id):

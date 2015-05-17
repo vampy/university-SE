@@ -2,113 +2,115 @@
 {% set page_title = 'See courses' %}
 
 {% block body %}
-
+<h1 class="text-center">See Courses</h1><hr>
 {% if current_user.is_student() %}
-
-<div class="row">
-    <div class="text-center col-md-2 col-md-push-5" >
-        <form method="post" class="form-group">
-            <select size="1" name="semester" class="form-control">
-                    <option value=0>Choose a semester</option>
-                    {% for semester in semesters %}
-                    <option value="{{ semester.id }}" >{{ semester.name }}</option>
-                    {% endfor %}
-            </select>
-            <br>
-            <INPUT TYPE="submit" value="choose" class="btn btn-default">
-        </form>
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4">
+            TODO display faculty/degree/name/group
+        </div>
+    </div><hr>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="btn-group" id="semesters-pick">
+                <a class="btn btn-default btn-block" href="{{ url_for('course.see_courses') }}">All</a>
+                {% for semester in semesters %}
+                    <a data-id="{{ semester.id }}" href="{{ url_for('course.see_courses', semester_id=semester.id) }}"
+                       class="btn btn-default{% if selected_semester.id == semester.id %} active{% endif %}">
+                        Semester {{ loop.index }}, Year {{ semester.year }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-9">
+            <table class="table table-striped table-bordered">
+                <tr>
+                    <th>Year</th>
+                    <th>Semester</th>
+                    <th>Code</th>
+                    <th>Course name</th>
+                    <th>Grade</th>
+                    <th>Date Exam</th>
+                </tr>
+                {% set previous_date = None %}
+                {% set semester_nr = 0 %}
+                {% for enrolled, course in courses_enrolled %}
+                    <tr>
+                        <td class="col-md-1">{{ enrolled.semester.year }}/{{ enrolled.semester.year + 1 }}</td>
+                        <td class="text-center col-md-1">
+                            {% if previous_date == None or previous_date != enrolled.semester.date_start%}
+                                {% set previous_date = enrolled.semester.date_start %}
+                                {% set semester_nr = semester_nr + 1 %}
+                            {% endif %}
+                            {{ semester_nr }}
+                        </td>
+                        <td>{{ course.degree.name[:3].upper() }}{{ '{0:02d}'.format(course.id) }}</td>
+                        <td>{{ course.name }}</td>
+                        <td class="text-center">{{ enrolled.grade }}</td>
+                        <td class="text-center col-md-2">{{ enrolled.date_grade if enrolled.date_grade != None else '-' }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-md-6 col-md-push-3" >
-      <table class="table table-striped table-bordered">
-        <tr>
-          <td class="col-md-5">
-            <strong>Course</strong>
-          </td>
-          <td class="col-md-1">
-            <strong>Grade</strong>
-          </td>
-        </tr>
-        {% for i in range(courses.__len__()) %}
-        <tr>
-            <td class="col-md-4">
-                {{ courses[i].name }}
-            </td>
-            <td class="col-md-1">
-                {% if grades[i] %}
-                    {{ grades[i] }}
-                {% else %}
-                    NC
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-      </table>
-    </div>
-</div>
-
 {% elif current_user.is_admin() %}
-<div class="col-md-4 col-md-push-4 text-center" >
-{% for dep in depts %}
-  <table class="table table-striped table-bordered">
-    <tr>
-      <td class="col-md-4">
-        <strong>{{ dep }}</strong>
-      </td>
-    </tr>
+    <div class="col-md-4 col-md-push-4 text-center">
+        {% for dep in depts %}
+            <table class="table table-striped table-bordered">
+                <tr>
+                    <td class="col-md-4">
+                        <strong>{{ dep }}</strong>
+                    </td>
+                </tr>
 
-  {% for dico in total %}
-    {% if dico["department"] == dep %}
-    <tr>
-        <td class="col-md-4">
-            {{ dico["course"] }}
-        </td>
-    </tr>
-    {% endif %}
-  {% endfor %}
+                {% for dico in total %}
+                    {% if dico["department"] == dep %}
+                        <tr>
+                            <td class="col-md-4">
+                                {{ dico["course"] }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
 
-  </table>
-  {% endfor %}
-</div>
+            </table>
+        {% endfor %}
+    </div>
 
 {% elif current_user.is_teacher() %}
-<div class="col-md-4 col-md-push-4 text-center" >
-  <table class="table table-striped table-bordered">
-    <tr>
-      <td class="col-md-4">
-        <strong>Courses you teach</strong>
-      </td>
-    </tr>
-    {% for course in courses %}
-    <tr>
-        <td class="col-md-4">
-            {{ course.name }}
-        </td>
-    </tr>
-    {% endfor %}
-  </table>
-</div>
+    <div class="col-md-4 col-md-push-4 text-center">
+        <table class="table table-striped table-bordered">
+            <tr>
+                <td class="col-md-4">
+                    <strong>Courses you teach</strong>
+                </td>
+            </tr>
+            {% for course in courses %}
+                <tr>
+                    <td class="col-md-4">
+                        {{ course.name }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 
 {% elif current_user.is_chief_department() %}
-<div class="col-md-4 col-md-push-4 text-center" >
-  <table class="table table-striped table-bordered">
-    <tr>
-      <td class="col-md-4">
-        <strong>{{ dp.name }}</strong>
-      </td>
-    </tr>
-    {% for dico in total %}
-    <tr>
-        <td class="col-md-4">
-            <a href="">{{ dico["course"] }}</a>
-        </td>
-    </tr>
-  {% endfor %}
-  </table>
-</div>
+    <div class="col-md-4 col-md-push-4 text-center">
+        <table class="table table-striped table-bordered">
+            <tr>
+                <td class="col-md-4">
+                    <strong>{{ dp.name }}</strong>
+                </td>
+            </tr>
+            {% for dico in total %}
+                <tr>
+                    <td class="col-md-4">
+                        <a href="">{{ dico["course"] }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 
 {% endif %}
-
-
 {% endblock %}

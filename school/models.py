@@ -91,9 +91,7 @@ class Degree(db.Model):
     courses = db.relationship("Course", backref="degree", lazy="dynamic")
 
     def __repr__(self):
-        return '<Degree id={0}, name={1}, type_id={2}, language_id={3}>'.format(self.id, self.name,
-                                                                                self.type_id,
-                                                                                self.type_id)
+        return '<Degree id={0}, name={1}, type_id={2}'.format(self.id, self.name, self.type_id)
 
     def is_undergraduate(self):
         return self.type_id == DegreeType.UNDERGRADUATE
@@ -126,8 +124,8 @@ class DegreePeriod(db.Model):
     # has back reference 'students' from User Model
 
     def __repr__(self):
-        return '<DegreePeriod id={0}, degree_id={1}, semester_start_id={2}, semester_end_id={3}>'.format(
-            self.id, self.degree_id, self.semester_start_id, self.semester_end_id)
+        return '<DegreePeriod id={0}, degree_id={1}, language_id={2}, semester_start_id={3}, semester_end_id={4}>'.format(
+            self.id, self.degree_id, self.language_id, self.semester_start_id, self.semester_end_id)
 
 
 # each course has it's own degree
@@ -155,9 +153,8 @@ class Course(db.Model):
     approved_user = db.relationship("User", foreign_keys=[approved_by])
 
     def __repr__(self):
-        return '<Course id={0}, name={1}, is_optional={2}, degree_id={3}>'.format(self.id, self.name,
-                                                                                  self.is_optional,
-                                                                                  self.degree_id)
+        return '<Course id={0}, name={1}, is_optional={2}, degree_id={3}>'.format(
+            self.id, self.name, self.is_optional, self.degree_id)
 
 # each course is part of a semester, from this list a student will choose the obligatory courses
 # and the optional ones
@@ -208,11 +205,8 @@ class Semester(db.Model):
         return cls.query.filter_by(id=semester_id).first_or_404()
 
     def __repr__(self):
-        return '<Semester id={0}, name={1}, year={2}, date_start={3}, date_end={4}>'.format(self.id,
-                                                                                            self.name,
-                                                                                            self.year,
-                                                                                            self.date_start,
-                                                                                            self.date_end)
+        return '<Semester id={0}, name={1}, year={2}, date_start={3}, date_end={4}>'.format(
+            self.id, self.name, self.year, self.date_start, self.date_end)
 
 
 # keeps track of each teacher teaches what course in what semester
