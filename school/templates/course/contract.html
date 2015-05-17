@@ -6,15 +6,18 @@
     <h1 class="text-center">Contract</h1><hr>
 
     <div class="row">
-        <div class="col-md-offset-5 col-md-3">
-            TODO display faculty/degree
+        <div class="col-md-offset-4 col-md-3">
+            <span class="label label-info"> Degree: {{ degree.name }} </span>
+            <span class="label label-info"> Group: {{ group.name }} </span>
+            <span class="label label-info"> Current year: {{ year }} </span>
+            <span class="label label-info"> Current semester: {{ semester_nr }} </span>
         </div>
     </div><hr>
     <div class="col-md-2">
         <div class="btn-group" id="semesters-pick">
             {% for semester in semesters %}
                 <a data-id="{{ semester.id }}" href="{{ url_for('course.contract', semester_id=semester.id) }}"
-                    class="btn btn-default{% if selected_semester.id == semester.id %} active{% endif %}">
+                    class="btn btn-default{% if semester_sel.id == semester.id %} active{% endif %}">
                     Semester {{ loop.index }}, Year {{ semester.year }}
                 </a>
             {% endfor %}

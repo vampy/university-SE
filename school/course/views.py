@@ -141,7 +141,9 @@ def contract(semester_id=None):
     # all the semesters for the default degree
     period = current_user.get_default_period()
     degree = period.degree
+    group = current_user.get_group(period)
     semesters = User.get_semesters_for_period(period)
+    year, sem_nr = User.get_current_year_semester(semesters)
 
     if semester_id is None:  # use default semester
         semester = semesters[0]
@@ -151,11 +153,16 @@ def contract(semester_id=None):
     has_contract = current_user.has_contract_signed(semester, degree)
     courses_enrolled = current_user.get_courses_enrolled_semester(semester, degree)
 
+    print(year, sem_nr)
     return render_template("course/contract.html",
                            semesters=semesters,
+                           semester_sel=semester,
+                           semester_nr=sem_nr,
+                           year=year,
+                           group=group,
+                           degree=degree,
                            has_contract=has_contract,
-                           courses_enrolled=courses_enrolled,
-                           selected_semester=semester)
+                           courses_enrolled=courses_enrolled)
 
 
 @course.route('/establish_courses')

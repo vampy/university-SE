@@ -9,7 +9,6 @@ from datetime import date
 
 
 # keep track of each student in what group, could just keep a column in users table
-# but it would complicate things with roles, as teachers, admins do not have groups associated with it
 group_students = db.Table(
     "group_students",
     Column("group_id", Integer, ForeignKey("groups.id"), nullable=False),
@@ -17,16 +16,19 @@ group_students = db.Table(
     PrimaryKeyConstraint('group_id', 'student_id')  # a student can be in only one group at a time
 )
 
-
+# Each degree period has specific groups
 class Group(db.Model):
     __tablename__ = "groups"
 
     id = Column(Integer, primary_key=True)
+    degree_period_id = Column(Integer, ForeignKey("degree_periods.id"))
     name = Column(String(64), nullable=False)  # 911, G922
+
+    degree_period = db.relationship("DegreePeriod")
     students = db.relationship("User",
                                secondary=group_students,
                                lazy="dynamic",
-                               backref=db.backref("group", lazy="dynamic"))
+                               backref=db.backref("groups", lazy="dynamic"))
 
     def __repr__(self):
         return '<Group id={0}, name={1}>'.format(self.id, self.name)
@@ -49,6 +51,15 @@ department_chiefs = db.Table(
 )
 
 
+# every teacher is part of an department
+department_teachers = db.Table(
+    "department_teachers",
+    Column("teacher_id", Integer, ForeignKey("users.id"), nullable=False),
+    Column("department_id", Integer, ForeignKey("departments.id"), nullable=False),
+    PrimaryKeyConstraint('teacher_id'),  # a user can be only part of one department
+)
+
+
 class Department(db.Model):
     __tablename__ = "departments"
 
@@ -59,7 +70,10 @@ class Department(db.Model):
                               backref=db.backref("departments", lazy="dynamic"))
     chiefs = db.relationship("User",
                              secondary=department_chiefs,
-                             backref=db.backref("department", lazy="dynamic"))
+                             backref=db.backref("department_cd", lazy="dynamic"))
+    teachers = db.relationship("User",
+                               secondary=department_teachers,
+                               backref=db.backref("department_teacher", lazy="dynamic"))
 
     def __repr__(self):
         return '<Departament id={0}, name={1}>'.format(self.id, self.name)
@@ -136,6 +150,7 @@ class Course(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
+    category = Column(SmallInteger, default=1)  # category 1 is obligatory courses
     degree_id = Column(Integer, ForeignKey("degrees.id"))
     # has back reference 'degree' from Degree model
     # has back reference 'semesters' from Semester model
@@ -143,13 +158,9 @@ class Course(db.Model):
     # optional course
     is_optional = Column(Boolean, default=False)  # is course optional
 
-    # the teacher who proposed the course
-    proposed_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
-
+    # the teacher who proposed the course is in the Teachers table and has one entry there
     # the CD who approved the course
     approved_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
-
-    proposed_user = db.relationship("User", foreign_keys=[proposed_by])
     approved_user = db.relationship("User", foreign_keys=[approved_by])
 
     def __repr__(self):
@@ -168,7 +179,7 @@ semester_courses = db.Table(
 # Each contract is a unique per student/semester/degree, I added degree because the student
 # may be at 2 degrees in the same semester
 class ContractSemester(db.Model):
-    __tablename__ = "contract_semesters"
+    __tablename__ = "semester_contracts"
 
     student_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     degree_id = Column(Integer, ForeignKey("degrees.id"), primary_key=True)

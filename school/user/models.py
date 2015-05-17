@@ -4,6 +4,7 @@ from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature, SignatureExpired
 from flask import current_app
+from datetime import date
 
 
 class Role:
@@ -38,7 +39,7 @@ class User(UserMixin, db.Model):
 
     # teacher or cd
     teaches = db.relationship("Teaches", lazy="dynamic", cascade="save-update, merge, delete, delete-orphan")
-    # has back reference 'department' from Department Model for CD
+    # has back reference 'department_cd' and 'department_teacher' from Department Model for CD
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -48,6 +49,15 @@ class User(UserMixin, db.Model):
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
 
+    def get_group(self, degree_period):
+        """
+        Get the group assigned for a student in a degree period
+        :param degree_period:
+        :return: a Group
+        """
+        assert self.is_student()
+        return self.groups.filter_by(degree_period_id=degree_period.id).first()
+
     def get_department_cd(self):
         """
         Get the department administered by the current CD.
@@ -55,7 +65,15 @@ class User(UserMixin, db.Model):
         :return: Department
         """
         assert self.is_chief_department()
-        return self.department.first()
+        return self.department_cd.first()
+
+    def get_department_teacher(self):
+        """
+        Get the department that the current teacher is part of
+        :return: Department
+        """
+        assert self.is_chief_department() or self.is_teacher()
+        return self.department_teacher.first()
 
     def get_default_period(self):
         """
@@ -101,6 +119,28 @@ class User(UserMixin, db.Model):
             and_(ContractSemester.student_id == self.id,
                  ContractSemester.degree_id == degree.id,
                  ContractSemester.semester_id == semester.id)).first() is not None
+
+    @staticmethod
+    def get_current_year_semester(semesters):
+        """
+        Get the current year and semester number from a list of semesters
+        :param semesters: a list of Semester types ordered by year
+        :return: (year, current_semester nr)
+        """
+
+        year_nr, sem_nr = 0, 0
+        current_date = date.today()
+        for i, semester in enumerate(semesters):
+            if i % 2:
+                year_nr += 1
+            sem_nr += 1
+
+            # current date is in range
+            if semester.date_start <= current_date <= semester.date_end:
+                return year_nr, sem_nr
+
+        # return last year and semester
+        return year_nr, sem_nr
 
     @staticmethod
     def get_semesters_for_period(degree_period):

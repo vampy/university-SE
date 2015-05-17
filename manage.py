@@ -107,9 +107,10 @@ def init():
     )
 
     # add additional options to each user
-    test_group = Group(name="911")
+    test_group = Group(name="911", degree_period=test_dperiod1)
     test_group.students.append(test_user)
-    test_chief_department.department.append(test_department)
+    test_chief_department.department_cd.append(test_department)
+    test_teacher.department_teacher.append(test_department)
     test_user.degree_periods.append(test_dperiod1)
 
     db.session.add_all([test_group, test_user, test_teacher, test_chief_department, test_admin])
