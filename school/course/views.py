@@ -198,6 +198,10 @@ def edit_optional_course(course_id):
     found_course = Course.get_by_id(course_id)
     department = current_user.get_department_cd()
 
+    if not found_course.is_optional:
+        flash("This course is not optional", FLASH_ERROR)
+        return redirect(url_for('course.establish_courses'))
+
     # degree not in department, can not edit
     if found_course.degree not in department.degrees:
         flash("You can not edit that course because it is not in your department", FLASH_ERROR)
@@ -205,7 +209,14 @@ def edit_optional_course(course_id):
 
     # if done properly, an optional course will appear only once in the teaches table
     teaches = Teaches.query.filter_by(course=found_course).first()
+    if teaches is None:
+        flash("Optional Course is not proposed by anyone", FLASH_ERROR)
+        return redirect(url_for('course.establish_courses'))
+
     semesters = Semester.get_semesters_year(date.today().year)
+    if teaches.semester not in semesters:
+        flash("You can not longer edit this optional course. The time has passed.", FLASH_ERROR)
+        return redirect(url_for('course.establish_courses'))
 
     # build form
     form = CDEditCourseForm()

@@ -136,6 +136,11 @@ def init():
 
     db.session.commit()
 
+    # add optional courses
+    course_aop, teaches_aop = test_teacher.add_optional_course("AOP", test_degree.id, test_semester4.id, True)
+    db.session.add(Enrollment(student=test_user, semester=teaches_aop.semester, course=course_aop))
+    db.session.commit()
+
     # print(test_user.degree_periods.first().degree)
     # print(test_user.get_semesters_for_period(test_user.get_default_period()))
     # print(Semester.get_semesters(date(2013, 10, 1), date(2015, 2, 15)))
