@@ -109,15 +109,26 @@
 </div>
 {% endmacro %}
 
-{% macro render_action(field) %}
+{% macro render_action(field, submit_block=False) %}
 <div class="form-group">
     <div class="form-actions">
-        {{ field(class_="btn btn-primary") }}
+        {% set cls = "btn btn-primary" %}
+        {% if submit_block %}
+            {% set cls = cls + " btn-block" %}
+        {% endif %}
+        {{ field(class_=cls) }}
     </div>
 </div>
 {% endmacro %}
 
-{% macro render_form(url, form, horizontal=False, legend=None, confirm_msg=None, formid=None, class_label="", class_field_wrapper="") %}
+{% macro render_form(url, form,
+                    horizontal=False,
+                    legend=None,
+                    confirm_msg=None,
+                    formid=None,
+                    submit_block=False,
+                    class_label="",
+                    class_field_wrapper="") %}
 {% set idattr = "id=" + formid if formid else "" %}
 <form {{idattr}} class="{% if horizontal %}form-horizontal{% endif %}" method="POST" action="{{ url }}"
     {% if confirm_msg %}onsubmit='return confirm("{{ confirm_msg }}");' {% endif %}
@@ -134,7 +145,7 @@
                 {% elif field.type == "BooleanField" %}
                     {{ render_checkbox(field, class_label, class_field_wrapper) }}
                 {% elif field.type == "SubmitField" %}
-                    {{ render_action(field) }}
+                    {{ render_action(field, submit_block) }}
                 {% elif field.type == "TextAreaField" %}
                     {{ render_textarea(field, class_label, class_field_wrapper) }}
                 {% elif field.type == "DateField" %}

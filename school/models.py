@@ -192,13 +192,16 @@ class Course(db.Model):
     is_optional = Column(Boolean, default=False)  # is course optional
 
     # the teacher who proposed the course is in the Teachers table and has one entry there
-    # the CD who approved the course
-    approved_by = Column(Integer, ForeignKey("users.id"), nullable=True, default=None)
-    approved_user = db.relationship("User", foreign_keys=[approved_by])
+    is_approved = Column(Boolean, default=True)
+    approval_reason = Column(String(256), nullable=True, default=None)
+
+    @classmethod
+    def get_by_id(cls, course_id):
+        return cls.query.filter_by(id=course_id).first_or_404()
 
     def __repr__(self):
-        return '<Course id={0}, name={1}, is_optional={2}, degree_id={3}>'.format(
-            self.id, self.name, self.is_optional, self.degree_id)
+        return '<Course id={0}, name={1}, is_optional={2}, degree_id={3}, is_approved={4}, reason={5}>'.format(
+            self.id, self.name, self.is_optional, self.degree_id, self.is_approved, self.approval_reason)
 
 # each course is part of a semester, from this list a student will choose the obligatory courses
 # and the optional ones
@@ -240,6 +243,10 @@ class Semester(db.Model):
     courses = db.relationship("Course", secondary=semester_courses, backref=db.backref("semesters", lazy="dynamic"))
 
     @staticmethod
+    def get_semesters_year(year):
+        return Semester.query.filter_by(year=year).order_by(Semester.date_start.asc()).all()
+
+    @staticmethod
     def get_semesters(date_start, date_end):
         return Semester.query.filter(and_(Semester.date_start >= date_start, Semester.date_end <= date_end)) \
             .order_by(Semester.year.asc(), Semester.date_start.asc()).all()
@@ -263,6 +270,17 @@ class Teaches(db.Model):
     teacher = db.relationship("User")
     course = db.relationship("Course")
     semester = db.relationship("Semester")
+
+    @staticmethod
+    def get_optional_courses(teacher, year):
+        """
+        Find all optional course for a teacher in a year
+        :param teacher: the teacher we want to find the optional course for
+        :param year: the year we want to find the optional courses
+        :return: a list of Teaches
+        """
+        return Teaches.query.join(Course).join(Semester). \
+            filter(and_(Teaches.teacher_id == teacher.id, Course.is_optional == True, Semester.year == year)).all()
 
     def __repr__(self):
         return '<Teaches tid={0}, cid={1}, sem_id={2}>'.format(self.teacher_id, self.course_id, self.semester_id)

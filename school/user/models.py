@@ -221,10 +221,18 @@ class User(UserMixin, db.Model):
             return 'invalid role'
 
     def is_lecturer(self):
-        return self.get_qualification().is_lecturer()
+        qualification = self.get_qualification()
+        if qualification is None:
+            return False
+
+        return qualification.is_lecturer()
 
     def is_assistant(self):
-        return self.get_qualification().is_assistant()
+        qualification = self.get_qualification()
+        if qualification is None:
+            return False
+
+        return qualification.is_assistant()
 
     def is_student(self):
         return self.role_id == Role.STUDENT
