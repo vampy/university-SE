@@ -50,6 +50,29 @@ class User(UserMixin, db.Model):
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
 
+    def can_edit_degree(self, degree):
+        return degree in self.get_de
+
+    def add_optional_course(self, course_name, degree_id, semester_id):
+        """
+        Add an optional course to the database
+        :param course_name:
+        :param degree_id:
+        :param semester_id:
+        :return: tuple (Course, Teaches)
+        """
+        # add course
+        add_course = Course(name=course_name, is_approved=False, is_optional=True, category=2, degree_id=degree_id)
+
+        # add mark in teaches
+        add_teaches = Teaches(teacher=self, course=add_course, semester_id=semester_id)
+
+        # add to database
+        db.session.add_all([add_course, add_teaches])
+        db.session.commit()
+
+        return add_course, add_teaches
+
     def get_qualification(self):
         """
         Get the qualification for the current teacher

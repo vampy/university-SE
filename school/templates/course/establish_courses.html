@@ -3,60 +3,84 @@
 {% set page_title = 'Establish Courses' %}
 
 {% block body %}
-{% if current_user.is_teacher() %}
-    <h1 class="text-center">Establish Courses</h1><hr>
-    <div class="row">
-        <div class="text-center">
-            <h3>Add Optional Course for next year</h3>
-        </div>
-        <div class="col-md-8 col-md-offset-2">
-            {% if can_add %}
-                {{ render_form(url_for('course.establish_courses'), add_form, submit_block=True) }}
-            {% else %}
-                <div class="alert alert-info">Can not add any more optional courses for next year</div>
-            {% endif %}
-        </div>
-    </div><hr>
-    {% if optional_teaches %}
+    <h1 class="text-center">Establish Courses</h1>
+    <hr>
+    {% if current_user.is_teacher() %}
         <div class="row">
             <div class="text-center">
-                <h3>See proposed optional course for next year</h3>
+                <h3>Add Optional Course for next year</h3>
+            </div>
+            <div class="col-md-8 col-md-offset-2">
+                {% if can_add %}
+                    {{ render_form(url_for('course.establish_courses'), add_form, submit_block=True) }}
+                {% else %}
+                    <div class="alert alert-info">Can not add any more optional courses for next year</div>
+                {% endif %}
             </div>
         </div>
-        <div class="col-md-8 col-md-offset-2">
-            <table class="table table-striped">
-                <tr>
-                    <th>#</th>
-                    <th>Degree</th>
-                    <th>Course Name</th>
-                    <th>Semester</th>
-                    <th>Is approved</th>
-                    <th>Reason</th>
-                    <th>Actions</th>
-                </tr>
-                {% for teach in optional_teaches %}
+        <hr>
+    {% endif %}
+    <div class="row">
+        <div class="text-center">
+            <h3>See proposed optional course for next year</h3>
+        </div>
+    </div>
+    {% if optional_teaches %}
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <table class="table table-striped">
                     <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ teach.course.degree.name }}</td>
-                        <td>{{ teach.course.name }}</td>
-                        <td>{{ teach.semester.name }}</td>
-                        <td>{{ teach.course.is_approved }}</td>
-                        <td>{{ teach.course.approval_reason }}</td>
-                        <td>
-                            <div class="btn-group">
-                                <a class="btn btn-danger" href="{{ url_for('course.remove_optional_course', course_id=teach.course.id) }}">
-                                    Remove
-                                </a>
-                            </div>
-                        </td>
+                        <th>#</th>
+                        <th>Degree</th>
+                        <th>Course Name</th>
+                        {% if current_user.is_chief_department() %}
+                            <td>Category</td>
+                            <td>Proposed by</td>
+                        {% endif %}
+                        <th>Semester</th>
+                        <th>Is approved</th>
+                        <th>Reason</th>
+                        <th>Actions</th>
                     </tr>
-                {% endfor %}
-            </table>
+                    {% for teach in optional_teaches %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ teach.course.degree.name }}</td>
+                            <td>{{ teach.course.name }}</td>
+                            {% if current_user.is_chief_department() %}
+                                <td>{{ teach.course.category }}</td>
+                                <td>{{ teach.teacher.username }}</td>
+                            {% endif %}
+                            <td>{{ teach.semester.name }}</td>
+                            <td>
+                                {% if teach.course.is_approved %}
+                                    <span class="text-success">True</span>
+                                {% else %}
+                                    <span class="text-danger">False</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ teach.course.approval_reason }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    {% if current_user.is_teacher() %}
+                                        <a class="btn btn-danger"
+                                           href="{{ url_for('course.remove_optional_course', course_id=teach.course.id) }}">
+                                            Remove
+                                        </a>
+                                    {% else %}
+                                        <a class="btn btn-primary"
+                                           href="{{ url_for('course.edit_optional_course', course_id=teach.course.id) }}">
+                                            Edit
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
     {% endif %}
-{% else %}
-    TODO
-{% endif %}
 {% endblock %}
 {% block js %}
     {{ super() }}

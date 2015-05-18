@@ -272,7 +272,7 @@ class Teaches(db.Model):
     semester = db.relationship("Semester")
 
     @staticmethod
-    def get_optional_courses(teacher, year):
+    def get_optional_courses_teacher(teacher, year):
         """
         Find all optional course for a teacher in a year
         :param teacher: the teacher we want to find the optional course for
@@ -281,6 +281,17 @@ class Teaches(db.Model):
         """
         return Teaches.query.join(Course).join(Semester). \
             filter(and_(Teaches.teacher_id == teacher.id, Course.is_optional == True, Semester.year == year)).all()
+
+    @staticmethod
+    def get_optional_courses_department(department, year):
+        """
+        Find all optional course for a department in a year
+        :param department: the department we want to find the optional course for
+        :param year: the year we want to find the optional courses
+        :return: a list of Teaches
+        """
+        return Teaches.query.join(Course).join(Semester).join(Department.degrees). \
+            filter(and_(Department.id == department.id, Course.is_optional == True, Semester.year == year)).all()
 
     def __repr__(self):
         return '<Teaches tid={0}, cid={1}, sem_id={2}>'.format(self.teacher_id, self.course_id, self.semester_id)

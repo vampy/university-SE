@@ -1,0 +1,22 @@
+{% from "macros/form.html" import render_form %}
+{% extends 'base.html' %}
+{% set page_title = 'Edit Optional Coruse' %}
+
+{% block body %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn btn-default pull-left" href="{{ url_for('course.establish_courses') }}">Back</a>
+            <h1 class="text-center">Edit Optional Course</h1>
+        </div>
+    </div><hr>
+    <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+            {{ render_form(url_for('course.edit_optional_course', course_id=course.id), form, submit_block=True) }}
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/courses.js') }}"></script>
+{% endblock %}

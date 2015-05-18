@@ -4,7 +4,7 @@ from school.decorators import role_required
 from school.config import FLASH_SUCCESS, FLASH_ERROR
 from school.models import *
 from school.user import User
-from .forms import TeacherAddCourseForm
+from .forms import TeacherAddCourseForm, CDEditCourseForm
 from datetime import date
 
 course = Blueprint('course', __name__)
@@ -169,12 +169,12 @@ def contract(semester_id=None):
 @course.route('/remove_optional_course/<int:course_id>', methods=["GET"])
 @login_required
 @role_required(teacher=True, cd=True)
-def remove_optional_course(course_id):
+def remove_optional_course(course_id):  # TODO check if secure
     found_course = Course.get_by_id(course_id)
     year = date.today().year
 
     if current_user.is_teacher():
-        optional_teaches = Teaches.get_optional_courses(current_user, year)
+        optional_teaches = Teaches.get_optional_courses_teacher(current_user, year)
         for teaches in optional_teaches:
             if found_course.id == teaches.course.id:  # found course remove it
                 # update database
@@ -191,20 +191,87 @@ def remove_optional_course(course_id):
     flash("TODO", FLASH_ERROR)
     return redirect(url_for("course.establish_courses"))
 
+@course.route('/edit_optional_course/<int:course_id>', methods=["GET", "POST"])
+@login_required
+@role_required(cd=True)
+def edit_optional_course(course_id):
+    found_course = Course.get_by_id(course_id)
+    department = current_user.get_department_cd()
+
+    # degree not in department, can not edit
+    if found_course.degree not in department.degrees:
+        flash("You can not edit that course because it is not in your department", FLASH_ERROR)
+        return redirect(url_for('course.establish_courses'))
+
+    # if done properly, an optional course will appear only once in the teaches table
+    teaches = Teaches.query.filter_by(course=found_course).first()
+    semesters = Semester.get_semesters_year(date.today().year)
+
+    # build form
+    form = CDEditCourseForm()
+    if not form.is_submitted(): # set name, degree_id, category, reason, is_approved
+        form = CDEditCourseForm(obj=found_course)
+
+    form.semester_id.choices = [(s.id, s.name) for s in semesters]
+    form.degree_id.choices = [(d.id, d.name) for d in department.degrees]
+
+    if form.validate_on_submit():
+        form_approve = bool(form.is_approved.data)
+        form_semester = form.semester_id.data
+
+        # find semester
+        semester = None
+        for s in semesters:
+            if form_semester == s.id:
+                semester = s
+
+        if semester is None:  # check for impossible condition
+            return "this should never happen, semester is none"
+
+        if found_course.is_approved is True and form_approve is False:  # set not approved
+            teaches.semester_id = form.semester_id.data
+            # remove from semester_courses
+            found_course.semesters = []
+
+        elif found_course.is_approved is False and form_approve is True:  # approve course
+            teaches.semester_id = form_semester
+            # add to semester_courses
+            found_course.semesters.append(semester)
+
+        # set name, degree_id, category, reason, is_approved
+        form.populate_obj(found_course)
+        found_course.is_approved = form_approve
+        teaches.semester = semester
+
+        # update db
+        db.session.add_all([found_course, teaches])
+        db.session.commit()
+
+        flash("Course Updated", FLASH_SUCCESS)
+    else:
+        form.semester_id.data = teaches.semester.id  # set semester id
+
+    return render_template("course/edit_optional_course.html",
+                           course=found_course,
+                           teaches=teaches,
+                           form=form)
+
+
 @course.route('/establish_courses', methods=["GET", "POST"])
 @login_required
 @role_required(teacher=True, cd=True)
 def establish_courses():
-    if current_user.is_teacher():
+    year = date.today().year
+
+    if current_user.is_teacher():  # teacher
         if not current_user.is_lecturer():
             flash("You are not a lecturer, so you can't add optional courses", FLASH_ERROR)
             return redirect(url_for("user.index"))
 
-        year = date.today().year
         semesters = Semester.get_semesters_year(year)
         department = current_user.get_department_teacher()
         degrees = department.degrees
-        optional_teaches = Teaches.get_optional_courses(current_user, year)
+        optional_teaches = Teaches.get_optional_courses_teacher(current_user, year)
         can_add = (len(optional_teaches) < 2)  # only 2 optional course per year
 
         # build form
@@ -214,19 +281,12 @@ def establish_courses():
             add_form.degree_id.choices = [(d.id, d.name) for d in degrees]
             if add_form.validate_on_submit():
                 # add optional course to database
-                add_course = Course(is_approved=False, is_optional=True, category=0)
-                add_form.populate_obj(add_course)  # should set name, degree_id
-
-                # add mark in teaches
-                add_teaches = Teaches(teacher=current_user, course=add_course, semester_id=add_form.semester_id.data)
-
-                db.session.add_all([add_course, add_teaches])
-                db.session.commit()
+                current_user.add_optional_course(add_form.name.data, add_form.degree_id.data, add_form.semester_id.data)
 
                 # update view
                 flash("Optional course added", FLASH_SUCCESS)
                 add_form.name.data = ""
-                optional_teaches = Teaches.get_optional_courses(current_user, year)
+                optional_teaches = Teaches.get_optional_courses_teacher(current_user, year)
                 can_add = (len(optional_teaches) < 2)
 
         return render_template("course/establish_courses.html",
@@ -236,5 +296,6 @@ def establish_courses():
 
     # cd
     department = current_user.get_department_cd()
+    optional_teaches = Teaches.get_optional_courses_department(department, year)
 
-    return render_template("course/establish_courses.html")
+    return render_template("course/establish_courses.html", optional_teaches=optional_teaches)
