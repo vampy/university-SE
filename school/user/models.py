@@ -50,9 +50,6 @@ class User(UserMixin, db.Model):
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
 
-    def can_edit_degree(self, degree):
-        return degree in self.get_de
-
     def add_optional_course(self, course_name, degree_id, semester_id):
         """
         Add an optional course to the database
