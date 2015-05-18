@@ -111,6 +111,7 @@ def init():
     test_group.students.append(test_user)
     test_chief_department.department_cd.append(test_department)
     test_teacher.department_teacher.append(test_department)
+    test_teacher.qualification.append(Qualification())
     test_user.degree_periods.append(test_dperiod1)
 
     db.session.add_all([test_group, test_user, test_teacher, test_chief_department, test_admin])

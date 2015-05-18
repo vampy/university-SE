@@ -36,7 +36,7 @@ class Group(db.Model):
 # every department can have multiple degrees, and every degree can be part of multiple departments?
 # example: Math and Computer Science department can Have Computer Science in English, Math in Romanian
 department_degrees = db.Table(
-    "departments_degrees",
+    "department_degrees",
     Column("department_id", Integer, ForeignKey("departments.id"), nullable=False),
     Column("degree_id", Integer, ForeignKey("degrees.id"), nullable=False),
     PrimaryKeyConstraint('department_id', 'degree_id')
@@ -44,7 +44,7 @@ department_degrees = db.Table(
 
 # every department has chiefs, aka admins for that department
 department_chiefs = db.Table(
-    "departments_chiefs",
+    "department_chiefs",
     Column("chief_id", Integer, ForeignKey("users.id"), nullable=False),
     Column("department_id", Integer, ForeignKey("departments.id"), nullable=False),
     PrimaryKeyConstraint('chief_id'),  # a user can be only part of one department
@@ -90,6 +90,39 @@ class Language(db.Model):
         return '<Language id={0}, name={1}>'.format(self.id, self.name)
 
 
+# each teacher can have one or two qualifications
+class QualificationType:
+    LECTURER = 1
+    ASSISTANT = 2
+
+
+# keep track of qualifications of each teacher
+class Qualification(db.Model):
+    __tablename__ = "qualifications"
+
+    teacher_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    type_id = Column(SmallInteger, default=QualificationType.LECTURER)
+
+    teacher = db.relationship("User", backref=db.backref("qualification", lazy="dynamic"))
+
+    def is_lecturer(self):
+        return self.type_id == QualificationType.LECTURER
+
+    def is_assistant(self):
+        return self.type_id == QualificationType.ASSISTANT
+
+    def type_to_str(self):
+        if self.type_id == QualificationType.LECTURER:
+            return "lecturer"
+        elif self.type_id == QualificationType.ASSISTANT:
+            return "assistant"
+        else:
+            return "invalid type"
+
+    def __repr__(self):
+        return "<Qualification teacher_id={0}, type_id={1}>".format(self.teacher_id, self.type_to_str())
+
+
 class DegreeType:
     UNDERGRADUATE = 1
     GRADUATE = 2
@@ -115,7 +148,7 @@ class Degree(db.Model):
 
 # Connection between degree and student
 degrees_period_students = db.Table(
-    "degrees_period_students",
+    "degree_period_students",
     Column("student_id", Integer, ForeignKey("users.id"), nullable=False),
     Column("degree_period_id", Integer, ForeignKey("degree_periods.id"), nullable=False),
     PrimaryKeyConstraint('student_id', 'degree_period_id')
@@ -147,7 +180,7 @@ class DegreePeriod(db.Model):
 # along side the Teaches table, to keep track in what semester the optional course is taught
 class Course(db.Model):
     __tablename__ = "courses"
-
+    # TODO add min_students, max_students
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     category = Column(SmallInteger, default=1)  # category 1 is obligatory courses

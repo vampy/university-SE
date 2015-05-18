@@ -40,6 +40,7 @@ class User(UserMixin, db.Model):
     # teacher or cd
     teaches = db.relationship("Teaches", lazy="dynamic", cascade="save-update, merge, delete, delete-orphan")
     # has back reference 'department_cd' and 'department_teacher' from Department Model for CD
+    # has back reference 'qualification' from Qualification Model
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -48,6 +49,13 @@ class User(UserMixin, db.Model):
         if self.role_id is not None and self.role_id not in Role.get_roles():
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
+
+    def get_qualification(self):
+        """
+        Get the qualification for the current teacher
+        :return: Qualification
+        """
+        return self.qualification.first()
 
     def get_group(self, degree_period):
         """
@@ -209,6 +217,14 @@ class User(UserMixin, db.Model):
             return "chief_department"
         elif self.role_id == Role.ADMIN:
             return "admin"
+        else:
+            return 'invalid role'
+
+    def is_lecturer(self):
+        return self.get_qualification().is_lecturer()
+
+    def is_assistant(self):
+        return self.get_qualification().is_assistant()
 
     def is_student(self):
         return self.role_id == Role.STUDENT
