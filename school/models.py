@@ -182,11 +182,15 @@ class DegreePeriod(db.Model):
 # along side the Teaches table, to keep track in what semester the optional course is taught
 class Course(db.Model):
     __tablename__ = "courses"
-    # TODO add min_students, max_students
+
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     category = Column(SmallInteger, default=1)  # category 1 is obligatory courses
     degree_id = Column(Integer, ForeignKey("degrees.id"))
+    min_students = Column(Integer, default=20)
+    max_students = Column(Integer, default=4096)
+    credits = Column(Integer, default=6)
+
     # has back reference 'degree' from Degree model
     # has back reference 'semesters' from Semester model
 
