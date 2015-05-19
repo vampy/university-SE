@@ -66,12 +66,7 @@ def see_courses(semester_id=None):
 
     elif current_user.is_chief_department():
 
-        departments = Department.query.all()
-        for dp in departments:
-            for dp_ch in dp.chiefs:
-                if dp_ch.id == current_user.id:
-                    department = dp
-
+        department = current_user.get_department_cd()
 
         courses_depts = []
         for degree in department.degrees:
