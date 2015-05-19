@@ -137,7 +137,8 @@ def init():
     # add teaches
     test_teaches1 = Teaches(teacher=test_teacher, semester=test_semester3, course=test_course_se)
     test_teaches2 = Teaches(teacher=test_teacher, semester=test_semester3, course=test_course_os2)
-    db.session.add_all([test_teaches1, test_teaches2])
+    test_teaches3 = Teaches(teacher=test_chief_department, semester=test_semester3, course=test_course_os2)
+    db.session.add_all([test_teaches1, test_teaches2, test_teaches3])
 
     db.session.commit()
 
