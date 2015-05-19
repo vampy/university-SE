@@ -129,7 +129,7 @@ class User(UserMixin, db.Model):
 
     def get_courses_enrolled_semester(self, semester, degree):
         """
-        Get all the course the current has enrolled in a semester
+        Get all the course that are apprpoved in the current has enrolled in a semester
         :param semester: of type Semester
         :param degree: of type Degree
         :return: a list of tuples, the tuple if of the form (Enrollment, Course)
@@ -138,7 +138,8 @@ class User(UserMixin, db.Model):
         return db.session.query(Enrollment, Course).join(Course) \
             .filter(and_(Enrollment.semester_id == semester.id,
                          Enrollment.student_id == self.id,
-                         Course.degree_id == degree.id)) \
+                         Course.degree_id == degree.id,
+                         Course.is_approved == True)) \
             .all()
 
     def has_contract_signed(self, semester, degree):

@@ -144,7 +144,75 @@ def save_grade(user_id, course_id, grade, semester_id):
     return redirect(url_for("course.upload_course_results"))
 
 
-@course.route('/contract/', methods=["GET"])
+@course.route('/contract/start/<int:semester_id>')
+@course.route('/contract/action/<int:semester_id>/<int:add>/<int:course_id>')
+@login_required
+@role_required(student=True)
+def contract_action(semester_id, add=None, course_id=None):
+    # get info from database
+    semester = Semester.get_by_id(semester_id)
+    period = current_user.get_default_period()
+    degree = period.degree
+    has_contract = current_user.has_contract_signed(semester, degree)
+    courses_enrolled = current_user.get_courses_enrolled_semester(semester, degree)
+    return_path = redirect(url_for('course.contract', semester_id=semester_id))
+
+    # validate
+    if has_contract:
+        flash("Your contract is already signed for that semester", FLASH_ERROR)
+        return return_path
+
+    # start contract
+    if add is None and course_id is None:
+        if courses_enrolled:
+            flash("You already started the temporary contract for that semester", FLASH_ERROR)
+            return return_path
+
+        # add initial obligatory courses
+        obligatory_courses = semester.filter_obligatory_courses(degree)
+        for c in obligatory_courses:
+            db.session.add(Enrollment(student=current_user, semester=semester, course=c))
+        db.session.commit()
+
+        flash("Added obligatory courses", FLASH_SUCCESS)
+        return return_path
+
+    # add or remove course from contract
+    course_add = Course.get_by_id(course_id)
+    if not course_add.is_optional:
+        flash("Course is not optional", FLASH_ERROR)
+        return return_path
+
+    courses = [x[1] for x in courses_enrolled]
+    if add:  # add course
+        if course_add in courses:  # validate
+            flash("You are already enrolled for that course", FLASH_ERROR)
+            return return_path
+
+        db.session.add(Enrollment(student=current_user, semester=semester, course=course_add))
+        db.session.commit()
+
+        flash("Course Added", FLASH_SUCCESS)
+    else:
+        if course_add not in courses:   # validate
+            flash("You are not enrolled for that course", FLASH_ERROR)
+            return return_path
+
+        db.session.delete(Enrollment.query.filter_by(student=current_user, semester=semester, course=course_add).first())
+        db.session.commit()
+
+        flash("Course Removed", FLASH_SUCCESS)
+
+    return return_path
+
+# @course.route('/contract/add/<int:semester_id>/<int:course_id>', methods=["GET"])
+# @login_required
+# @role_required(student=True)
+# def contract_add(semester_id, course_id):
+#
+#     return redirect(url_for('course.contract', semester_id=semester_id))
+
+@course.route('/contract/')
 @course.route('/contract/<int:semester_id>', methods=["GET", "POST"])
 @login_required
 @role_required(student=True)
@@ -164,7 +232,18 @@ def contract(semester_id=None):
     has_contract = current_user.has_contract_signed(semester, degree)
     courses_enrolled = current_user.get_courses_enrolled_semester(semester, degree)
 
-    print(year, sem_nr)
+    # get optional courses
+    courses_contract = []
+    if not has_contract:
+        courses_contract = semester.filter_courses(degree)
+
+        # auto build check to see if optional course is already in the contract
+        courses_enrolled_first = [x[1] for x in courses_enrolled]
+        for i, c in enumerate(courses_contract):
+            courses_contract[i].is_in_contract = False
+            if c in courses_enrolled_first:
+                courses_contract[i].is_in_contract = True
+
     return render_template("course/contract.html",
                            semesters=semesters,
                            semester_sel=semester,
@@ -173,7 +252,8 @@ def contract(semester_id=None):
                            group=group,
                            degree=degree,
                            has_contract=has_contract,
-                           courses_enrolled=courses_enrolled)
+                           courses_enrolled=courses_enrolled,
+                           courses_contract=courses_contract)
 
 @course.route('/remove_optional_course/<int:course_id>', methods=["GET"])
 @login_required
@@ -229,7 +309,7 @@ def edit_optional_course(course_id):
 
     # build form
     form = CDEditCourseForm()
-    if not form.is_submitted(): # set name, degree_id, category, reason, is_approved
+    if not form.is_submitted():  # set name, degree_id, category, reason, is_approved
         form = CDEditCourseForm(obj=found_course)
 
     form.semester_id.choices = [(s.id, s.name) for s in semesters]

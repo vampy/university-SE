@@ -3,43 +3,110 @@
 {% set page_title = 'Contract' %}
 
 {% block body %}
-    <h1 class="text-center">Contract</h1><hr>
+    <h1 class="text-center">Contract</h1>
+    <hr>
     <div class="row">
-        <div class="col-md-offset-4 col-md-3">
-            <span class="label label-info"> Degree: {{ degree.name }} </span>
-            <span class="label label-info"> Group: {{ group.name }} </span>
-            <span class="label label-info"> Current year: {{ year }} </span>
-            <span class="label label-info"> Current semester: {{ semester_nr }} </span>
+        <div class="col-md-offset-3 col-md-8">
+            <button class="btn btn-default" disabled="disabled"> Degree: {{ degree.name }} </button>
+            <button class="btn btn-default" disabled="disabled"> Group: {{ group.name }} </button>
+            <button class="btn btn-default" disabled="disabled"> Current year: {{ year }} </button>
+            <button class="btn btn-default" disabled="disabled"> Current semester: {{ semester_nr }} </button>
         </div>
-    </div><hr>
+    </div>
+    <hr>
     <div class="col-md-2">
         <div class="btn-group" id="semesters-pick">
             {% for semester in semesters %}
                 <a data-id="{{ semester.id }}" href="{{ url_for('course.contract', semester_id=semester.id) }}"
-                    class="btn btn-default{% if semester_sel.id == semester.id %} active{% endif %}">
+                   class="btn btn-default{% if semester_sel.id == semester.id %} active{% endif %}">
                     Semester {{ loop.index }}, Year {{ semester.year }}
                 </a>
             {% endfor %}
         </div>
     </div>
-    <div class="col-md-10">
-        <table class="table table-striped">
-            <tr>
-                <th>#</th>
-                <th>Code</th>
-                <th>Name Course</th>
-                <th>Grade</th>
-            </tr>
-            {%  for enrolled, course in courses_enrolled %}
+    {% if has_contract %}
+        <div class="col-md-10">
+            <table class="table table-striped">
                 <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ course.degree.name[:3].upper() }}{{ '{0:02d}'.format(course.id) }}</td>
-                    <td>{{ course.name }}</td>
-                    <td>{{ enrolled.grade }}</td>
+                    <th>#</th>
+                    <th>Code</th>
+                    <th>Name Course</th>
+                    <th>Grade</th>
                 </tr>
-            {%  endfor %}
-        </table>
-    </div>
+                {% for enrolled, course in courses_enrolled %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ course.get_code() }}</td>
+                        <td>{{ course.name }}</td>
+                        {# TODO add passed#}
+                        <td>{{ enrolled.grade }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% elif not courses_enrolled %}
+        <div class="col-md-4 col-md-offset-2">
+            <p class="text-center">Contract is empty, start building temporary contract</p>
+            <a class="btn btn-default col-md-offset-3" href="{{ url_for("course.contract_action", semester_id=semester_sel.id) }}">
+                Start Building Contract
+            </a>
+        </div>
+    {% else %}
+        <div class="col-md-5">
+            <h3>All courses you can choose</h3>
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th>#</th>
+                    <th class="col-md-1">Type</th>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Actions</th>
+                </tr>
+                {% for course in courses_contract %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ course.category }}</td>
+                        <td>{{ course.name }}</td>
+                        <td>{{ course.get_code() }}</td>
+                        <td>
+                             {% if course.is_optional and not course.is_in_contract %}
+                                <a href="{{ url_for('course.contract_action', semester_id=semester_sel.id, add=True, course_id=course.id) }}"
+                                   class="btn btn-primary">Add</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-md-5">
+            <h3>Temporary contract</h3>
+            <table class="table table-bordered table-striped tabble-c">
+                <tr>
+                    <th>#</th>
+                    <th class="col-md-1">Type</th>
+                    <th>Name Course</th>
+                    <th>Code</th>
+                    <th>Actions</th>
+                </tr>
+                {% for enrolled, course in courses_enrolled %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ course.category }}</td>
+                        <td>{{ course.name }}</td>
+                        <td>{{ course.get_code() }}</td>
+                        <td>
+                            <div class="btn-group">
+                                {% if course.is_optional %}
+                                    <a href="{{ url_for('course.contract_action', semester_id=semester_sel.id, add=False, course_id=course.id) }}"
+                                       class="btn btn-danger">Remove</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
 {% endblock %}
 {% block js %}
     {{ super() }}

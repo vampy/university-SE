@@ -41,11 +41,14 @@ def init():
     test_course_dbms = Course(name="DBMS")
     test_course_ai = Course(name="AI")
     test_course_networks = Course(name="Computer Networks")
+    test_course_networks2 = Course(name="Computer Networks2")
+    test_course_graphics = Course(name="Graphics")
 
     test_degree = Degree(name="Computer Science", type_id=DegreeType.UNDERGRADUATE)
     test_degree.courses.extend(
-        [test_course_algebra, test_course_calculus, test_course_arhitecture, test_course_se, test_course_os, test_course_os2,
-         test_course_geometry, test_course_graphs, test_course_dbms, test_course_ai, test_course_networks])
+        [test_course_algebra, test_course_calculus, test_course_arhitecture, test_course_se, test_course_os,
+         test_course_os2, test_course_geometry, test_course_graphs, test_course_dbms, test_course_ai,
+         test_course_networks, test_course_graphics, test_course_networks2])
     test_department.degrees.append(test_degree)
 
     test_semester1 = Semester(name="Autumn 2013", year=2013, date_start=date(2013, 10, 1), date_end=date(2014, 2, 15))
@@ -62,12 +65,14 @@ def init():
     test_semester4.courses.extend([test_course_ai, test_course_networks, test_course_se])
 
     test_semester5 = Semester(name="Autumn 2015", year=2015, date_start=date(2015, 10, 1), date_end=date(2016, 2, 15))
+    test_semester5.courses.extend([test_course_networks2, test_course_graphics])
+
     test_semester6 = Semester(name="Spring 2016", year=2015, date_start=date(2016, 2, 20), date_end=date(2016, 6, 15))
 
     test_dperiod1 = DegreePeriod()
     test_dperiod1.degree = test_degree
     test_dperiod1.semester_start = test_semester1
-    test_dperiod1.semester_end = test_semester4
+    test_dperiod1.semester_end = test_semester6
 
     db.session.add_all([test_semester1, test_semester2, test_semester3, test_semester4, test_semester5, test_semester6,
                         test_degree, test_department, test_dperiod1])
@@ -116,13 +121,13 @@ def init():
 
     db.session.add_all([test_group, test_user, test_teacher, test_chief_department, test_admin])
 
-    # add Contracts
-    test_user_degree = test_user.get_default_period().degree
-    for semester in [test_semester1, test_semester2]:
-        db.session.add(ContractSemester(student=test_user, semester=semester, degree=test_user_degree))
-
     # add enrollments to all users, aka user has contract signed
     semesters = [test_semester1, test_semester2, test_semester3, test_semester4]
+
+    # add Contracts
+    test_user_degree = test_user.get_default_period().degree
+    for semester in semesters:
+        db.session.add(ContractSemester(student=test_user, semester=semester, degree=test_user_degree))
 
     for semester in semesters:
         for course in semester.courses:
@@ -138,6 +143,7 @@ def init():
 
     # add optional courses
     course_aop, teaches_aop = test_teacher.add_optional_course("AOP", test_degree.id, test_semester4.id, True)
+    test_teacher.add_optional_course("Security", test_degree.id, test_semester5.id, True)
     db.session.add(Enrollment(student=test_user, semester=teaches_aop.semester, course=course_aop))
     db.session.commit()
 
@@ -145,6 +151,7 @@ def init():
     # print(test_user.get_semesters_for_period(test_user.get_default_period()))
     # print(Semester.get_semesters(date(2013, 10, 1), date(2015, 2, 15)))
     print('DB initialized')
+
 
 if __name__ == "__main__":
     manager.run()

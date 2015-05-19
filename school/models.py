@@ -16,6 +16,7 @@ group_students = db.Table(
     PrimaryKeyConstraint('group_id', 'student_id')  # a student can be in only one group at a time
 )
 
+
 # Each degree period has specific groups
 class Group(db.Model):
     __tablename__ = "groups"
@@ -154,6 +155,7 @@ degrees_period_students = db.Table(
     PrimaryKeyConstraint('student_id', 'degree_period_id')
 )
 
+
 # Each degree can have different periods, Computer science 3 years English, Computer Science 4 years German, etc
 class DegreePeriod(db.Model):
     __tablename__ = "degree_periods"
@@ -171,8 +173,8 @@ class DegreePeriod(db.Model):
     # has back reference 'students' from User Model
 
     def __repr__(self):
-        return '<DegreePeriod id={0}, degree_id={1}, language_id={2}, semester_start_id={3}, semester_end_id={4}>'.format(
-            self.id, self.degree_id, self.language_id, self.semester_start_id, self.semester_end_id)
+        return '<DegreePeriod id={0}, degree_id={1}, language_id={2}, semester_start_id={3}, semester_end_id={4}>'\
+            .format(self.id, self.degree_id, self.language_id, self.semester_start_id, self.semester_end_id)
 
 
 # each course has it's own degree
@@ -194,6 +196,13 @@ class Course(db.Model):
     # the teacher who proposed the course is in the Teachers table and has one entry there
     is_approved = Column(Boolean, default=True)
     approval_reason = Column(String(256), nullable=True, default=None)
+
+    def get_code(self):
+        """
+        Get a unique code representing the course
+        :return: string
+        """
+        return self.degree.name[:3].upper() + '{0:02d}'.format(self.id)
 
     @classmethod
     def get_by_id(cls, course_id):
@@ -242,12 +251,47 @@ class Semester(db.Model):
     date_end = Column(Date)  # june 2015
     courses = db.relationship("Course", secondary=semester_courses, backref=db.backref("semesters", lazy="dynamic"))
 
+    def filter_courses(self, degree):
+        """
+        Get all approved courses for this semester
+        :param degree:
+        :return:
+        """
+        return [course for course in self.courses if course.is_approved is True and course.degree_id == degree.id]
+
+    def filter_obligatory_courses(self, degree):
+        """
+        Get all the obligatory courses for this semester
+        :param degree:
+        :return: a list of Courses
+        """
+        return [course for course in self.filter_courses(degree) if course.is_optional is False]
+
+    def filter_optional_courses(self, degree):
+        """
+        Get all optional courses for this semester
+        :param degree:
+        :return: a list of Courses
+        """
+        return [course for course in self.filter_courses(degree) if course.is_optional is True]
+
     @staticmethod
     def get_semesters_year(year):
+        """
+        Get all semesters that are in the year sorted by start date ascending
+        :param year: amn integer representing the year
+        :return: a list of Semesters
+        """
         return Semester.query.filter_by(year=year).order_by(Semester.date_start.asc()).all()
 
     @staticmethod
     def get_semesters(date_start, date_end):
+        """
+        Get all semesters between these two dates, that are sorted ascending by year and start date
+        :param date_start:
+        :param date_end:
+        :return: a list of Semesters
+        """
         return Semester.query.filter(and_(Semester.date_start >= date_start, Semester.date_end <= date_end)) \
             .order_by(Semester.year.asc(), Semester.date_start.asc()).all()
 
