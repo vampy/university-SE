@@ -5,6 +5,4 @@ Flask-WTF
 Flask-Login
 Flask-Mail
 Flask-Testing
-
-
-
+Flask-DebugToolbar
