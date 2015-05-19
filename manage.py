@@ -152,6 +152,5 @@ def init():
     # print(Semester.get_semesters(date(2013, 10, 1), date(2015, 2, 15)))
     print('DB initialized')
 
-
 if __name__ == "__main__":
     manager.run()

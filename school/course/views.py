@@ -205,13 +205,6 @@ def contract_action(semester_id, add=None, course_id=None):
 
     return return_path
 
-# @course.route('/contract/add/<int:semester_id>/<int:course_id>', methods=["GET"])
-# @login_required
-# @role_required(student=True)
-# def contract_add(semester_id, course_id):
-#
-#     return redirect(url_for('course.contract', semester_id=semester_id))
-
 @course.route('/contract/')
 @course.route('/contract/<int:semester_id>', methods=["GET", "POST"])
 @login_required
@@ -261,6 +254,7 @@ def contract(semester_id=None):
 def remove_optional_course(course_id):  # TODO check if secure
     found_course = Course.get_by_id(course_id)
     year = date.today().year
+    return_path = redirect(url_for("course.establish_courses"))
 
     if current_user.is_teacher():
         optional_teaches = Teaches.get_optional_courses_teacher(current_user, year)
@@ -272,13 +266,13 @@ def remove_optional_course(course_id):  # TODO check if secure
                 db.session.commit()
 
                 flash("Removed optional course", FLASH_SUCCESS)
-                return redirect(url_for("course.establish_courses"))
+                return return_path
 
         flash("Can not remove that optional course", FLASH_ERROR)
-        return redirect(url_for("course.establish_courses"))
+        return return_path
 
     flash("TODO", FLASH_ERROR)
-    return redirect(url_for("course.establish_courses"))
+    return return_path
 
 @course.route('/edit_optional_course/<int:course_id>', methods=["GET", "POST"])
 @login_required
@@ -286,26 +280,27 @@ def remove_optional_course(course_id):  # TODO check if secure
 def edit_optional_course(course_id):
     found_course = Course.get_by_id(course_id)
     department = current_user.get_department_cd()
+    return_path = redirect(url_for('course.establish_courses'))
 
     if not found_course.is_optional:
         flash("This course is not optional", FLASH_ERROR)
-        return redirect(url_for('course.establish_courses'))
+        return return_path
 
     # degree not in department, can not edit
     if found_course.degree not in department.degrees:
         flash("You can not edit that course because it is not in your department", FLASH_ERROR)
-        return redirect(url_for('course.establish_courses'))
+        return return_path
 
     # if done properly, an optional course will appear only once in the teaches table
     teaches = Teaches.query.filter_by(course=found_course).first()
     if teaches is None:
         flash("Optional Course is not proposed by anyone", FLASH_ERROR)
-        return redirect(url_for('course.establish_courses'))
+        return return_path
 
     semesters = Semester.get_semesters_year(date.today().year)
     if teaches.semester not in semesters:
         flash("You can not longer edit this optional course. The time has passed.", FLASH_ERROR)
-        return redirect(url_for('course.establish_courses'))
+        return return_path
 
     # build form
     form = CDEditCourseForm()
