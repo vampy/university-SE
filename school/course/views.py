@@ -58,18 +58,22 @@ def see_courses(semester_id=None):
     elif current_user.is_teacher():
 
         courses = []
-        for teach in current_user.teaches.all():  # TODO get only approved courses
-            courses.append(teach.course)
+        for teach in current_user.teaches.all():
+            if teach.course.is_approved:
+                courses.append(teach.course)
 
         return render_template("course/see_courses.html", courses=courses)
 
     elif current_user.is_chief_department():
 
-        name_dp = "Math/Computer Science"
-        department = Department.query.filter_by(name=name_dp).first()
+        departments = Department.query.all()
+        for dp in departments:
+            for dp_ch in dp.chiefs:
+                if dp_ch.id == current_user.id:
+                    department = dp
+
 
         courses_depts = []
-
         for degree in department.degrees:
             for course in degree.courses:
                 dico = dict()
@@ -77,7 +81,12 @@ def see_courses(semester_id=None):
                 dico["department"] = department.name
                 courses_depts.append(dico)
 
-        return render_template("course/see_courses.html", total=courses_depts, dp=department)
+        courses = []
+        for teach in current_user.teaches.all():
+            if teach.course.is_approved:
+                courses.append(teach.course)
+
+        return render_template("course/see_courses.html", total=courses_depts, dp=department, courses=courses)
 
 
 @course.route('/upload_course_results', methods=['GET', 'POST'])
