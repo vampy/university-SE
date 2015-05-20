@@ -116,6 +116,8 @@ def upload_course_results():
             students.append(User.query.filter_by(id=student.student_id).first())
             grades.append(student.grade)
 
+
+
         return render_template("course/upload_course_results.html",
                                allcourses=allcourses,
                                thecourse=le_cours,
@@ -137,19 +139,62 @@ def save_grade():
 
     cid = request.form['course_id']
     sid = request.form['semester_id']
+
+    le_semestre = Semester.query.filter_by(id=sid).first()
+    le_cours = Course.query.filter_by(id=cid).first()
+    semesters = []
+    the_semester = Semester.query.all()
+    for semester in the_semester:
+        semesters.append(semester)
+
+    allcourses = [teach.course for teach in current_user.teaches.all()]
+    students = []
+    grades = []
+
+    test_grade = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+
     studentsenrolled = Enrollment.query.filter_by(course_id=cid, semester_id=sid).all()
     for student in studentsenrolled:
+        students.append(User.query.filter_by(id=student.student_id).first())
+        grades.append(student.grade)
         uid = student.student_id
         grade = request.form[str(uid)]
-        enrollment_instance = Enrollment.query.filter_by(student_id=uid,
-                                                     course_id=cid,
-                                                     semester_id=sid).first()
-        enrollment_instance.grade = grade
-        db.session.add(enrollment_instance)
-        db.session.commit()
+
+
+        if grade in test_grade:
+            enrollment_instance = Enrollment.query.filter_by(student_id=uid,
+                                                         course_id=cid,
+                                                         semester_id=sid).first()
+            enrollment_instance.grade = grade
+            db.session.add(enrollment_instance)
+            db.session.commit()
+        else:
+            flash("A grade is invalid", FLASH_ERROR)
+            return render_template("course/upload_course_results.html",
+                                   course_id=cid,
+                                   allcourses=allcourses,
+                                   thecourse=le_cours,
+                                   students=students,
+                                   semesters=semesters,
+                                   le_semestre=le_semestre,
+                                   grades=grades)
+
+
+
+    grades = []
+    students = []
+    for student in studentsenrolled:
+        students.append(User.query.filter_by(id=student.student_id).first())
+        grades.append(student.grade)
 
     flash("Grade updated", FLASH_SUCCESS)
-    return redirect(url_for("course.upload_course_results", course_id=cid))
+    return render_template("course/upload_course_results.html", course_id=cid,
+                               allcourses=allcourses,
+                               thecourse=le_cours,
+                               students=students,
+                               semesters=semesters,
+                               le_semestre=le_semestre,
+                               grades=grades)
 
 
 @course.route('/contract/start/<int:semester_id>')
