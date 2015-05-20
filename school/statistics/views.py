@@ -1,9 +1,7 @@
-__author__ = 'gabriel'
-
-from flask.ext.login import login_required, current_user
-from flask import Blueprint, render_template, flash, redirect, url_for, request
+from flask.ext.login import login_required
+from flask import Blueprint, render_template, flash, redirect, url_for
 from school.decorators import role_required
-from school.config import FLASH_SUCCESS, FLASH_ERROR
+from school.config import FLASH_ERROR
 from .forms import SelectStatisticForm, TeacherWBOWROStatisticForm, OrderedStudentsStatisticFrom, TeacherDisciplinesStatisticForm
 from school.models import *
 from sqlalchemy import func

@@ -6,54 +6,53 @@
 <h3 class="text-center">Disciplines given by {{ teacher_name}}</h3><hr>
 
 <div class="text-center">
-        <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered">
+        <tr>
+            <th>No</th>
+            <th>Course name</th>
+            <th>Course category</th>
+            <th>Optional course</th>
+            <th>Degree name</th>
+            <th>Degree type</th>
+            <th>Language</th>
+            <th>No. of students</th>
+        </tr>
+        {% set course_no = 1 %}
+        {% for statistic in statistics_table %}
             <tr>
-                <th>No</th>
-                <th>Course name</th>
-                <th>Course category</th>
-                <th>Optional course</th>
-                <th>Degree name</th>
-                <th>Degree type</th>
-                <th>Language</th>
-                <th>No. of students</th>
-            </tr>
-            {% set course_no = 1 %}
-            {% for statistic in statistics_table %}
-                <tr>
-                    <td>{{ course_no }}</td>
-                    {% set course_no = course_no + 1  %}
-                    <td>{{ statistic.courses_name }}</td>
-                    <td>
-                        {% if statistic.courses_category == 1 %}
-                            Obligatory
-                        {% elif statistic.courses_category > 1 %}
-                            Optional {{ statistic.courses_category }}
-                        {% else %}
-                            Unknown category
-                        {% endif %}
-                    </td>
-                    <td class="text-center">
-                        {% if statistic.courses_is_optional == 0 %}
-                            False
-                        {% else %}
-                            True
-                        {% endif %}
-                    </td>
-                    <td>{{ statistic.degrees_name }}</td>
-                    <td class="text-center">
-                        {% if statistic.degrees_type_id == 1 %}
-                            Undergraduate
-                        {% else %}
-                            Graduate
-                        {% endif %}
-                    </td>
+                <td>{{ course_no }}</td>
+                {% set course_no = course_no + 1  %}
+                <td>{{ statistic.courses_name }}</td>
+                <td>
+                    {% if statistic.courses_category == 1 %}
+                        Obligatory
+                    {% elif statistic.courses_category > 1 %}
+                        Optional {{ statistic.courses_category }}
+                    {% else %}
+                        Unknown category
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if statistic.courses_is_optional == 0 %}
+                        False
+                    {% else %}
+                        True
+                    {% endif %}
+                </td>
+                <td>{{ statistic.degrees_name }}</td>
+                <td class="text-center">
+                    {% if statistic.degrees_type_id == 1 %}
+                        Undergraduate
+                    {% else %}
+                        Graduate
+                    {% endif %}
+                </td>
 
-                    <td>{{ statistic.languages_name }}</td>
-                    <td>{{ statistic.no_of_students }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    </div>
+                <td>{{ statistic.languages_name }}</td>
+                <td>{{ statistic.no_of_students }}</td>
+            </tr>
+        {% endfor %}
+    </table>
 </div>
 
 {% endblock body %}
