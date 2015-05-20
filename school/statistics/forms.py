@@ -1,15 +1,11 @@
-from wtforms import SubmitField, SelectField, DecimalField, Label
-from wtforms.validators import DataRequired, EqualTo, NumberRange
-from school.forms import RedirectForm
-from flask.ext.login import current_user
-from flask import flash
-from school.config import FLASH_INFO
+from flask_wtf import Form
+from wtforms import SubmitField, SelectField, DecimalField
+from wtforms.validators import DataRequired, NumberRange
 from school.user import User
 from school.user.models import Role
 
 
-
-class SelectStatisticForm(RedirectForm):
+class SelectStatisticForm(Form):
     selected_statistic = SelectField(label="Available statistics", coerce=int,
                                      choices=[(0, "Students ordered by their professional results."),
                                               (1, "Teacher with the best/worst results obtained."),
@@ -26,7 +22,7 @@ class SelectStatisticForm(RedirectForm):
         return True
 
 
-class OrderedStudentsStatisticFrom(RedirectForm):
+class OrderedStudentsStatisticFrom(Form):
     presentation = "Ordered students"
     from_each = SelectField(label="From each", coerce=int,
                             choices=[(0, "Group"),
@@ -58,7 +54,7 @@ class OrderedStudentsStatisticFrom(RedirectForm):
 
 
 #     Teacher With Best Or Worst Results Obtained
-class TeacherWBOWROStatisticForm(RedirectForm):
+class TeacherWBOWROStatisticForm(Form):
     presentation = "Teacher with best or worst results obtained"
     teacher_name = SelectField(label="Teacher", coerce=int)
     criteria = SelectField(label="Criteria", coerce=int,
@@ -78,7 +74,7 @@ class TeacherWBOWROStatisticForm(RedirectForm):
         return True
 
 
-class TeacherDisciplinesStatisticForm(RedirectForm):
+class TeacherDisciplinesStatisticForm(Form):
     presentation = "Disciplines given by a teacher"
     teacher_name = SelectField(label="Teacher", coerce=int)
     submit = SubmitField("Show")
