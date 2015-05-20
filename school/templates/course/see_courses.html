@@ -88,7 +88,7 @@
             {% for course in courses %}
                 <tr>
                     <td>
-                        <a href={{ url_for('course.upload_course_results', thecourse=course) }}>{{ course.name }}</a>
+                        <a href={{ url_for('course.upload_course_results', course_id=course.id) }}>{{ course.name }}</a>
                     </td>
                 </tr>
             {% endfor %}

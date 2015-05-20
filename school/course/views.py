@@ -103,7 +103,7 @@ def upload_course_results():
     allcourses = [teach.course for teach in current_user.teaches.all()]
 
     if request.method == 'POST':
-        val = request.form['course']
+        val = request.args['course_id']
         sem = request.form['semester']
         students = []
         grades = []
@@ -130,19 +130,27 @@ def upload_course_results():
                                thecourse=le_cours)
 
 
-@course.route('/upload_course_results/<int:user_id>,<int:course_id>,<int:grade>,<int:semester_id>')
+@course.route('/upload_course_results/', methods=['GET', 'POST'])
 @login_required
 @role_required(teacher=True, cd=True)
-def save_grade(user_id, course_id, grade, semester_id):
-    enrollment_instance = Enrollment.query.filter_by(student_id=user_id, course_id=course_id,
-                                                     semester_id=semester_id).first()
+def save_grade():
 
-    enrollment_instance.grade = grade
-    db.session.add(enrollment_instance)
-    db.session.commit()
+    cid = request.form['course_id']
+    sid = request.form['semester_id']
+    studentsenrolled = Enrollment.query.filter_by(course_id=cid, semester_id=sid).all()
+    for student in studentsenrolled:
+        uid = student.student_id
+        grade = request.form[str(uid)]
+        enrollment_instance = Enrollment.query.filter_by(student_id=uid,
+                                                     course_id=cid,
+                                                     semester_id=sid).first()
+        enrollment_instance.grade = grade
+        db.session.add(enrollment_instance)
+        db.session.commit()
 
     flash("Grade updated", FLASH_SUCCESS)
-    return redirect(url_for("course.upload_course_results"))
+    return redirect(url_for("course.upload_course_results", course_id=cid))
+
 
 @course.route('/contract/start/<int:semester_id>')
 @course.route('/contract/action/<int:semester_id>/<int:add>/<int:course_id>')
@@ -194,11 +202,12 @@ def contract_action(semester_id, add=None, course_id=None):
 
         flash("Course Added", FLASH_SUCCESS)
     else:
-        if course_add not in courses:   # validate
+        if course_add not in courses:  # validate
             flash("You are not enrolled for that course", FLASH_ERROR)
             return return_path
 
-        db.session.delete(Enrollment.query.filter_by(student=current_user, semester=semester, course=course_add).first())
+        db.session.delete(
+            Enrollment.query.filter_by(student=current_user, semester=semester, course=course_add).first())
         db.session.commit()
 
         flash("Course Removed", FLASH_SUCCESS)
