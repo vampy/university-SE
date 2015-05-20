@@ -1,0 +1,80 @@
+{% from "macros/form.html" import render_form %}
+{% extends 'base.html' %}
+{% set page_title = 'See statistics' %}
+
+{% block body %}
+<h2 class="text-center">Statistics</h2><hr>
+<div class="col-md-4 col-md-offset-4">
+    <div>
+        {{ render_form(url_for('statistics.see_statistics'), form, horizontal=True) }}
+    </div>
+</div>
+{#<div class="row">#}
+{#    <div class="text-center col-md-2 col-md-push-5" >#}
+{#        <form method="post" class="form-group">#}
+{#            <select size="1" name="statistic" class="form-control">#}
+{#                    <option value=0>Choose statistic</option>#}
+{#                    # statistic is a tuple having the form: (index, name)#}
+{#                    {% for statistic in statistics %}#}
+{#                    <option value="{{ statistic[0] }}" >{{ statistic[1] }}</option>#}
+{#                    {% endfor %}#}
+{#            </select>#}
+{#            <br>#}
+{#            <INPUT TYPE="submit" value="choose" class="btn btn-default">#}
+{#        </form>#}
+{#    </div>#}
+{#</div>#}
+
+{#<div class="row">#}
+{#    <div class="col-md-6 col-md-push-3" >#}
+{#      <table class="table table-striped table-bordered">#}
+{#        <tr>#}
+{#          <td class="col-md-5">#}
+{#            <strong>Course</strong>#}
+{#          </td>#}
+{#          <td class="col-md-1">#}
+{#            <strong>Grade</strong>#}
+{#          </td>#}
+{#        </tr>#}
+{#        {% for i in range(courses.__len__()) %}#}
+{#        <tr>#}
+{#            <td class="col-md-4">#}
+{#                {{ courses[i].name }}#}
+{#            </td>#}
+{#            <td class="col-md-1">#}
+{#                {% if grades[i] %}#}
+{#                    {{ grades[i] }}#}
+{#                {% else %}#}
+{#                    NC#}
+{#                {% endif %}#}
+{#            </td>#}
+{#        </tr>#}
+{#        {% endfor %}#}
+{#      </table>#}
+{#    </div>#}
+{#</div>#}
+
+
+
+{#{%if current_user.is_chief_department() %}#}
+{#<div class="col-md-4 col-md-push-4 text-center" >#}
+{#  <table class="table table-striped table-bordered">#}
+{#    <tr>#}
+{#      <td class="col-md-4">#}
+{#        <strong>{{ dp.name }}</strong>#}
+{#      </td>#}
+{#    </tr>#}
+{#    {% for dico in total %}#}
+{#    <tr>#}
+{#        <td class="col-md-4">#}
+{#            <a href="">{{ dico["course"] }}</a>#}
+{#        </td>#}
+{#    </tr>#}
+{#  {% endfor %}#}
+{#  </table>#}
+{#</div>#}
+{##}
+{#{% endif %}#}
+
+
+{% endblock %}

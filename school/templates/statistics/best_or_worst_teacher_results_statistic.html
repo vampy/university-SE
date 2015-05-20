@@ -1,0 +1,34 @@
+{% from "macros/form.html" import render_form %}
+{% extends 'base.html' %}
+{% set page_title = 'Statistics' %}
+
+{% block body %}
+<h2 class="text-center">
+    Teacher with
+    {% if best_0_or_worst_1 == 0 %}
+        best
+    {% elif best_0_or_worst_1 == 1 %}
+        worst
+    {% endif %}
+    results obtained
+</h2><hr>
+
+<div class="text-center">
+    <table class="table table-striped table-bordered">
+            <tr>
+                <th class="text-center">Teacher name</th>
+                <th class="text-center">Course name</th>
+                <th class="text-center">No. of students</th>
+                <th class="text-center">Average mark</th>
+            </tr>
+            {% for teacher in teacher_table %}
+                <tr>
+                    <td>{{ teacher.users_realname }}</td>
+                    <td>{{ teacher.courses_name}}</td>
+                    <td>{{ teacher.no_of_students }}</td>
+                    <td>{{ teacher.average_mark }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+</div>
+{% endblock body %}

@@ -47,7 +47,7 @@
                                             <li><a href="{{ url_for('course.upload_course_results') }}">Upload course results</a></li>
                                             <li><a href="{{ url_for('course.establish_courses') }}">Establish courses</a></li>
                                             {% if current_user.is_chief_department() or current_user.is_admin() %}
-                                            <li><a href="#{#{{ url_for('frontend.___________') }}#}">See statistics</a></li>
+                                            <li><a href="{{ url_for('statistics.see_statistics') }}">See statistics</a></li>
                                             {% endif %}
                                         {% endif %}
                                     </ul>
