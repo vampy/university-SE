@@ -208,6 +208,15 @@ class Course(db.Model):
         """
         return self.degree.name[:3].upper() + '{0:02d}'.format(self.id)
 
+    def get_nr_enrolled(self, semester_id):
+        return db.session.query(Enrollment).filter_by(semester_id=semester_id, course_id=self.id).count()
+
+    def get_max_str(self):
+        if self.max_students > 1024:
+            return "Max"
+
+        return str(self.max_students)
+
     @classmethod
     def get_by_id(cls, course_id):
         return cls.query.filter_by(id=course_id).first_or_404()

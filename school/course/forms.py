@@ -1,5 +1,5 @@
 from flask_wtf import Form
-from wtforms import PasswordField, SubmitField, BooleanField, StringField, SelectField, TextAreaField
+from wtforms import PasswordField, SubmitField, BooleanField, StringField, IntegerField,  SelectField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo, Email
 from school.forms import RedirectForm
 from flask.ext.login import current_user
@@ -21,6 +21,9 @@ class TeacherAddCourseForm(Form):
 class CDEditCourseForm(TeacherAddCourseForm):
     category = SelectField("Category", coerce=int, validators=[DataRequired()],
                            choices=[(i, i) for i in range(2, 6)])
+    min_students = IntegerField("Min Students", validators=[DataRequired()])
+    max_students = IntegerField("Max Students", validators=[DataRequired()])
+    credits = IntegerField("Credits", validators=[DataRequired()])
     approval_reason = TextAreaField("Reason")
     is_approved = BooleanField("Approved")
 

@@ -19,6 +19,8 @@ def see_courses(semester_id=None):
         period = current_user.get_default_period()
         degree = period.degree
         semesters = User.get_semesters_for_period(period)
+        group = current_user.get_group(period)
+        year, sem_nr = User.get_current_year_semester(semesters)
 
         if semester_id is None:  # use default, all semesters, enrolled with contract
             semester = None
@@ -33,7 +35,11 @@ def see_courses(semester_id=None):
         return render_template("course/see_courses.html",
                                semesters=semesters,
                                courses_enrolled=courses_enrolled,
-                               selected_semester=semester)
+                               selected_semester=semester,
+                               group=group,
+                               degree=degree,
+                               year=year,
+                               semester_nr=sem_nr)
     elif current_user.is_admin():
 
         departments = Department.query.order_by("name").all()

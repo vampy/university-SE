@@ -52,7 +52,7 @@
             </a>
         </div>
     {% else %}
-        <div class="col-md-5">
+        <div class="col-md-6">
             <h3>All courses you can choose</h3>
             <table class="table table-bordered table-striped">
                 <tr>
@@ -60,6 +60,8 @@
                     <th class="col-md-1">Type</th>
                     <th>Name</th>
                     <th>Code</th>
+                    <th class="col-md-1">Credits</th>
+                    <th>Enrolled/Max</th>
                     <th>Actions</th>
                 </tr>
                 {% for course in courses_contract %}
@@ -68,6 +70,8 @@
                         <td>{{ course.category }}</td>
                         <td>{{ course.name }}</td>
                         <td>{{ course.get_code() }}</td>
+                        <td>{{ course.credits }}</td>
+                        <td>{{ course.get_nr_enrolled(semester_sel.id) }}/{{ course.get_max_str() }}</td>
                         <td>
                              {% if course.is_optional and not course.is_in_contract %}
                                 <a href="{{ url_for('course.contract_action', semester_id=semester_sel.id, add=True, course_id=course.id) }}"
@@ -78,7 +82,7 @@
                 {% endfor %}
             </table>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-4">
             <h3>Temporary contract</h3>
             <table class="table table-bordered table-striped tabble-c">
                 <tr>
