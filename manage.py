@@ -7,7 +7,6 @@ from flask.ext.script import Manager
 from school.extensions import db
 from datetime import date
 import random
-from sqlalchemy import func, desc
 app = create_app()
 manager = Manager(app)
 
@@ -42,11 +41,14 @@ def init():
     test_course_dbms = Course(name="DBMS")
     test_course_ai = Course(name="AI")
     test_course_networks = Course(name="Computer Networks")
+    test_course_networks2 = Course(name="Computer Networks2")
+    test_course_graphics = Course(name="Graphics")
 
     test_degree = Degree(name="Computer Science", type_id=DegreeType.UNDERGRADUATE)
     test_degree.courses.extend(
-        [test_course_algebra, test_course_calculus, test_course_arhitecture, test_course_se, test_course_os, test_course_os2,
-         test_course_geometry, test_course_graphs, test_course_dbms, test_course_ai, test_course_networks])
+        [test_course_algebra, test_course_calculus, test_course_arhitecture, test_course_se, test_course_os,
+         test_course_os2, test_course_geometry, test_course_graphs, test_course_dbms, test_course_ai,
+         test_course_networks, test_course_graphics, test_course_networks2])
     test_department.degrees.append(test_degree)
 
     test_semester1 = Semester(name="Autumn 2013", year=2013, date_start=date(2013, 10, 1), date_end=date(2014, 2, 15))
@@ -63,6 +65,8 @@ def init():
     test_semester4.courses.extend([test_course_ai, test_course_networks, test_course_se])
 
     test_semester5 = Semester(name="Autumn 2015", year=2015, date_start=date(2015, 10, 1), date_end=date(2016, 2, 15))
+    test_semester5.courses.extend([test_course_networks2, test_course_graphics])
+
     test_semester6 = Semester(name="Spring 2016", year=2015, date_start=date(2016, 2, 20), date_end=date(2016, 6, 15))
 
     test_language = Language(name="English")
@@ -72,7 +76,7 @@ def init():
     test_dperiod1.degree = test_degree
     test_dperiod1.language_id = test_language.id
     test_dperiod1.semester_start = test_semester1
-    test_dperiod1.semester_end = test_semester4
+    test_dperiod1.semester_end = test_semester6
 
     db.session.add_all([test_semester1, test_semester2, test_semester3, test_semester4, test_semester5, test_semester6,
                         test_degree, test_department, test_dperiod1])
@@ -138,10 +142,14 @@ def init():
 
     db.session.add_all([test_group, test_group2, test_user, test_user2, test_user3, test_teacher, test_chief_department, test_admin])
 
+    # add enrollments to all users, aka user has contract signed
+    semesters = [test_semester1, test_semester2, test_semester3, test_semester4]
+
     # add Contracts
     test_user_degree = test_user.get_default_period().degree
-    for semester in [test_semester1, test_semester2]:
+    for semester in semesters:
         db.session.add(ContractSemester(student=test_user, semester=semester, degree=test_user_degree))
+
 
     test_user2_degree = test_user2.get_default_period().degree
     for semester in [test_semester1, test_semester2]:
@@ -156,6 +164,7 @@ def init():
 
     students = [test_user, test_user2, test_user3]
     student_degrees = [test_user_degree, test_user2_degree, test_user3_degree]
+
     for semester in semesters:
         for course in semester.courses:
             # zip: the lists should have the same length.
@@ -167,12 +176,14 @@ def init():
     # add teaches
     test_teaches1 = Teaches(teacher=test_teacher, semester=test_semester3, course=test_course_se)
     test_teaches2 = Teaches(teacher=test_teacher, semester=test_semester3, course=test_course_os2)
-    db.session.add_all([test_teaches1, test_teaches2])
+    test_teaches3 = Teaches(teacher=test_chief_department, semester=test_semester3, course=test_course_os2)
+    db.session.add_all([test_teaches1, test_teaches2, test_teaches3])
 
     db.session.commit()
 
     # add optional courses
     course_aop, teaches_aop = test_teacher.add_optional_course("AOP", test_degree.id, test_semester4.id, True)
+    test_teacher.add_optional_course("Security", test_degree.id, test_semester5.id, True)
     db.session.add(Enrollment(student=test_user, semester=teaches_aop.semester, course=course_aop))
     db.session.commit()
 
