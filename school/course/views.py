@@ -144,7 +144,6 @@ def save_grade(user_id, course_id, grade, semester_id):
     flash("Grade updated", FLASH_SUCCESS)
     return redirect(url_for("course.upload_course_results"))
 
-
 @course.route('/contract/start/<int:semester_id>')
 @course.route('/contract/action/<int:semester_id>/<int:add>/<int:course_id>')
 @login_required
@@ -206,7 +205,7 @@ def contract_action(semester_id, add=None, course_id=None):
 
     return return_path
 
-@course.route('/contract/')
+@course.route('/contract/', methods=["GET"])
 @course.route('/contract/<int:semester_id>', methods=["GET", "POST"])
 @login_required
 @role_required(student=True)

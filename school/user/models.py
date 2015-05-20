@@ -50,7 +50,8 @@ class User(UserMixin, db.Model):
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
 
-    def add_optional_course(self, course_name, degree_id, semester_id, is_approved=False, category=2, credits_=6):
+    def add_optional_course(self, course_name, degree_id,
+                            semester_id, is_approved=False, category=2, credits_=6):
         """
         Add an optional course to the database
         :param course_name:

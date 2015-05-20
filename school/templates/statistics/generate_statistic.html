@@ -1,0 +1,13 @@
+{% from "macros/form.html" import render_form %}
+{% extends 'base.html' %}
+{% set page_title = 'Generate statistic' %}
+
+{% block body %}
+<h2 class="text-center">{{ form.presentation}}</h2><hr>
+<div class="col-md-4 col-md-offset-4">
+    <div>
+        {{ render_form(url_for('statistics.generate', statistic_id=statistic_id), form, horizontal=True) }}
+    </div>
+</div>
+
+{% endblock %}

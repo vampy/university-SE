@@ -3,8 +3,7 @@
 {% set page_title = 'Contract' %}
 
 {% block body %}
-    <h1 class="text-center">Contract</h1>
-    <hr>
+    <h1 class="text-center">Contract</h1><hr>
     <div class="row">
         <div class="col-md-offset-3 col-md-8">
             <button class="btn btn-default" disabled="disabled"> Degree: {{ degree.name }} </button>
@@ -12,13 +11,12 @@
             <button class="btn btn-default" disabled="disabled"> Current year: {{ year }} </button>
             <button class="btn btn-default" disabled="disabled"> Current semester: {{ semester_nr }} </button>
         </div>
-    </div>
-    <hr>
+    </div><hr>
     <div class="col-md-2">
         <div class="btn-group" id="semesters-pick">
             {% for semester in semesters %}
                 <a data-id="{{ semester.id }}" href="{{ url_for('course.contract', semester_id=semester.id) }}"
-                   class="btn btn-default{% if semester_sel.id == semester.id %} active{% endif %}">
+                    class="btn btn-default{% if semester_sel.id == semester.id %} active{% endif %}">
                     Semester {{ loop.index }}, Year {{ semester.year }}
                 </a>
             {% endfor %}

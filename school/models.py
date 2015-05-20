@@ -16,7 +16,6 @@ group_students = db.Table(
     PrimaryKeyConstraint('group_id', 'student_id')  # a student can be in only one group at a time
 )
 
-
 # Each degree period has specific groups
 class Group(db.Model):
     __tablename__ = "groups"
@@ -155,7 +154,6 @@ degrees_period_students = db.Table(
     PrimaryKeyConstraint('student_id', 'degree_period_id')
 )
 
-
 # Each degree can have different periods, Computer science 3 years English, Computer Science 4 years German, etc
 class DegreePeriod(db.Model):
     __tablename__ = "degree_periods"
@@ -173,8 +171,8 @@ class DegreePeriod(db.Model):
     # has back reference 'students' from User Model
 
     def __repr__(self):
-        return '<DegreePeriod id={0}, degree_id={1}, language_id={2}, semester_start_id={3}, semester_end_id={4}>'\
-            .format(self.id, self.degree_id, self.language_id, self.semester_start_id, self.semester_end_id)
+        return '<DegreePeriod id={0}, degree_id={1}, language_id={2}, semester_start_id={3}, semester_end_id={4}>'.\
+            format(self.id, self.degree_id, self.language_id, self.semester_start_id, self.semester_end_id)
 
 
 # each course has it's own degree

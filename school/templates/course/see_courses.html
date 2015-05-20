@@ -40,7 +40,6 @@
                     <tr>
                         <td>{{ enrolled.semester.year }}/{{ enrolled.semester.year + 1 }}</td>
                         <td class="text-center">
-                            {# TODO fix for single semester #}
                             {% if previous_date == None or previous_date != enrolled.semester.date_start%}
                                 {% set previous_date = enrolled.semester.date_start %}
                                 {% set semester_nr = semester_nr + 1 %}

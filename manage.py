@@ -6,7 +6,7 @@ from school.models import *
 from flask.ext.script import Manager
 from school.extensions import db
 from datetime import date
-
+import random
 app = create_app()
 manager = Manager(app)
 
@@ -69,8 +69,12 @@ def init():
 
     test_semester6 = Semester(name="Spring 2016", year=2015, date_start=date(2016, 2, 20), date_end=date(2016, 6, 15))
 
+    test_language = Language(name="English")
+    db.session.add(test_language)
+    db.session.commit()
     test_dperiod1 = DegreePeriod()
     test_dperiod1.degree = test_degree
+    test_dperiod1.language_id = test_language.id
     test_dperiod1.semester_start = test_semester1
     test_dperiod1.semester_end = test_semester6
 
@@ -78,12 +82,24 @@ def init():
                         test_degree, test_department, test_dperiod1])
 
     # Add users
-    # student
+    # students
     test_user = User(
         username="test",
         password="test",
         realname="John Doe",
         email="test@example.com"
+    )
+    test_user2 = User(
+        username="gabriel",
+        password="gabriel",
+        realname="Cramer Gabriel",
+        email="cramergabriel@gmai.com"
+    )
+    test_user3 = User(
+        username= "harap",
+        password="alb",
+        realname="Harap Alb",
+        email="harapalb@gmail.com"
     )
     # teacher
     test_teacher = User(
@@ -114,12 +130,17 @@ def init():
     # add additional options to each user
     test_group = Group(name="921", degree_period=test_dperiod1)
     test_group.students.append(test_user)
+    test_group.students.append(test_user2)
+    test_group2 = Group(name="922", degree_period=test_dperiod1)
+    test_group2.students.append(test_user3)
     test_chief_department.department_cd.append(test_department)
     test_teacher.department_teacher.append(test_department)
     test_teacher.qualification.append(Qualification())
     test_user.degree_periods.append(test_dperiod1)
+    test_user2.degree_periods.append(test_dperiod1)
+    test_user3.degree_periods.append(test_dperiod1)
 
-    db.session.add_all([test_group, test_user, test_teacher, test_chief_department, test_admin])
+    db.session.add_all([test_group, test_group2, test_user, test_user2, test_user3, test_teacher, test_chief_department, test_admin])
 
     # add enrollments to all users, aka user has contract signed
     semesters = [test_semester1, test_semester2, test_semester3, test_semester4]
@@ -129,10 +150,28 @@ def init():
     for semester in semesters:
         db.session.add(ContractSemester(student=test_user, semester=semester, degree=test_user_degree))
 
+
+    test_user2_degree = test_user2.get_default_period().degree
+    for semester in [test_semester1, test_semester2]:
+        db.session.add(ContractSemester(student=test_user2, semester=semester, degree=test_user2_degree))
+
+    test_user3_degree = test_user3.get_default_period().degree
+    for semester in [test_semester1, test_semester2]:
+        db.session.add(ContractSemester(student=test_user3, semester=semester, degree=test_user3_degree))
+
+    # add enrollments to all users, aka user has contract signed
+    semesters = [test_semester1, test_semester2, test_semester3, test_semester4]
+
+    students = [test_user, test_user2, test_user3]
+    student_degrees = [test_user_degree, test_user2_degree, test_user3_degree]
+
     for semester in semesters:
         for course in semester.courses:
-            if course.degree == test_user_degree:
-                db.session.add(Enrollment(student=test_user, semester=semester, course=course))
+            # zip: the lists should have the same length.
+            for student, student_degree in zip(students, student_degrees):
+                if course.degree == student_degree:
+                    db.session.add(Enrollment(student=student, semester=semester, course=course, grade=random.randint(3, 10)))
+
 
     # add teaches
     test_teaches1 = Teaches(teacher=test_teacher, semester=test_semester3, course=test_course_se)
