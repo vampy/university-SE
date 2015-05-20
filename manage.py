@@ -128,7 +128,7 @@ def init():
     )
 
     # add additional options to each user
-    test_group = Group(name="911", degree_period=test_dperiod1)
+    test_group = Group(name="921", degree_period=test_dperiod1)
     test_group.students.append(test_user)
     test_group.students.append(test_user2)
     test_group2 = Group(name="922", degree_period=test_dperiod1)
@@ -176,7 +176,7 @@ def init():
     # add teaches
     test_teaches1 = Teaches(teacher=test_teacher, semester=test_semester3, course=test_course_se)
     test_teaches2 = Teaches(teacher=test_teacher, semester=test_semester3, course=test_course_os2)
-    test_teaches3 = Teaches(teacher=test_chief_department, semester=test_semester3, course=test_course_os2)
+    test_teaches3 = Teaches(teacher=test_chief_department, semester=test_semester3, course=test_course_dbms)
     db.session.add_all([test_teaches1, test_teaches2, test_teaches3])
 
     db.session.commit()

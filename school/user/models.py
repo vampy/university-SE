@@ -50,7 +50,8 @@ class User(UserMixin, db.Model):
             print("ERROR: INVALID role_id: ", self.role_id)
             self.role_id = Role.STUDENT
 
-    def add_optional_course(self, course_name, degree_id, semester_id, is_approved=False, category=2):
+    def add_optional_course(self, course_name, degree_id,
+                            semester_id, is_approved=False, category=2, credits_=6):
         """
         Add an optional course to the database
         :param course_name:
@@ -59,7 +60,7 @@ class User(UserMixin, db.Model):
         :return: tuple (Course, Teaches)
         """
         # add course
-        add_course = Course(name=course_name, is_approved=is_approved,
+        add_course = Course(name=course_name, is_approved=is_approved, max_students=80, credits=credits_,
                             is_optional=True, category=category, degree_id=degree_id)
 
         # mark as required
@@ -129,7 +130,7 @@ class User(UserMixin, db.Model):
 
     def get_courses_enrolled_semester(self, semester, degree):
         """
-        Get all the course the current has enrolled in a semester
+        Get all the course that are apprpoved in the current has enrolled in a semester
         :param semester: of type Semester
         :param degree: of type Degree
         :return: a list of tuples, the tuple if of the form (Enrollment, Course)
@@ -138,7 +139,8 @@ class User(UserMixin, db.Model):
         return db.session.query(Enrollment, Course).join(Course) \
             .filter(and_(Enrollment.semester_id == semester.id,
                          Enrollment.student_id == self.id,
-                         Course.degree_id == degree.id)) \
+                         Course.degree_id == degree.id,
+                         Course.is_approved == True)) \
             .all()
 
     def has_contract_signed(self, semester, degree):
