@@ -1,5 +1,5 @@
 from flask.ext.login import login_required, current_user
-from flask import Blueprint, render_template, flash, redirect, url_for, request
+from flask import Blueprint, render_template, flash, redirect, url_for
 from .forms import ChangePasswordForm, EditUserForm, AddUserForm
 from .models import User
 from school.config import FLASH_SUCCESS, FLASH_ERROR
@@ -27,7 +27,8 @@ def change_password():
         db.session.add(current_user)
         db.session.commit()
 
-        msg = Message('Your password has changed', sender='academicinfo.seproject@gmail.com', recipients=[current_user.email])
+        msg = Message('Your password has changed', sender='academicinfo.seproject@gmail.com',
+                      recipients=[current_user.email])
         msg.html = render_template('emails/changed_password_email.html', user=current_user)
         mail.send(msg)
         return form.redirect("user.index")

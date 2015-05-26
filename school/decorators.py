@@ -1,4 +1,5 @@
 from functools import wraps
+
 from flask import abort
 from flask.ext.login import current_user
 
@@ -7,6 +8,7 @@ class role_required:
     """
     Check if user has the required roles
     """
+
     def __init__(self, student=False, teacher=False, cd=False, admin=False):
         self.student = student
         self.teacher = teacher

@@ -1,12 +1,14 @@
 #!/usr/bin/python3
+from datetime import date
+import random
+
 from school import create_app
 from school.user import User
 from school.user.models import Role
 from school.models import *
 from flask.ext.script import Manager
 from school.extensions import db
-from datetime import date
-import random
+
 app = create_app()
 manager = Manager(app)
 
@@ -96,7 +98,7 @@ def init():
         email="cramergabriel@gmai.com"
     )
     test_user3 = User(
-        username= "harap",
+        username="harap",
         password="alb",
         realname="Harap Alb",
         email="harapalb@gmail.com"
@@ -109,8 +111,15 @@ def init():
         email="dan@chiorean.com",
         role_id=Role.TEACHER
     )
-    # chief_department
+    test_teacher2 = User(
+        username="teacher2",
+        password="teacher2",
+        realname="Test Teacher 2",
+        email="dan2@chiorean.com",
+        role_id=Role.TEACHER
+    )
 
+    # chief_department
     test_chief_department = User(
         username="cd",
         password="cd",
@@ -136,11 +145,14 @@ def init():
     test_chief_department.department_cd.append(test_department)
     test_teacher.department_teacher.append(test_department)
     test_teacher.qualification.append(Qualification())
+    test_teacher2.department_teacher.append(test_department)
+    test_teacher2.qualification.append(Qualification())
     test_user.degree_periods.append(test_dperiod1)
     test_user2.degree_periods.append(test_dperiod1)
     test_user3.degree_periods.append(test_dperiod1)
 
-    db.session.add_all([test_group, test_group2, test_user, test_user2, test_user3, test_teacher, test_chief_department, test_admin])
+    db.session.add_all([test_group, test_group2, test_user, test_user2, test_user3, test_teacher2, test_teacher,
+                        test_chief_department, test_admin])
 
     # add enrollments to all users, aka user has contract signed
     semesters = [test_semester1, test_semester2, test_semester3, test_semester4]
@@ -149,7 +161,6 @@ def init():
     test_user_degree = test_user.get_default_period().degree
     for semester in semesters:
         db.session.add(ContractSemester(student=test_user, semester=semester, degree=test_user_degree))
-
 
     test_user2_degree = test_user2.get_default_period().degree
     for semester in [test_semester1, test_semester2]:
@@ -170,8 +181,8 @@ def init():
             # zip: the lists should have the same length.
             for student, student_degree in zip(students, student_degrees):
                 if course.degree == student_degree:
-                    db.session.add(Enrollment(student=student, semester=semester, course=course, grade=random.randint(3, 10)))
-
+                    db.session.add(Enrollment(student=student, semester=semester, course=course,
+                                              grade=random.randint(3, 10)))
 
     # add teaches
     test_teaches1 = Teaches(teacher=test_teacher, semester=test_semester3, course=test_course_se)
@@ -184,6 +195,7 @@ def init():
     # add optional courses
     course_aop, teaches_aop = test_teacher.add_optional_course("AOP", test_degree.id, test_semester4.id, True)
     test_teacher.add_optional_course("Security", test_degree.id, test_semester5.id, True)
+    test_teacher2.add_optional_course("Design Patterns", test_degree.id, test_semester5.id, True)
     db.session.add(Enrollment(student=test_user, semester=teaches_aop.semester, course=course_aop))
     db.session.commit()
 
@@ -191,6 +203,7 @@ def init():
     # print(test_user.get_semesters_for_period(test_user.get_default_period()))
     # print(Semester.get_semesters(date(2013, 10, 1), date(2015, 2, 15)))
     print('DB initialized')
+
 
 if __name__ == "__main__":
     manager.run()

@@ -2,10 +2,12 @@
 General project models used.
 These may get moved to a blueprint/package at any time
 """
+from datetime import date
+
 from school.extensions import db
 from sqlalchemy import Column, Integer, String, ForeignKey, \
     Date, SmallInteger, Boolean, PrimaryKeyConstraint, and_
-from datetime import date
+
 
 
 # keep track of each student in what group, could just keep a column in users table
@@ -171,7 +173,7 @@ class DegreePeriod(db.Model):
     # has back reference 'students' from User Model
 
     def __repr__(self):
-        return '<DegreePeriod id={0}, degree_id={1}, language_id={2}, semester_start_id={3}, semester_end_id={4}>'.\
+        return '<DegreePeriod id={0}, degree_id={1}, language_id={2}, semester_start_id={3}, semester_end_id={4}>'. \
             format(self.id, self.degree_id, self.language_id, self.semester_start_id, self.semester_end_id)
 
 

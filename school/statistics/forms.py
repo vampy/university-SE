@@ -32,19 +32,20 @@ class OrderedStudentsStatisticFrom(Form):
                         choices=[(0, "Average mark (descending)"),
                                  (1, "Name (alphabetically)")])
 
-    average_mark_lower_bound = DecimalField(label="Lower bound", default=1,
-                                            validators=[DataRequired(),
-                                                        NumberRange(min=1, max=10,
-                                                        message="Value should be in the interval [%(min)s,%(max)s].")])
+    message = "Value should be in the interval [%(min)s,%(max)s]."
+    average_mark_lower_bound = DecimalField(label="Lower bound",
+                                            default=1,
+                                            validators=[DataRequired(), NumberRange(min=1, max=10, message=message)])
 
     average_mark_upper_bound = DecimalField(label="Upper bound", default=10)
     show_statistic = SubmitField("Show")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.average_mark_upper_bound.validators = [DataRequired(),
-                                                    NumberRange(min=self.average_mark_lower_bound.data, max=10,
-                                                                message="Value should be in the interval [%(min)s,%(max)s].")]
+        message = "Value should be in the interval [%(min)s,%(max)s]."
+        self.average_mark_upper_bound.validators = [DataRequired(), NumberRange(min=self.average_mark_lower_bound.data,
+                                                                                max=10,
+                                                                                message=message)]
 
     def validate(self):
         rv = super().validate()
@@ -53,7 +54,7 @@ class OrderedStudentsStatisticFrom(Form):
         return True
 
 
-#     Teacher With Best Or Worst Results Obtained
+# Teacher With Best Or Worst Results Obtained
 class TeacherWBOWROStatisticForm(Form):
     presentation = "Teacher with best or worst results obtained"
     teacher_name = SelectField(label="Teacher", coerce=int)

@@ -1,11 +1,11 @@
 from flask_wtf import Form
-from wtforms import PasswordField, SubmitField, BooleanField, StringField, IntegerField,  SelectField, TextAreaField
-from wtforms.validators import DataRequired, EqualTo, Email
-from school.forms import RedirectForm
-from flask.ext.login import current_user
+from wtforms import SubmitField, BooleanField, StringField, IntegerField, SelectField, TextAreaField
+from wtforms.validators import DataRequired
+
 
 class EditCourseForm(Form):
     pass
+
 
 class AddCourseForm(Form):
     pass
@@ -17,6 +17,7 @@ class TeacherAddCourseForm(Form):
     semester_id = SelectField("Semester", coerce=int, validators=[DataRequired()], choices=[])
 
     submit = SubmitField("Add Optional Course")
+
 
 class CDEditCourseForm(TeacherAddCourseForm):
     category = SelectField("Category", coerce=int, validators=[DataRequired()],

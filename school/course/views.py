@@ -1,3 +1,5 @@
+from datetime import date
+
 from flask.ext.login import login_required, current_user
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from school.decorators import role_required
@@ -5,7 +7,6 @@ from school.config import FLASH_SUCCESS, FLASH_ERROR
 from school.models import *
 from school.user import User
 from .forms import TeacherAddCourseForm, CDEditCourseForm
-from datetime import date
 
 course = Blueprint('course', __name__)
 
@@ -116,8 +117,6 @@ def upload_course_results():
             students.append(User.query.filter_by(id=student.student_id).first())
             grades.append(student.grade)
 
-
-
         return render_template("course/upload_course_results.html",
                                allcourses=allcourses,
                                thecourse=le_cours,
@@ -136,7 +135,6 @@ def upload_course_results():
 @login_required
 @role_required(teacher=True, cd=True)
 def save_grade():
-
     cid = request.form['course_id']
     sid = request.form['semester_id']
 
@@ -160,11 +158,10 @@ def save_grade():
         uid = student.student_id
         grade = request.form[str(uid)]
 
-
         if grade in test_grade:
             enrollment_instance = Enrollment.query.filter_by(student_id=uid,
-                                                         course_id=cid,
-                                                         semester_id=sid).first()
+                                                             course_id=cid,
+                                                             semester_id=sid).first()
             enrollment_instance.grade = grade
             db.session.add(enrollment_instance)
             db.session.commit()
@@ -179,8 +176,6 @@ def save_grade():
                                    le_semestre=le_semestre,
                                    grades=grades)
 
-
-
     grades = []
     students = []
     for student in studentsenrolled:
@@ -189,12 +184,12 @@ def save_grade():
 
     flash("Grade updated", FLASH_SUCCESS)
     return render_template("course/upload_course_results.html", course_id=cid,
-                               allcourses=allcourses,
-                               thecourse=le_cours,
-                               students=students,
-                               semesters=semesters,
-                               le_semestre=le_semestre,
-                               grades=grades)
+                           allcourses=allcourses,
+                           thecourse=le_cours,
+                           students=students,
+                           semesters=semesters,
+                           le_semestre=le_semestre,
+                           grades=grades)
 
 
 @course.route('/contract/start/<int:semester_id>')
@@ -259,6 +254,7 @@ def contract_action(semester_id, add=None, course_id=None):
 
     return return_path
 
+
 @course.route('/contract/', methods=["GET"])
 @course.route('/contract/<int:semester_id>', methods=["GET", "POST"])
 @login_required
@@ -302,6 +298,7 @@ def contract(semester_id=None):
                            courses_enrolled=courses_enrolled,
                            courses_contract=courses_contract)
 
+
 @course.route('/remove_optional_course/<int:course_id>', methods=["GET"])
 @login_required
 @role_required(teacher=True, cd=True)
@@ -327,6 +324,7 @@ def remove_optional_course(course_id):  # TODO check if secure
 
     flash("TODO", FLASH_ERROR)
     return return_path
+
 
 @course.route('/edit_optional_course/<int:course_id>', methods=["GET", "POST"])
 @login_required

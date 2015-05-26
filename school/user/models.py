@@ -1,10 +1,11 @@
+from datetime import date
+
 from school.models import *
 from sqlalchemy import Column, Integer, String, SmallInteger, and_
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as TJSONWebSigSerializer, BadSignature, SignatureExpired
 from flask import current_app
-from datetime import date
 
 
 class Role:

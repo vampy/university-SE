@@ -1,5 +1,6 @@
-from flask import Flask, render_template, url_for
+import os
 
+from flask import Flask, render_template, url_for
 from .frontend import frontend
 from .config import Config
 from .extensions import *
@@ -7,8 +8,6 @@ from .user import User, user
 from .course import course
 from .admin import admin
 from .statistics import statistics
-
-import os
 
 
 def create_app():

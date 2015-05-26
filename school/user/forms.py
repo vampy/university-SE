@@ -33,4 +33,3 @@ class AddUserForm(EditUserForm):
     password_again = PasswordField("Check Password",
                                    validators=[DataRequired(), EqualTo("password", "Confirm password does not match")])
     submit = SubmitField("Add user")
-
