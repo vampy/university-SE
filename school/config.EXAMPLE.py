@@ -42,3 +42,44 @@ class Config:
     MAIL_USE_SSL = False
     MAIL_USERNAME = ''
     MAIL_PASSWORD = ''
+
+    #############################################################################
+    # School settings for the current app
+    #############################################################################
+    # User Model
+    APP_USER_USERNAME_MIN = 2
+    APP_USER_USERNAME_MAX = 64
+    APP_USER_REALNAME_MAX = 128
+    APP_USER_EMAIL_MAX = 64
+    APP_USER_PASSWORD_MIN = 7
+
+    # Group Model
+    APP_GROUP_NAME_MIN = 3
+    APP_GROUP_NAME_MAX = 64
+
+    # Department Model
+    APP_DEPARTMENT_NAME_MIN = 4
+    APP_DEPARTMENT_NAME_MAX = 64
+
+    # Language Model
+    APP_LANGUAGE_NAME_MIN = 4
+    APP_LANGUAGE_NAME_MAX = 64
+
+    # Degree Model
+    APP_DEGREE_NAME_MIN = 4
+    APP_DEGREE_NAME_MAX = 64
+
+    # Course Model
+    APP_COURSE_NAME_MIN = 4
+    APP_COURSE_NAME_MAX = 64
+    APP_COURSE_MIN_STUDENTS = 20
+    APP_COURSE_MAX_STUDENTS = 4096
+    APP_COURSE_MAX_STUDENTS_OPTIONAL = 80  # max students for optional course
+    APP_COURSE_CREDITS = 6
+    APP_COURSE_CATEGORY = 1
+    APP_COURSE_CATEGORY_OPTIONAL = 2  # default category for optional course
+
+    # Semester Model
+    APP_SEMESTER_NAME_MIN = 4
+    APP_SEMESTER_NAME_MAX = 64
+

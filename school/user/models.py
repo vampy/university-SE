@@ -1,6 +1,5 @@
-from datetime import date
-
 from school.models import *
+from school.config import Config
 from sqlalchemy import Column, Integer, String, SmallInteger, and_
 from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -23,9 +22,9 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    username = Column(String(64), unique=True)
-    realname = Column(String(128), nullable=True)
-    email = Column(String(64), unique=True)
+    username = Column(String(Config.APP_USER_USERNAME_MAX), unique=True)
+    realname = Column(String(Config.APP_USER_REALNAME_MAX), nullable=True)
+    email = Column(String(Config.APP_USER_EMAIL_MAX), unique=True)
     active_token = Column(String(125), nullable=True, default=None)
     password_hash = Column(String(160), nullable=False)
     role_id = Column(SmallInteger, default=Role.STUDENT)
@@ -52,7 +51,8 @@ class User(UserMixin, db.Model):
             self.role_id = Role.STUDENT
 
     def add_optional_course(self, course_name, degree_id,
-                            semester_id, is_approved=False, category=2, credits_=6):
+                            semester_id, is_approved=False,
+                            category=Config.APP_COURSE_CATEGORY_OPTIONAL, credits_=Config.APP_COURSE_CREDITS):
         """
         Add an optional course to the database
         :param course_name:
@@ -61,7 +61,8 @@ class User(UserMixin, db.Model):
         :return: tuple (Course, Teaches)
         """
         # add course
-        add_course = Course(name=course_name, is_approved=is_approved, max_students=80, credits=credits_,
+        add_course = Course(name=course_name, is_approved=is_approved,
+                            max_students=Config.APP_COURSE_MAX_STUDENTS_OPTIONAL, credits=credits_,
                             is_optional=True, category=category, degree_id=degree_id)
 
         # mark as required

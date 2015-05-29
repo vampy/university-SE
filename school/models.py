@@ -4,6 +4,7 @@ These may get moved to a blueprint/package at any time
 """
 from datetime import date
 
+from school.config import Config
 from school.extensions import db
 from sqlalchemy import Column, Integer, String, ForeignKey, \
     Date, SmallInteger, Boolean, PrimaryKeyConstraint, and_
@@ -24,7 +25,7 @@ class Group(db.Model):
 
     id = Column(Integer, primary_key=True)
     degree_period_id = Column(Integer, ForeignKey("degree_periods.id"))
-    name = Column(String(64), nullable=False)  # 911, G922
+    name = Column(String(Config.APP_GROUP_NAME_MAX), nullable=False)  # 911, G922
 
     degree_period = db.relationship("DegreePeriod")
     students = db.relationship("User",
@@ -66,7 +67,7 @@ class Department(db.Model):
     __tablename__ = "departments"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(64), nullable=False)
+    name = Column(String(Config.APP_DEPARTMENT_NAME_MAX), nullable=False)
     degrees = db.relationship("Degree",
                               secondary=department_degrees,
                               backref=db.backref("departments", lazy="dynamic"))
@@ -85,7 +86,7 @@ class Language(db.Model):
     __tablename__ = "languages"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(64), nullable=False)
+    name = Column(String(Config.APP_LANGUAGE_NAME_MAX), nullable=False)
     degrees = db.relationship("DegreePeriod", backref="language", lazy="dynamic")
 
     def __repr__(self):
@@ -135,7 +136,7 @@ class Degree(db.Model):
     __tablename__ = "degrees"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(64), nullable=False)
+    name = Column(String(Config.APP_DEGREE_NAME_MAX), nullable=False)
     type_id = Column(SmallInteger, default=DegreeType.UNDERGRADUATE)
     courses = db.relationship("Course", backref="degree", lazy="dynamic")
 
@@ -184,12 +185,12 @@ class Course(db.Model):
     __tablename__ = "courses"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(64), nullable=False)
-    category = Column(SmallInteger, default=1)  # category 1 is obligatory courses
+    name = Column(String(Config.APP_COURSE_NAME_MAX), nullable=False)
+    category = Column(SmallInteger, default=Config.APP_COURSE_CATEGORY)  # category 1 is obligatory courses
     degree_id = Column(Integer, ForeignKey("degrees.id"))
-    min_students = Column(Integer, default=20)
-    max_students = Column(Integer, default=4096)
-    credits = Column(Integer, default=6)
+    min_students = Column(Integer, default=Config.APP_COURSE_MIN_STUDENTS)
+    max_students = Column(Integer, default=Config.APP_COURSE_MAX_STUDENTS)
+    credits = Column(Integer, default=Config.APP_COURSE_CREDITS)
 
     # has back reference 'degree' from Degree model
     # has back reference 'semesters' from Semester model
@@ -212,7 +213,7 @@ class Course(db.Model):
         return db.session.query(Enrollment).filter_by(semester_id=semester_id, course_id=self.id).count()
 
     def get_max_str(self):
-        if self.max_students > 1024:
+        if self.max_students == Config.APP_COURSE_MAX_STUDENTS:
             return "Max"
 
         return str(self.max_students)
@@ -258,7 +259,7 @@ class Semester(db.Model):
     __tablename__ = "semesters"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(64), nullable=False)  # human readable semester name
+    name = Column(String(Config.APP_SEMESTER_NAME_MAX), nullable=False)  # human readable semester name
     year = Column(Integer)  # the semester year, 2014, 2015
     date_start = Column(Date)  # september 2014
     date_end = Column(Date)  # june 2015
@@ -373,3 +374,4 @@ class Enrollment(db.Model):
     def __repr__(self):
         return '<Enrollment sid={0}, cid={1}, sem_id={2}, grade={3}>'.format(self.student_id, self.course_id,
                                                                              self.semester_id, self.grade)
+    # TODO add priority for course chosen

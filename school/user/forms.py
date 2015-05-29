@@ -1,13 +1,16 @@
 from wtforms import PasswordField, SubmitField, ValidationError, StringField, SelectField
 from wtforms.validators import DataRequired, EqualTo, Email, Length
 from school.forms import RedirectForm
+from school.config import Config
 from flask.ext.login import current_user
 from .models import Role
 
 
 class ChangePasswordForm(RedirectForm):
     old_password = PasswordField('Old password', validators=[DataRequired()])
-    new_password = PasswordField('New password', validators=[DataRequired(), Length(min=7, message="Password is too short (minimum is 7 characters)")])
+    new_password = PasswordField('New password', validators=[DataRequired(),
+                                                             Length(min=Config.APP_USER_PASSWORD_MIN,
+                                                                    message="Password is too short (minimum is 7 characters)")])
     confirmed_password = PasswordField('Confirm password',
                                        validators=[DataRequired(), EqualTo('new_password', "Confirm password is different from New password field")])
     submit = SubmitField('Update password')
