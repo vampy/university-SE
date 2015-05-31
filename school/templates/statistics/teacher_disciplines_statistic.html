@@ -25,10 +25,10 @@
                 <td>{{ statistic.courses_name }}</td>
                 <td>
                     {# TODO check with CourseType #}
-                    {% if statistic.courses_category == 1 %}
+                    {% if statistic.courses_type == 1 %}
                         Obligatory
-                    {% elif statistic.courses_category > 1 %}
-                        Optional {{ statistic.courses_category }}
+                    {% elif statistic.courses_type > 1 %}
+                        Optional {{ statistic.courses_type }}
                     {% else %}
                         Unknown category
                     {% endif %}

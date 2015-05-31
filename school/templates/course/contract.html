@@ -29,6 +29,7 @@
                     <th>#</th>
                     <th>Code</th>
                     <th>Name Course</th>
+                    <th>Type</th>
                     <th>Grade</th>
                 </tr>
                 {% for enrolled, course in courses_enrolled %}
@@ -36,7 +37,7 @@
                         <td>{{ loop.index }}</td>
                         <td>{{ course.get_code() }}</td>
                         <td>{{ course.name }}</td>
-                        {# TODO add passed#}
+                        <td>{{ course.type_to_str().title() }}</td>
                         <td>{{ enrolled.grade }}</td>
                     </tr>
                 {% endfor %}
@@ -65,7 +66,11 @@
                 {% for course in courses_contract %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ course.type_id }}</td>
+                        <td>
+                            <span data-toggle="tooltip" data-placement="top" title="{{ course.type_to_str().title() }}">
+                                {{ course.type_id }}
+                            </span>
+                        </td>
                         <td>{{ course.name }}</td>
                         <td>{{ course.get_code() }}</td>
                         <td>{{ course.credits }}</td>
@@ -93,7 +98,11 @@
                 {% for enrolled, course in courses_enrolled %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ course.type_id }}</td>
+                        <td>
+                            <span data-toggle="tooltip" data-placement="top" title="{{ course.type_to_str().title() }}">
+                                {{ course.type_id }}
+                            </span>
+                        </td>
                         <td>{{ course.name }}</td>
                         <td>{{ course.get_code() }}</td>
                         <td>

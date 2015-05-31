@@ -7,4 +7,6 @@ $(document).ready(function () {
         format: 'mm/dd/yyyy'
     });
 
+    // set tooltip options
+    $('[data-toggle="tooltip"]').tooltip()
 });
