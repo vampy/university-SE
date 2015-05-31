@@ -243,13 +243,13 @@ class User(UserMixin, db.Model):
 
     def role_to_str(self):
         if self.role_id == Role.STUDENT:
-            return "student"
+            return 'student'
         elif self.role_id == Role.TEACHER:
-            return "teacher"
+            return 'teacher'
         elif self.role_id == Role.CHIEF_DEPARTMENT:
-            return "chief_department"
+            return 'chief_department'
         elif self.role_id == Role.ADMIN:
-            return "admin"
+            return 'admin'
         else:
             return 'invalid role'
 

@@ -220,17 +220,17 @@ class Course(db.Model):
 
     def get_max_str(self):
         if self.max_students == Config.APP_COURSE_MAX_STUDENTS:
-            return "Max"
+            return 'Max'
 
         return str(self.max_students)
 
     def type_to_str(self):
         if self.type_id == CourseType.COMPULSORY:
-            return "obligatory"
+            return 'obligatory'
         elif self.type_id == CourseType.OPTIONAL:
-            return "optional"
+            return 'optional'
         elif self.type_id == CourseType.OTHER_OPTIONAL:
-            return "other_optional"
+            return 'other_optional'
         else:
             return 'invalid type'
 

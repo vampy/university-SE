@@ -279,7 +279,7 @@ def contract(semester_id=None):
     courses_contract = []
     if not has_contract:
         courses_contract = semester.filter_courses(degree)
-        print(courses_contract)
+
         # auto build check to see if optional course is already in the contract
         courses_enrolled_first = [x[1] for x in courses_enrolled]
         for i, c in enumerate(courses_contract):
@@ -371,19 +371,20 @@ def edit_optional_course(course_id):
         for s in semesters:
             if form_semester == s.id:
                 semester = s
+                break
 
         if semester is None:  # check for impossible condition
             return "this should never happen, semester is none"
 
         if found_course.is_approved is True and form_approve is False:  # set not approved
-            teaches.semester_id = form.semester_id.data
             # remove from semester_courses
             found_course.semesters = []
 
-        elif found_course.is_approved is False and form_approve is True:  # approve course
-            teaches.semester_id = form_semester
+        # approve course
+        elif (found_course.is_approved is False and form_approve is True) \
+                or semester != teaches.semester:  # semesters differ
             # add to semester_courses
-            found_course.semesters.append(semester)
+            found_course.semesters = [semester]
 
         # set name, degree_id, type_id, reason, is_approved
         form.populate_obj(found_course)
