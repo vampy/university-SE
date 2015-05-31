@@ -2,6 +2,7 @@ from flask_wtf import Form
 from wtforms import SubmitField, BooleanField, StringField, IntegerField, SelectField, TextAreaField
 from wtforms.validators import DataRequired, Length, Regexp, NumberRange
 from school.config import Config
+from school.models import CourseType
 
 
 class EditCourseForm(Form):
@@ -24,8 +25,8 @@ class TeacherAddCourseForm(Form):
 
 
 class CDEditCourseForm(TeacherAddCourseForm):
-    category = SelectField("Category", coerce=int, validators=[DataRequired()],
-                           choices=[(i, i) for i in range(2, 6)])
+    type_id = SelectField("Type", coerce=int, validators=[DataRequired()],
+                          choices=[(CourseType.OPTIONAL, "Optional"), (CourseType.OTHER_OPTIONAL, "Other Optional")])
     min_students = IntegerField("Min Students", validators=[DataRequired()])
     max_students = IntegerField("Max Students", validators=[DataRequired()])
     credits = IntegerField("Credits", validators=[DataRequired(),

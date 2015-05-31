@@ -279,7 +279,7 @@ def contract(semester_id=None):
     courses_contract = []
     if not has_contract:
         courses_contract = semester.filter_courses(degree)
-
+        print(courses_contract)
         # auto build check to see if optional course is already in the contract
         courses_enrolled_first = [x[1] for x in courses_enrolled]
         for i, c in enumerate(courses_contract):
@@ -356,7 +356,7 @@ def edit_optional_course(course_id):
 
     # build form
     form = CDEditCourseForm()
-    if not form.is_submitted():  # set name, degree_id, category, reason, is_approved
+    if not form.is_submitted():  # set name, degree_id, type_id, reason, is_approved
         form = CDEditCourseForm(obj=found_course)
 
     form.semester_id.choices = [(s.id, s.name) for s in semesters]
@@ -385,7 +385,7 @@ def edit_optional_course(course_id):
             # add to semester_courses
             found_course.semesters.append(semester)
 
-        # set name, degree_id, category, reason, is_approved
+        # set name, degree_id, type_id, reason, is_approved
         form.populate_obj(found_course)
         found_course.is_approved = form_approve
         teaches.semester = semester

@@ -34,7 +34,7 @@
                         <th>Degree</th>
                         <th>Course Name</th>
                         {% if current_user.is_chief_department() %}
-                            <td>Category</td>
+                            <td>Type</td>
                             <td>Proposed by</td>
                         {% endif %}
                         <th>Semester</th>
@@ -48,7 +48,7 @@
                             <td>{{ teach.course.degree.name }}</td>
                             <td>{{ teach.course.name }}</td>
                             {% if current_user.is_chief_department() %}
-                                <td>{{ teach.course.category }}</td>
+                                <td>{{ teach.course.type_to_str().title() }}</td>
                                 <td>{{ teach.teacher.username }}</td>
                             {% endif %}
                             <td>{{ teach.semester.name }}</td>

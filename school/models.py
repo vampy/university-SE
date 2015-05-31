@@ -178,6 +178,12 @@ class DegreePeriod(db.Model):
             format(self.id, self.degree_id, self.language_id, self.semester_start_id, self.semester_end_id)
 
 
+class CourseType:
+    COMPULSORY = 1
+    OPTIONAL = 2
+    OTHER_OPTIONAL = 3
+
+
 # each course has it's own degree
 # If a optional course it is proposed, the entry it is first added to this table
 # along side the Teaches table, to keep track in what semester the optional course is taught
@@ -186,7 +192,7 @@ class Course(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(Config.APP_COURSE_NAME_MAX), nullable=False)
-    category = Column(SmallInteger, default=Config.APP_COURSE_CATEGORY)  # category 1 is obligatory courses
+    type_id = Column(SmallInteger, default=CourseType.COMPULSORY)
     degree_id = Column(Integer, ForeignKey("degrees.id"))
     min_students = Column(Integer, default=Config.APP_COURSE_MIN_STUDENTS)
     max_students = Column(Integer, default=Config.APP_COURSE_MAX_STUDENTS)
@@ -217,6 +223,16 @@ class Course(db.Model):
             return "Max"
 
         return str(self.max_students)
+
+    def type_to_str(self):
+        if self.type_id == CourseType.COMPULSORY:
+            return "obligatory"
+        elif self.type_id == CourseType.OPTIONAL:
+            return "optional"
+        elif self.type_id == CourseType.OTHER_OPTIONAL:
+            return "other_optional"
+        else:
+            return 'invalid type'
 
     @classmethod
     def get_by_id(cls, course_id):

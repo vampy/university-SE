@@ -24,6 +24,7 @@
                 {% set course_no = course_no + 1  %}
                 <td>{{ statistic.courses_name }}</td>
                 <td>
+                    {# TODO check with CourseType #}
                     {% if statistic.courses_category == 1 %}
                         Obligatory
                     {% elif statistic.courses_category > 1 %}

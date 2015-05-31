@@ -112,7 +112,7 @@ def generate(statistic_id):
                 if choice[0] == teacher_id:
                     teacher_name = choice[1]
             statistics_table = db.session.query(Course.name.label("courses_name"),
-                                                Course.category.label("courses_category"),
+                                                Course.type_id.label("courses_type"),
                                                 Course.is_optional.label("courses_is_optional"),
                                                 Degree.name.label("degrees_name"),
                                                 Degree.type_id.label("degrees_type_id"),

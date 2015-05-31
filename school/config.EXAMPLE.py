@@ -76,8 +76,6 @@ class Config:
     APP_COURSE_MAX_STUDENTS = 4096
     APP_COURSE_MAX_STUDENTS_OPTIONAL = 80  # max students for optional course
     APP_COURSE_CREDITS = 6
-    APP_COURSE_CATEGORY = 1
-    APP_COURSE_CATEGORY_OPTIONAL = 2  # default category for optional course
 
     # Semester Model
     APP_SEMESTER_NAME_MIN = 4

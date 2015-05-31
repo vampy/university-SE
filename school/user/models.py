@@ -52,7 +52,7 @@ class User(UserMixin, db.Model):
 
     def add_optional_course(self, course_name, degree_id,
                             semester_id, is_approved=False,
-                            category=Config.APP_COURSE_CATEGORY_OPTIONAL, credits_=Config.APP_COURSE_CREDITS):
+                            type_id=CourseType.OPTIONAL, credits_=Config.APP_COURSE_CREDITS):
         """
         Add an optional course to the database
         :param course_name:
@@ -63,7 +63,7 @@ class User(UserMixin, db.Model):
         # add course
         add_course = Course(name=course_name, is_approved=is_approved,
                             max_students=Config.APP_COURSE_MAX_STUDENTS_OPTIONAL, credits=credits_,
-                            is_optional=True, category=category, degree_id=degree_id)
+                            is_optional=True, type_id=type_id, degree_id=degree_id)
 
         # mark as required
         if is_approved:

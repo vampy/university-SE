@@ -65,7 +65,7 @@
                 {% for course in courses_contract %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ course.category }}</td>
+                        <td>{{ course.type_id }}</td>
                         <td>{{ course.name }}</td>
                         <td>{{ course.get_code() }}</td>
                         <td>{{ course.credits }}</td>
@@ -93,7 +93,7 @@
                 {% for enrolled, course in courses_enrolled %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ course.category }}</td>
+                        <td>{{ course.type_id }}</td>
                         <td>{{ course.name }}</td>
                         <td>{{ course.get_code() }}</td>
                         <td>
