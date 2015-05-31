@@ -40,6 +40,7 @@
                         <th>Semester</th>
                         <th>Is approved</th>
                         <th>Reason</th>
+                        <td>Package</td>
                         <th>Actions</th>
                     </tr>
                     {% for teach in optional_teaches %}
@@ -60,6 +61,7 @@
                                 {% endif %}
                             </td>
                             <td>{{ teach.course.approval_reason }}</td>
+                            <td>{{ teach.course.package }}</td>
                             <td>
                                 <div class="btn-group">
                                     {% if current_user.is_teacher() %}

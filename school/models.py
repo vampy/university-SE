@@ -198,6 +198,10 @@ class Course(db.Model):
     max_students = Column(Integer, default=Config.APP_COURSE_MAX_STUDENTS)
     credits = Column(Integer, default=Config.APP_COURSE_CREDITS)
 
+    # each course has a package, for obligatory courses this does not make any sense
+    # but for optional courses, we can group optional courses by package
+    package = Column(Integer, default=0)
+
     # has back reference 'degree' from Degree model
     # has back reference 'semesters' from Semester model
 

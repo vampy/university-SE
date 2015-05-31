@@ -27,6 +27,7 @@ class TeacherAddCourseForm(Form):
 class CDEditCourseForm(TeacherAddCourseForm):
     type_id = SelectField("Type", coerce=int, validators=[DataRequired()],
                           choices=[(CourseType.OPTIONAL, "Optional"), (CourseType.OTHER_OPTIONAL, "Other Optional")])
+    package = SelectField("Package Nr", coerce=int, validators=[DataRequired()], choices=[(i, i) for i in range(1, 6)])
     min_students = IntegerField("Min Students", validators=[DataRequired()])
     max_students = IntegerField("Max Students", validators=[DataRequired()])
     credits = IntegerField("Credits", validators=[DataRequired(),
