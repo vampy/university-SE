@@ -83,6 +83,7 @@ class User(UserMixin, db.Model):
         Get the qualification for the current teacher
         :return: Qualification
         """
+        assert self.is_chief_department() or self.is_teacher()
         return self.qualification.first()
 
     def get_group(self, degree_period):
@@ -124,6 +125,7 @@ class User(UserMixin, db.Model):
         :param degree: of type Degree
         :return: a list of tuples, the tuple if of the form (Enrollment, Course)
         """
+        assert self.is_student()
         return db.session.query(Enrollment, Course).join(Course).join(Course.semesters) \
             .join(ContractSemester) \
             .filter(and_(Enrollment.student_id == self.id, Course.degree_id == degree.id)) \
@@ -132,11 +134,12 @@ class User(UserMixin, db.Model):
 
     def get_courses_enrolled_semester(self, semester, degree):
         """
-        Get all the course that are apprpoved in the current has enrolled in a semester
+        Get all the course that are approved in the current has enrolled in a semester
         :param semester: of type Semester
         :param degree: of type Degree
         :return: a list of tuples, the tuple if of the form (Enrollment, Course)
         """
+        assert self.is_student()
         # join with join(Course.semesters) to verify that the courses exist also in the semester, besides enrolled
         return db.session.query(Enrollment, Course).join(Course) \
             .filter(and_(Enrollment.semester_id == semester.id,
@@ -152,6 +155,7 @@ class User(UserMixin, db.Model):
         :param degree: of type Degree
         :return:
         """
+        assert self.is_student()
         return ContractSemester.query.filter(
             and_(ContractSemester.student_id == self.id,
                  ContractSemester.degree_id == degree.id,
