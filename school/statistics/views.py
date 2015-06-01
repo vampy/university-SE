@@ -16,15 +16,16 @@ statistics = Blueprint("statistics", __name__)
 @login_required
 @role_required(admin=True, cd=True)
 def see_statistics():
-    select_statistic_form = SelectStatisticForm()
-    if select_statistic_form.validate_on_submit():
-        if select_statistic_form.selected_statistic.data == 0:
-            return redirect(url_for('statistics.generate', statistic_id=select_statistic_form.selected_statistic.data))
-        if select_statistic_form.selected_statistic.data == 1:
-            return redirect(url_for('statistics.generate', statistic_id=select_statistic_form.selected_statistic.data))
-        if select_statistic_form.selected_statistic.data == 2:
-            return redirect(url_for('statistics.generate', statistic_id=select_statistic_form.selected_statistic.data))
-    return render_template("statistics/see_statistics.html", form=select_statistic_form)
+    form = SelectStatisticForm()
+    if form.validate_on_submit():
+        selected = form.selected_statistic.data
+        if selected == Statistic.ORDERED_STUDENTS:
+            return redirect(url_for('statistics.generate', statistic_id=selected))
+        if selected == Statistic.TEACHER_RANKING:
+            return redirect(url_for('statistics.generate', statistic_id=selected))
+        if selected == Statistic.TEACHER_DISCIPLINES:
+            return redirect(url_for('statistics.generate', statistic_id=selected))
+    return render_template("statistics/see_statistics.html", form=form)
 
 
 @statistics.route('/statistics/<int:statistic_id>', methods=["GET", "POST"])
