@@ -24,7 +24,7 @@ def login():
 
         return form.redirect("user.index")
 
-    return render_template('frontend/index.html', form=form)
+    return render_template('frontend/login.html', form=form)
 
 
 @frontend.route('/logout')
