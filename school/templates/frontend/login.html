@@ -1,4 +1,3 @@
-{% from "macros/form.html" import render_form %}
 {% extends 'base.html' %}
 {% set page_title = 'Login School' %}
 
@@ -13,7 +12,26 @@
         <div class="panel panel-default">
             <div class="panel-heading"><h3 class="panel-title">Login</h3></div>
             <div class="panel-body">
-                {{ render_form(url_for('frontend.login'), form, submit_block=True) }}
+                <form role="form" method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        {{ form.username(class_="form-control", placeholder="Enter username", id="login-username") }}
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password <a href="{{ url_for('frontend.password_reset') }}" tabindex="-1">(forgot password)</a></label>
+                        {{ form.password(class_="form-control", id="login-password", placeholder="Password") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.remember_me(id="login-remeber-me") }}
+                        <label for="login-remeber-me">Remember me</label>
+                    </div>
+
+                    <hr>
+                    <div class="form-group">
+                        {{ form.submit(class_="btn btn-success btn-block") }}
+                    </div>
+                </form>
             </div>
         </div>
     </div>
