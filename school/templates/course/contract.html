@@ -130,7 +130,7 @@
                                      <form method="post" action="{{ url_for('course.contract_action', semester_id=semester_sel.id, action=3, course_id=course.id) }}">
                                          <div class="input-group">
                                              <input type="number" name="priority" min="1" max="9"
-                                                    class="pos-numeric form-control input-sm" value="{{ enrolled.priority }}">
+                                                    class="pos-integer form-control input-sm" value="{{ enrolled.priority }}">
                                              <span class="input-group-btn">
                                                  <input type="submit" class="btn btn-sm btn-success" value="Change Priority">
                                              </span>

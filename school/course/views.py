@@ -4,6 +4,7 @@ from school.decorators import role_required
 from school.config import FLASH_SUCCESS, FLASH_ERROR
 from school.models import *
 from school.user import User
+from school.util import is_integer
 from .forms import TeacherAddCourseForm, CDEditCourseForm
 
 course = Blueprint('course', __name__)
@@ -259,6 +260,10 @@ def contract_action(semester_id, action=None, course_id=None):
         if "priority" not in request.form:
             flash("Priority value is missing", FLASH_ERROR)
             return return_path
+        if not is_integer(request.form["priority"]):
+            flash("Please input a valid integer for the priority", FLASH_ERROR)
+            return return_path
+
         priority = int(request.form["priority"])
         if priority < 2 or priority > 9:
             flash("Priority value is invalid. Should be between 2 and 9", FLASH_ERROR)

@@ -2,5 +2,5 @@
     "use strict";
     console.log("courses loaded");
 
-    $(".pos-numeric").numeric({negative: false, decimalPlaces: 1})
+    $(".pos-integer").numeric({negative: false, decimal: false})
 })();
