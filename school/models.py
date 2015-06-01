@@ -386,6 +386,10 @@ class Enrollment(db.Model):
     grade = Column(Integer, default=0)
     date_grade = Column(Date, default=None, nullable=True)  # The date he got the grade
 
+    # priority does not make much sense for obligatory courses
+    # but for optional courses, the lower the number the higher the priority of that course in that package
+    priority = Column(Integer, default=0)
+
     # maybe use lazy dynamic
     student = db.relationship("User")
     course = db.relationship("Course")
@@ -394,4 +398,3 @@ class Enrollment(db.Model):
     def __repr__(self):
         return '<Enrollment sid={0}, cid={1}, sem_id={2}, grade={3}>'.format(self.student_id, self.course_id,
                                                                              self.semester_id, self.grade)
-    # TODO add priority for course chosen

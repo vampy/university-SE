@@ -51,11 +51,11 @@
             </a>
         </div>
     {% else %}
-        <div class="col-md-6">
+        <div class="col-md-10">
             <h3>All courses you can choose</h3>
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped" id="table-all-courses">
                 <tr>
-                    <th>#</th>
+                    <th class="col-md-1">Package</th>
                     <th class="col-md-1">Type</th>
                     <th>Name</th>
                     <th>Code</th>
@@ -63,9 +63,13 @@
                     <th>Enrolled/Max</th>
                     <th>Actions</th>
                 </tr>
-                {% for course in courses_contract %}
+                {% for course in courses_semester %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td>
+                            {% if course.is_optional %}
+                                {{ course.package }}
+                            {% endif %}
+                        </td>
                         <td>
                             <span data-toggle="tooltip" data-placement="top" title="{{ course.type_to_str().title() }}">
                                 {{ course.type_id }}
@@ -77,27 +81,42 @@
                         <td>{{ course.get_nr_enrolled(semester_sel.id) }}/{{ course.get_max_str() }}</td>
                         <td>
                              {% if course.is_optional and not course.is_in_contract %}
-                                <a href="{{ url_for('course.contract_action', semester_id=semester_sel.id, add=True, course_id=course.id) }}"
-                                   class="btn btn-primary">Add</a>
+                                <a href="{{ url_for('course.contract_action', semester_id=semester_sel.id, action=1, course_id=course.id) }}"
+                                   class="btn btn-primary btn-block" data-toggle="tooltip" data-placement="top" title="You can change priority after you add it">
+                                    {% if course.package in packages %}
+                                        Add preference to package
+                                    {% else %}
+                                        Add
+                                    {% endif %}
+                                </a>
                             {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
             </table>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-10 col-md-offset-2">
             <h3>Temporary contract</h3>
             <table class="table table-bordered table-striped tabble-c">
                 <tr>
-                    <th>#</th>
+                    <th class="col-md-1">Package</th>
                     <th class="col-md-1">Type</th>
                     <th>Name Course</th>
-                    <th>Code</th>
-                    <th>Actions</th>
+                    <th class="col-md-1">Code</th>
+                    <td class="col-md-3">
+                        <span data-toggle="tooltip" data-placement="top" title="What is your priority for this optional course. Lower priority means it is higher ranked">Priority</span>
+                    </td>
+                    <th class="col-md-2">Actions</th>
                 </tr>
                 {% for enrolled, course in courses_enrolled %}
                     <tr>
-                        <td>{{ loop.index }}</td>
+                        <td>
+                            {% if course.is_optional %}
+                            <span data-toggle="tooltip" data-placement="top" title="Priority: {{ enrolled.priority }}">
+                                {{ course.package }}
+                            </span>
+                            {% endif %}
+                        </td>
                         <td>
                             <span data-toggle="tooltip" data-placement="top" title="{{ course.type_to_str().title() }}">
                                 {{ course.type_id }}
@@ -106,12 +125,28 @@
                         <td>{{ course.name }}</td>
                         <td>{{ course.get_code() }}</td>
                         <td>
-                            <div class="btn-group">
-                                {% if course.is_optional %}
-                                    <a href="{{ url_for('course.contract_action', semester_id=semester_sel.id, add=False, course_id=course.id) }}"
+                            {% if course.is_optional %}
+                                 {% if packages[course.package]|length > 1 %}
+                                     <form method="post" action="{{ url_for('course.contract_action', semester_id=semester_sel.id, action=3, course_id=course.id) }}">
+                                         <div class="input-group">
+                                             <input type="number" name="priority" min="1" max="9"
+                                                    class="pos-numeric form-control input-sm" value="{{ enrolled.priority }}">
+                                             <span class="input-group-btn">
+                                                 <input type="submit" class="btn btn-sm btn-success" value="Change Priority">
+                                             </span>
+                                         </div>
+                                     </form>
+                                 {% else %}
+                                     {{ enrolled.priority }}</td>
+                                 {% endif %}
+                            {% endif %}
+                        <td>
+                        <div class="btn-group">
+                            {% if course.is_optional %}
+                                 <a href="{{ url_for('course.contract_action', semester_id=semester_sel.id, action=2, course_id=course.id) }}"
                                        class="btn btn-danger">Remove</a>
-                                {% endif %}
-                            </div>
+                            {% endif %}
+                        </div>
                         </td>
                     </tr>
                 {% endfor %}

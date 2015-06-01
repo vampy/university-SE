@@ -145,7 +145,7 @@ class User(UserMixin, db.Model):
             .filter(and_(Enrollment.semester_id == semester.id,
                          Enrollment.student_id == self.id,
                          Course.degree_id == degree.id,
-                         Course.is_approved == True)) \
+                         Course.is_approved == True)).order_by(Course.package.asc()) \
             .all()
 
     def has_contract_signed(self, semester, degree):

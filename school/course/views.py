@@ -1,5 +1,3 @@
-from datetime import date
-
 from flask.ext.login import login_required, current_user
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from school.decorators import role_required
@@ -193,10 +191,10 @@ def save_grade():
 
 
 @course.route('/contract/start/<int:semester_id>')
-@course.route('/contract/action/<int:semester_id>/<int:add>/<int:course_id>')
+@course.route('/contract/action/<int:semester_id>/<int:action>/<int:course_id>', methods=['GET', 'POST'])
 @login_required
 @role_required(student=True)
-def contract_action(semester_id, add=None, course_id=None):
+def contract_action(semester_id, action=None, course_id=None):
     # get info from database
     semester = Semester.get_by_id(semester_id)
     period = current_user.get_default_period()
@@ -211,7 +209,7 @@ def contract_action(semester_id, add=None, course_id=None):
         return return_path
 
     # start contract
-    if add is None and course_id is None:
+    if action is None and course_id is None:
         if courses_enrolled:
             flash("You already started the temporary contract for that semester", FLASH_ERROR)
             return return_path
@@ -232,18 +230,18 @@ def contract_action(semester_id, add=None, course_id=None):
         return return_path
 
     courses = [x[1] for x in courses_enrolled]
-    if add:  # add course
+    if action == 1:  # add course
         if course_add in courses:  # validate
             flash("You are already enrolled for that course", FLASH_ERROR)
             return return_path
 
-        db.session.add(Enrollment(student=current_user, semester=semester, course=course_add))
+        db.session.add(Enrollment(student=current_user, semester=semester, course=course_add, priority=1))
         db.session.commit()
 
         flash("Course Added", FLASH_SUCCESS)
-    else:
+    elif action == 2:  # remove course
         if course_add not in courses:  # validate
-            flash("You are not enrolled for that course", FLASH_ERROR)
+            flash("You are not enrolled in that course", FLASH_ERROR)
             return return_path
 
         db.session.delete(
@@ -251,6 +249,29 @@ def contract_action(semester_id, add=None, course_id=None):
         db.session.commit()
 
         flash("Course Removed", FLASH_SUCCESS)
+    elif action == 3:  # set course priority
+        if course_add not in courses:  # validate
+            flash("You are not enrolled in that course", FLASH_ERROR)
+            return return_path
+        if request.method != 'POST':
+            flash("You did not submit any form", FLASH_ERROR)
+            return return_path
+        if "priority" not in request.form:
+            flash("Priority value is missing", FLASH_ERROR)
+            return return_path
+        priority = int(request.form["priority"])
+        if priority < 2 or priority > 9:
+            flash("Priority value is invalid. Should be between 2 and 9", FLASH_ERROR)
+            return return_path
+
+        enroll = Enrollment.query.filter_by(student=current_user, semester=semester, course=course_add).first()
+        enroll.priority = priority
+        db.session.add(enroll)
+        db.session.commit()
+
+        flash("Priority set", FLASH_SUCCESS)
+    else:
+        flash("Action is wrong", FLASH_ERROR)
 
     return return_path
 
@@ -276,16 +297,24 @@ def contract(semester_id=None):
     courses_enrolled = current_user.get_courses_enrolled_semester(semester, degree)
 
     # get optional courses
-    courses_contract = []
+    courses_semester = []
+    packages = {}  # map from package to set of priorities
     if not has_contract:
-        courses_contract = semester.filter_courses(degree)
+        courses_semester = semester.filter_courses(degree)
+
+        # add to seen packages
+        for enrolled, c in courses_enrolled:
+            if c.package not in packages:
+                packages[c.package] = set()
+
+            packages[c.package].add(c.id)
 
         # auto build check to see if optional course is already in the contract
         courses_enrolled_first = [x[1] for x in courses_enrolled]
-        for i, c in enumerate(courses_contract):
-            courses_contract[i].is_in_contract = False
+        for i, c in enumerate(courses_semester):
+            courses_semester[i].is_in_contract = False
             if c in courses_enrolled_first:
-                courses_contract[i].is_in_contract = True
+                courses_semester[i].is_in_contract = True
 
     return render_template("course/contract.html",
                            semesters=semesters,
@@ -296,7 +325,8 @@ def contract(semester_id=None):
                            degree=degree,
                            has_contract=has_contract,
                            courses_enrolled=courses_enrolled,
-                           courses_contract=courses_contract)
+                           courses_semester=courses_semester,
+                           packages=packages)
 
 
 @course.route('/remove_optional_course/<int:course_id>', methods=["GET"])
