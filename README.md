@@ -1,6 +1,9 @@
 # SE-project
 Software engineering project from UBB.
 
+# Build Status
+[![Build Status](https://travis-ci.org/leyyin/SE-project.svg?branch=master)](https://travis-ci.org/leyyin/SE-project)
+
 # Installation
 Notice, you need Python 3.4+ for this steps to work.
 
