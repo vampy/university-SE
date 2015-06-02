@@ -4,43 +4,46 @@
 {% block body %}
 <div class="col-md-4 col-md-push-4 text-center">
     <form method="post">
-        <div class = "row">
+        <div class="row">
             <div class="col-md-6">
-                <select class="form-control" size="1" name="semester">
-                        <option value=0>Choose a semester</option>
-                        {% for semester in semesters %}
-                        <option value="{{ semester.id }}" >{{ semester.name }}</option>
-                        {% endfor %}
+                <select class="form-control" size="1" name="semester_id">
+                    <option value=0>Choose a semester</option>
+                    {% for semester in semesters %}
+                        <option value="{{ semester.id }}" {% if selected_semester == semester %}selected{% endif %}>
+                            {{ semester.name }}
+                        </option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="col-md-1">
-                <INPUT TYPE="submit" class="btn btn-default" value="Select">
+                <input type="submit" class="btn btn-default" value="Select">
             </div>
         </div>
     </form>
 
-
     <h3>
-    <span class="label label-default">{{ thecourse.name }}</span>
-    <span class="label label-default">{{ le_semestre.name }}</span>
-    </h3>
+        <span class="label label-default">{{ selected_course.name }}</span>
+        <span class="label label-default">{{ selected_semester.name }}</span>
+    </h3><hr>
 
-    <form method="post" action="{{ url_for("course.save_grade") }}">
-    <table class="table table-bordered">
-       <tr>
-           <th>Name</th>
-           <th>Grade</th>
-       </tr>
-       {% for i in range(students.__len__()) %}
-       <tr>
-           <td> {{ students[i].realname }} <input type="hidden" name="student_id" value="{{ students[i].id }}">
-           <input type="hidden" name="course_id" value="{{ thecourse.id }}">
-           <input type="hidden" name="semester_id" value="{{ le_semestre.id }}"></td>
-           <td> <input type="text" class="form-control" name={{ students[i].id }} placeholder="Grade" value={% if grades[i] %} {{ grades[i] }} {% else %} NC {% endif %}></td>
-       </tr>
-       {% endfor %}
-    </table>
-<INPUT TYPE="submit" class="btn btn-primary" value="Save">
-</form>
+    {% if students_enrolled %}
+    <form method="post" action="{{ url_for("course.save_grade", course_id=selected_course.id, semester_id=selected_semester.id) }}">
+        <table class="table table-bordered">
+            <tr>
+                <th>Name</th>
+                <th>Grade</th>
+            </tr>
+            {% for enrolled in students_enrolled %}
+                <tr>
+                    <td>{{ enrolled.student.realname }}</td>
+                    <td>
+                        <input type="text" class="form-control" name="{{ enrolled.student.id }}" placeholder="Grade" value="{{ enrolled.grade }}">
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type="submit" class="btn btn-primary" value="Save">
+    </form>
+    {% endif %}
 </div>
 {% endblock %}

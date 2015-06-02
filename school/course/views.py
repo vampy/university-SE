@@ -52,143 +52,94 @@ def see_courses(semester_id=None):
             if department.name not in seen_depts:
                 seen_depts.add(department.name)
                 depts.append(department.name)
+
             for degree in department.degrees:
                 for course in degree.courses:
-                    dico = dict()
-                    dico["course"] = course.name
-                    dico["department"] = department.name
-                    courses_depts.append(dico)
+                    courses_depts.append({
+                        "course": course.name,
+                        "department": department.name
+                    })
 
         return render_template("course/see_courses.html", total=courses_depts, depts=depts)
 
     elif current_user.is_teacher():
-
-        courses = []
-        for teach in current_user.teaches.all():
-            if teach.course.is_approved:
-                courses.append(teach.course)
+        # TODO group by semester
+        courses = [teach.course for teach in current_user.teaches.all() if teach.course.is_approved]
 
         return render_template("course/see_courses.html", courses=courses)
 
     elif current_user.is_chief_department():
-
         department = current_user.get_department_cd()
 
         courses_depts = []
         for degree in department.degrees:
             for course in degree.courses:
-                dico = dict()
-                dico["course"] = course.name
-                dico["department"] = department.name
-                courses_depts.append(dico)
+                courses_depts.append({
+                    "course": course.name,
+                    "department": department.name
+                })
 
-        courses = []
-        for teach in current_user.teaches.all():
-            if teach.course.is_approved:
-                courses.append(teach.course)
+        courses = [teach.course for teach in current_user.teaches.all() if teach.course.is_approved]
 
         return render_template("course/see_courses.html", total=courses_depts, dp=department, courses=courses)
 
 
-@course.route('/upload_course_results', methods=['GET', 'POST'])
+@course.route('/upload_course_results/<int:course_id>', methods=['GET', 'POST'])
 @login_required
-def upload_course_results():
-    le_semestre = ""
-    le_cours = ""
-    semesters = []
-    the_semester = Semester.query.all()
-    for semester in the_semester:
-        semesters.append(semester)
-
-    allcourses = [teach.course for teach in current_user.teaches.all()]
+def upload_course_results(course_id):
+    selected_course = Course.get_by_id(course_id)
 
     if request.method == 'POST':
-        val = request.args['course_id']
-        sem = request.form['semester']
-        students = []
-        grades = []
-
-        le_cours = Course.query.filter_by(id=int(val)).first()
-        le_semestre = Semester.query.filter_by(id=sem).first()
-
-        studentsenrolled = Enrollment.query.filter_by(course_id=int(val), semester_id=int(sem)).all()
-        for student in studentsenrolled:
-            students.append(User.query.filter_by(id=student.student_id).first())
-            grades.append(student.grade)
+        sem_id = int(request.form['semester_id'])
+        selected_semester = Semester.get_by_id(sem_id)
+        students_enrolled = Enrollment.query.filter_by(course_id=course_id, semester_id=sem_id).all()
 
         return render_template("course/upload_course_results.html",
-                               allcourses=allcourses,
-                               thecourse=le_cours,
-                               students=students,
-                               semesters=semesters,
-                               le_semestre=le_semestre,
-                               grades=grades)
-    else:
-        return render_template("course/upload_course_results.html", allcourses=allcourses,
-                               le_semestre=le_semestre,
-                               semesters=semesters,
-                               thecourse=le_cours)
+                               students_enrolled=students_enrolled,
+                               semesters=selected_course.semesters,
+                               selected_course=selected_course,
+                               selected_semester=selected_semester, )
+
+    return render_template("course/upload_course_results.html",
+                           semesters=selected_course.semesters,
+                           selected_semester=[],
+                           selected_course=selected_course)
 
 
-@course.route('/upload_course_results/', methods=['GET', 'POST'])
+@course.route('/save_grade/<int:course_id>/<int:semester_id>', methods=['POST'])
 @login_required
 @role_required(teacher=True, cd=True)
-def save_grade():
-    cid = request.form['course_id']
-    sid = request.form['semester_id']
+def save_grade(course_id, semester_id):
+    # if "course_id" not in request.form or "semester_id" not in:
+    # TODO validate
 
-    le_semestre = Semester.query.filter_by(id=sid).first()
-    le_cours = Course.query.filter_by(id=cid).first()
-    semesters = []
-    the_semester = Semester.query.all()
-    for semester in the_semester:
-        semesters.append(semester)
+    selected_semester = Semester.get_by_id(semester_id)
+    selected_course = Course.get_by_id(course_id)
 
-    allcourses = [teach.course for teach in current_user.teaches.all()]
-    students = []
-    grades = []
+    students_enrolled = Enrollment.query.filter_by(course_id=course_id, semester_id=semester_id).all()
+    for enrolled in students_enrolled:
 
-    test_grade = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+        # TODO validate
+        grade = int(request.form[str(enrolled.student_id)])
 
-    studentsenrolled = Enrollment.query.filter_by(course_id=cid, semester_id=sid).all()
-    for student in studentsenrolled:
-        students.append(User.query.filter_by(id=student.student_id).first())
-        grades.append(student.grade)
-        uid = student.student_id
-        grade = request.form[str(uid)]
-
-        if grade in test_grade:
-            enrollment_instance = Enrollment.query.filter_by(student_id=uid,
-                                                             course_id=cid,
-                                                             semester_id=sid).first()
-            enrollment_instance.grade = grade
-            db.session.add(enrollment_instance)
+        if 0 <= grade <= 10:  # save new grade
+            enrolled.grade = grade
+            db.session.add(enrolled)
             db.session.commit()
         else:
             flash("A grade is invalid", FLASH_ERROR)
             return render_template("course/upload_course_results.html",
-                                   course_id=cid,
-                                   allcourses=allcourses,
-                                   thecourse=le_cours,
-                                   students=students,
-                                   semesters=semesters,
-                                   le_semestre=le_semestre,
-                                   grades=grades)
-
-    grades = []
-    students = []
-    for student in studentsenrolled:
-        students.append(User.query.filter_by(id=student.student_id).first())
-        grades.append(student.grade)
+                                   students_enrolled=students_enrolled,
+                                   semesters=selected_course.semesters,
+                                   selected_course=selected_course,
+                                   selected_semester=selected_semester)
 
     flash("Grade updated", FLASH_SUCCESS)
-    return render_template("course/upload_course_results.html", course_id=cid,
-                           allcourses=allcourses,
-                           thecourse=le_cours,
-                           students=students,
-                           semesters=semesters,
-                           le_semestre=le_semestre,
-                           grades=grades)
+    return render_template("course/upload_course_results.html",
+                           students_enrolled=students_enrolled,
+                           semesters=selected_course.semesters,
+                           selected_course=selected_course,
+                           selected_semester=selected_semester)
 
 
 @course.route('/contract/start/<int:semester_id>')
