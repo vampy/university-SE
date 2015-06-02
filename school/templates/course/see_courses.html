@@ -12,13 +12,19 @@
             <button class="btn btn-default" disabled="disabled"> Current semester: {{ semester_nr }} </button>
         </div>
     </div><hr>
+    {% set selected_semester_nr = [] %} {# stupid hack, seriously jinja #}
     <div class="row">
         <div class="col-md-2">
             <div class="btn-group" id="semesters-pick">
                 <a class="btn btn-default btn-block" href="{{ url_for('course.see_courses') }}">All</a>
                 {% for semester in semesters %}
+                    {% set class = '' %}
+                    {% if selected_semester.id == semester.id %}
+                        {% set class = ' active' %}
+                        {% do selected_semester_nr.append(loop.index) %}
+                    {% endif %}
                     <a data-id="{{ semester.id }}" href="{{ url_for('course.see_courses', semester_id=semester.id) }}"
-                       class="btn btn-default{% if selected_semester.id == semester.id %} active{% endif %}">
+                       class="btn btn-default{{ class }}">
                         Semester {{ loop.index }}, Year {{ semester.year }}
                     </a>
                 {% endfor %}
@@ -40,11 +46,15 @@
                     <tr>
                         <td>{{ enrolled.semester.year }}/{{ enrolled.semester.year + 1 }}</td>
                         <td class="text-center">
-                            {% if previous_date == None or previous_date != enrolled.semester.date_start%}
-                                {% set previous_date = enrolled.semester.date_start %}
-                                {% set semester_nr = semester_nr + 1 %}
+                            {% if selected_semester %}
+                                {{ selected_semester_nr[0] }}
+                            {% else %}
+                                {% if previous_date == None or previous_date != enrolled.semester.date_start %}
+                                    {% set previous_date = enrolled.semester.date_start %}
+                                    {% set semester_nr = semester_nr + 1 %}
+                                {% endif %}
+                                {{ semester_nr }}
                             {% endif %}
-                            {{ semester_nr }}
                         </td>
                         <td>{{ course.get_code() }}</td>
                         <td>{{ course.name }}</td>
