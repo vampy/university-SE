@@ -110,20 +110,22 @@ def upload_course_results(course_id, semester_id=None):
         selected_semester = Semester.get_by_id(semester_id)
         students_enrolled = Enrollment.query.filter_by(course_id=course_id, semester_id=semester_id).all()
 
-        seen_groups = set()
-        groups = []
-        for se in students_enrolled:
-            g = se.student.get_group(se.student.get_default_period())
-            if g not in seen_groups:
-                seen_groups.add(g)
-                groups.append(g)
+        # group students in Groups :P
+        groups = {}
+        for enroll in students_enrolled:
+            g = enroll.student.get_group(enroll.student.get_default_period())
+            if g.name not in groups:
+                groups[g.name] = []
+
+            groups[g.name].append(enroll)
 
         return render_template("course/upload_course_results.html",
                                students_enrolled=students_enrolled,
                                semesters=selected_course.semesters,
                                selected_course=selected_course,
                                selected_semester=selected_semester,
-                               groups=groups, )
+                               groups=groups,
+                               groups_keys=sorted(groups.keys()))
 
     # use default to be first semester
     if not selected_course.semesters:
