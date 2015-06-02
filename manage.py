@@ -166,7 +166,7 @@ def generate_data_v2():
             semester_start = 0
         elif i % 5 == 0:
             semester_start = 1
-        for j in range(semester_start, semester_start + 7, 2):
+        for j in range(semester_start, semester_start + 3, 2):
             teaches.append(Teaches(teacher=teachers[i], semester=semesters[j], course=courses[i]))
 
     db.session.add_all(teaches)
@@ -194,46 +194,55 @@ def generate_data_v2():
     )
     # STUDENT
     # =========================================================================
-    random_names = ["Athena Nettles", "Trinity Studivant", "Shemeka Rolland", "Jaclyn Milera", "Shu Jennison",
-                    "Tomeka Bolten", "Bonita Crose", "Merle Guess", "Tomiko Lape", "Tommie Leclerc",
-                    "Lenita Omar", "Norris Gaut", "Lashawn Puryear", "Jacalyn Chaput", "Susy Tigner",
-                    "Delphine Holbrook", "Celeste Evensen", "Wilburn Lucky", "Perry Ratledge", "Jolanda Orchard",
-                    "Ivory Guidry", "Earlean Odle", "Hilaria Edman", "Lachelle Vanover", "Twila Maine",
-                    "Kam Timoteo", "Audria Lamkin", "Dahlia Donelson", "Ayesha Fessenden", "Linnie Luckett",
-                    "Jason Dynes", "Kyle Snider", "Sena Collins", "Erika Michell", "Misha Moncayo",
-                    "Hilde Nappi", "Susanna Conigliaro", "Kristal Blassingame", "Chantell Paille", "Lakeshia Novy",
-                    "Cassaundra Boudreaux", "Onita Livengood", "Scot Lachermeier", "Jammie River", "Leandra Muse",
-                    "Leia Lunday", "Elvin Cosey", "Christene Formica", "Kassandra Strothers", "Zane Mcgahee",
-                    "Emmett Mazzei", "Aleta Wygant", "Shannon Fausnaught", "Melynda Hornsby", "Dawn Talarico",
-                    "Javier Stallcup", "Rosaline Morein", "Laine Buss", "Roselle Largent", "Claudette Gourd",
-                    "Lino Hynson", "Margeret Prasad", "Sherry Dunaway", "Dorethea Deshaies", "Fredda Mawson",
-                    "Lazaro Rosalez", "Thomasina Lape", "Geoffrey Zylstra", "Dwana Halterman", "Tiffani Hieb",
-                    "Tammy Mackey", "Ninfa Simms", "Drucilla Militello", "Constance Blaylock", "Adrian Forrester",
-                    "Talia Rome", "Amado Vibbert", "Mei Lai", "Gilberte Vassell", "Lesia Brizendine",
-                    "Weldon Grady", "Dian Loo", "Megan Peralta", "Sharan Spight", "Fannie Nath",
-                    "Amber Yarberry", "Gisela Moisan", "Alphonse Brokaw", "Coletta Christen", "Kimi Hildebrandt",
-                    "Brenna Fleischer", "Vilma Yepez", "Delena Tobey", "Darron Alverez", "Darrin Beaudry",
-                    "Ulrike Tann", "Danna Jordan", "Lesli Colas", "Harrison Ahl", "Victor Guan",
-                    "Kymberly Waldeck", "Nola Foss", "Ressie Mancia", "Nita Parm", "Yang Queener",
-                    "Berenice Mingo", "Terina Gentle", "Sarina Manes", "Cherie Lindner", "Jacquelyn Whitfield",
-                    "Jamison Rosenfield", "Corie Haden", "Stefany Petrosky", "Jadwiga Schoenberger", "Ruthe Laxton",
-                    "Lajuana Mcmillian", "Xiao Broome", "Rocio Hendrix", "Emelina Messer", "Diego Yanez",
-                    "Marti Sheaffer", "Domenica Corney", "Sonia Stromain", "Carly Meuser", "Melba Belville",
-                    "Sharika Draughn", "Lorriane Oquinn", "Lucie Fullen", "Iona Simpler", "Hosea Swanberg",
-                    "Ricki Traxler", "Freda Yang", "Maegan Odowd", "Vennie Sapienza", "Michale Quintero",
-                    "Migdalia Kina", "Johanne Sturtevant", "Carolin Brough", "Tarsha Millener", "Chu Mignone",
-                    "Willard Blass", "Douglas Mahi", "Royce Lamson", "Delana Wronski", "Kathleen Balke",
-                    "Enid Gallimore", "Clarine Engberg ", "Francesco Hartline", "Darcey Greeno", "Jada Granato",
-                    "Lucienne Alessi", "Janelle Montalto", "Maynard Farwell", "Saran Kaczynski", "Rigoberto Greco",
-                    "Sherryl Willetts", "Esta Gulbranson", "Malisa Lucier", "Imelda Pray", "Mirella Avant",
-                    "Ozell Story", "Violet Bonilla", "Vonnie Priest", "Micah Fettig", "Bethany Gillins",
-                    "Octavia Rodkey", "Yi Haithcock", "Kathie Depaola", "Khaleesi Steiner", "Stephanie Claflin",
-                    "Salvatore Wisniewski", "Golda Haberle", "Lorri Chastain", "Wan Beisner", "Arden Archey",
-                    "Marylin Ruffo", "Nida Commons", "Tamara Jaillet", "Lilliana Rosenbaum", "Hilario Gregorio",
-                    "Erwin Gaskins", "Michelle Doherty", "Ariane Doolin", "Buford Stjames", "Jame Peaslee",
-                    "Mamie Caplinger", "Lettie Pasquariello", "Rosalind Oesterling", "Carmen Bark", "Orpha Degraff",
-                    "Deloras Pomerleau", "Margaretta Buzbee", "Valda Applebaum", "Niesha Prosperie", "Mildred Hoggard",
-                    "Sybil Dykes", "Daniell Houchin", "Jamila Mass", "Daniella Trevino", "Danica Barriere"]
+    random_student_names = ["Shemeka Rolland", "Jaclyn Milera", "Shu Jennison",
+                            "Tomeka Bolten", "Bonita Crose", "Merle Guess", "Tomiko Lape", "Tommie Leclerc",
+                            "Lenita Omar", "Norris Gaut", "Lashawn Puryear", "Jacalyn Chaput", "Susy Tigner",
+                            "Delphine Holbrook", "Celeste Evensen", "Wilburn Lucky", "Perry Ratledge",
+                            "Jolanda Orchard",
+                            "Ivory Guidry", "Earlean Odle", "Hilaria Edman", "Lachelle Vanover", "Twila Maine",
+                            "Kam Timoteo", "Audria Lamkin", "Dahlia Donelson", "Ayesha Fessenden", "Linnie Luckett",
+                            "Jason Dynes", "Kyle Snider", "Sena Collins", "Erika Michell", "Misha Moncayo",
+                            "Hilde Nappi", "Susanna Conigliaro", "Kristal Blassingame", "Chantell Paille",
+                            "Lakeshia Novy",
+                            "Cassaundra Boudreaux", "Onita Livengood", "Scot Lachermeier", "Jammie River",
+                            "Leandra Muse",
+                            "Leia Lunday", "Elvin Cosey", "Christene Formica", "Kassandra Strothers", "Zane Mcgahee",
+                            "Emmett Mazzei", "Aleta Wygant", "Shannon Fausnaught", "Melynda Hornsby", "Dawn Talarico",
+                            "Javier Stallcup", "Rosaline Morein", "Laine Buss", "Roselle Largent", "Claudette Gourd",
+                            "Lino Hynson", "Margeret Prasad", "Sherry Dunaway", "Dorethea Deshaies", "Fredda Mawson",
+                            "Lazaro Rosalez", "Thomasina Lape", "Geoffrey Zylstra", "Dwana Halterman", "Tiffani Hieb",
+                            "Tammy Mackey", "Ninfa Simms", "Drucilla Militello", "Constance Blaylock",
+                            "Adrian Forrester",
+                            "Talia Rome", "Amado Vibbert", "Mei Lai", "Gilberte Vassell", "Lesia Brizendine",
+                            "Weldon Grady", "Dian Loo", "Megan Peralta", "Sharan Spight", "Fannie Nath",
+                            "Amber Yarberry", "Gisela Moisan", "Alphonse Brokaw", "Coletta Christen",
+                            "Kimi Hildebrandt",
+                            "Brenna Fleischer", "Vilma Yepez", "Delena Tobey", "Darron Alverez", "Darrin Beaudry",
+                            "Ulrike Tann", "Danna Jordan", "Lesli Colas", "Harrison Ahl", "Victor Guan",
+                            "Kymberly Waldeck", "Nola Foss", "Ressie Mancia", "Nita Parm", "Yang Queener",
+                            "Berenice Mingo", "Terina Gentle", "Sarina Manes", "Cherie Lindner", "Jacquelyn Whitfield",
+                            "Jamison Rosenfield", "Corie Haden", "Stefany Petrosky", "Jadwiga Schoenberger",
+                            "Ruthe Laxton",
+                            "Lajuana Mcmillian", "Xiao Broome", "Rocio Hendrix", "Emelina Messer", "Diego Yanez",
+                            "Marti Sheaffer", "Domenica Corney", "Sonia Stromain", "Carly Meuser", "Melba Belville",
+                            "Sharika Draughn", "Lorriane Oquinn", "Lucie Fullen", "Iona Simpler", "Hosea Swanberg",
+                            "Ricki Traxler", "Freda Yang", "Maegan Odowd", "Vennie Sapienza", "Michale Quintero",
+                            "Migdalia Kina", "Johanne Sturtevant", "Carolin Brough", "Tarsha Millener", "Chu Mignone",
+                            "Willard Blass", "Douglas Mahi", "Royce Lamson", "Delana Wronski", "Kathleen Balke",
+                            "Enid Gallimore", "Clarine Engberg ", "Francesco Hartline", "Darcey Greeno", "Jada Granato",
+                            "Lucienne Alessi", "Janelle Montalto", "Maynard Farwell", "Saran Kaczynski",
+                            "Rigoberto Greco",
+                            "Sherryl Willetts", "Esta Gulbranson", "Malisa Lucier", "Imelda Pray", "Mirella Avant",
+                            "Ozell Story", "Violet Bonilla", "Vonnie Priest", "Micah Fettig", "Bethany Gillins",
+                            "Octavia Rodkey", "Yi Haithcock", "Kathie Depaola", "Khaleesi Steiner", "Stephanie Claflin",
+                            "Salvatore Wisniewski", "Golda Haberle", "Lorri Chastain", "Wan Beisner", "Arden Archey",
+                            "Marylin Ruffo", "Nida Commons", "Tamara Jaillet", "Lilliana Rosenbaum", "Hilario Gregorio",
+                            "Erwin Gaskins", "Michelle Doherty", "Ariane Doolin", "Buford Stjames", "Jame Peaslee",
+                            "Mamie Caplinger", "Lettie Pasquariello", "Rosalind Oesterling", "Carmen Bark",
+                            "Orpha Degraff",
+                            "Deloras Pomerleau", "Margaretta Buzbee", "Valda Applebaum", "Niesha Prosperie",
+                            "Mildred Hoggard",
+                            "Sybil Dykes", "Daniell Houchin", "Jamila Mass", "Daniella Trevino", "Danica Barriere"]
 
     test_user = User(
         username="test",
@@ -249,7 +258,8 @@ def generate_data_v2():
     )
 
     students = []
-    for random_name in random_names:
+    students.extend([test_user, test_user2])
+    for random_name in random_student_names:
         credentials = random_name.split(" ")
         students.append(User(
             username=credentials[0].lower(),
@@ -258,7 +268,6 @@ def generate_data_v2():
             email=random_name.replace(" ", "").lower() + "@gmail.com"
 
         ))
-    db.session.add_all([test_user, test_user2])
     db.session.add_all(students)
     db.session.commit()
 
@@ -282,9 +291,6 @@ def generate_data_v2():
         if (i + 1) % group_milestone == 0:
             degree_period_index += 1
 
-    groups[5].students.append(test_user)
-    groups[5].students.append(test_user2)
-
     group_index = 0
     degree_period_index = 0
     small_milestone = 20
@@ -304,9 +310,10 @@ def generate_data_v2():
     # =========================================================================
 
     starting_semester_index = 0
+    ending_semester_index = 4
     contract_semester = []
     for i in range(0, len(students)):
-        for j in range(starting_semester_index, starting_semester_index + 6):
+        for j in range(starting_semester_index, ending_semester_index):
             contract_semester.append(ContractSemester(
                 student=students[i],
                 semester=semesters[j],
@@ -322,13 +329,11 @@ def generate_data_v2():
     # =========================================================================
 
     courses_per_semester = 5
-    no_of_students_enrolled = 0
     no_of_courses_enrolled = 0
     semester_index = 0
     # first 100 students will be enrolled in 20 courses, next 100 students only in the first 10.
-    courses_to_enroll = 20
     enrollments = []
-    for student in students:
+    for student in students[:100]:
         for course_index in range(0, len(courses) - 1):
             if course_index < 15:
                 if random.randint(1, 10) > 5:
@@ -347,26 +352,42 @@ def generate_data_v2():
             no_of_courses_enrolled += 1
             if no_of_courses_enrolled % courses_per_semester == 0:
                 semester_index += 1
-            if no_of_courses_enrolled == courses_to_enroll:
-                break
-        no_of_courses_enrolled = 0
-        no_of_students_enrolled += 1
-        if no_of_students_enrolled % big_milestone == 0:
-            semester_index = 2
-            courses_to_enroll = 10
-        else:
-            semester_index = 0
+
+        semester_index = 0
+
+    semester_index = 2
+    # next 100 students only in the first 10.
+    for student in students[100:]:
+        for course_index in range(0, 10):
+            if course_index < 5:
+                if random.randint(1, 10) > 5:
+                    grade = 10
+                else:
+                    grade = random.randint(3, 10)
+
+                enrollments.append(
+                    Enrollment(student=student, semester=semesters[semester_index], course=courses[course_index],
+                               grade=grade, date_grade=semesters[semester_index].date_end)
+                )
+            else:
+                enrollments.append(
+                    Enrollment(student=student, semester=semesters[semester_index], course=courses[course_index])
+                )
+            no_of_courses_enrolled += 1
+            if no_of_courses_enrolled % courses_per_semester == 0:
+                semester_index += 1
+        semester_index = 2
+
 
     db.session.add_all(enrollments)
-    test_user.degree_periods.append(degree_periods[0])
-    test_user2.degree_periods.append(degree_periods[0])
+
     test_chief_department.department_cd.append(test_department)
     test_teacher.department_teacher.append(test_department)
     test_teacher.qualification.append(Qualification())
     test_teacher2.department_teacher.append(test_department)
     test_teacher2.qualification.append(Qualification())
 
-    db.session.add_all([test_user, test_user2, test_teacher2, test_teacher,
+    db.session.add_all([test_teacher2, test_teacher,
                         test_chief_department, test_admin])
 
     # add optional courses
@@ -377,8 +398,6 @@ def generate_data_v2():
     enrollments_aop = []
     for student in students[:100]:
         enrollments_aop.append(Enrollment(student=student, semester=teaches_aop.semester, course=course_aop))
-
-    enrollments_aop.append(Enrollment(student=test_user, semester=teaches_aop.semester, course=course_aop))
 
     db.session.add_all(enrollments_aop)
 
