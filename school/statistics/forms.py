@@ -55,7 +55,7 @@ class TeacherDisciplinesStatisticForm(Form):
 
 
 # Teacher With Best Or Worst Results Obtained
-class TeacherWBOWROStatisticForm(TeacherDisciplinesStatisticForm):
+class TeacherWBOWROStatisticForm(Form):
     presentation = "Teacher with best or worst results obtained"
     criteria = SelectField(label="Criteria", coerce=int,
                            choices=[(0, "Best results obtained"), (1, "Worst results obtained")])

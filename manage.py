@@ -28,6 +28,367 @@ def init():
     """
     db.drop_all()
     db.create_all()
+    # generate_data_v1()
+    generate_data_v2()
+
+
+def generate_data_v2():
+    # DEPARTMENT
+    # =========================================================================
+    test_department = Department(name="Math/Computer Science")
+
+    # COURSE
+    # =========================================================================
+    #                   SEMESTER 1
+    course_names_cs = ["Algebra", "Calculus", "Computer Architecture", "Fundamentals of programming",
+                       "Computational Logic",
+                       # SEMESTER 2
+                       "OOP", "OS", "Geometry", "Graphs Algorithms", "Data Structures and Algorithms",
+                       # SEMESTER 3
+                       "Advanced Programming Methods", "Distributed Operating Systems", "Databases",
+                       "Functional and Logic Programming", "Probability and statistics",
+                       # SEMESTER 4
+                       "DBMS", "Artificial Intelligence", "Software Engineering", "Computer Networks",
+                       "Individual Project",
+                       # SEMESTER 5
+                       " Graphics"]
+    courses = []
+    for course_name in course_names_cs:
+        courses.append(Course(name=course_name))
+
+    # DEGREE
+    # =========================================================================
+
+    test_degree = Degree(name="Computer Science", type_id=DegreeType.UNDERGRADUATE)
+    test_degree.courses.extend(courses)
+    test_department.degrees.append(test_degree)
+
+    # SEMESTER
+    # =========================================================================
+    semester_names = ["Autumn ", "Spring "]
+    years = [2013, 2014, 2015, 2016]
+    semesters = []
+    for i in range(0, len(years)):
+        semesters.append(Semester(
+            name=semester_names[0] + years[i].__str__(),
+            year=years[i],
+            date_start=date(years[i], 10, 1),
+            date_end=date(years[i] + 1, 2, 15)
+        ))
+        semesters.append(Semester(
+            name=semester_names[1] + (years[i] + 1).__str__(),
+            year=years[i],
+            date_start=date(years[i] + 1, 2, 20),
+            date_end=date(years[i] + 1, 6, 15)
+        ))
+
+    db.session.add_all(semesters)
+    db.session.commit()
+
+    # SEMESTER_COURSE
+    # =========================================================================
+
+    first = True
+    for semester in semesters:
+        if first:
+            semester.courses.extend(courses[0:5])
+            semester.courses.extend(courses[10:15])
+            first = False
+        else:
+            semester.courses.extend(courses[5:10])
+            semester.courses.extend(courses[15:20])
+            first = True
+
+    # LANGUAGE
+    # =========================================================================
+
+    english_language = Language(name="English")
+    db.session.add(english_language)
+    db.session.commit()
+
+    # DEGREE PERIOD
+    # =========================================================================
+    degree_periods = []
+    no_of_degree_periods = 2
+    for i in range(0, no_of_degree_periods * 2, 2):
+        degree_periods.append(DegreePeriod())
+        degree_periods[-1].degree = test_degree
+        degree_periods[-1].language_id = english_language.id
+        degree_periods[-1].semester_start = semesters[i]
+        degree_periods[-1].semester_end = semesters[i + 5]
+
+    db.session.add_all(degree_periods)
+    db.session.add(test_department)
+
+    # USERS
+    # =========================================================================
+
+    # TEACHER AND TEACHES
+    # =========================================================================
+    random_teacher_names = ["Keira Wrinkle", "Lurline Leary", "Jazmine Bender", "Lissette Rayes", "Mindy Trussell",
+                            "Joellen Findlay", "Avelina Stoudemire", "Edward Chadbourne", "Ilda Byrns", "Kelli Wolford",
+                            "Omer Folger", "Holly Donelson", "Gregorio Faris", "Jenee Fleischman", "Janel Tafoya",
+                            "Kelsi Callihan", "Lyle Iverson", "Demetria Freitag", "Guy Ryant", "Adan Leachman"]
+    test_teacher = User(
+        username="teacher",
+        password="teacher",
+        realname="Test Teacher",
+        email="dan@chiorean.com",
+        role_id=Role.TEACHER
+    )
+    test_teacher2 = User(
+        username="teacher2",
+        password="teacher2",
+        realname="Test Teacher 2",
+        email="dan2@chiorean.com",
+        role_id=Role.TEACHER
+    )
+    teachers = []
+    for random_teacher_name in random_teacher_names:
+        credentials = random_teacher_name.split(" ")
+        teachers.append(User(
+            username=credentials[0].lower(),
+            password=credentials[1].lower(),
+            realname=random_teacher_name,
+            email=random_teacher_name.replace(" ", "").lower() + "@gmail.com",
+            role_id=Role.TEACHER
+
+        ))
+        teachers[-1].qualification.append(Qualification())
+        teachers[-1].department_teacher.append(test_department)
+
+    db.session.add_all(teachers)
+    db.session.commit()
+
+    teaches = []
+    for i in range(0, len(teachers)):
+        if i % 10 == 0:
+            semester_start = 0
+        elif i % 5 == 0:
+            semester_start = 1
+        for j in range(semester_start, semester_start + 7, 2):
+            teaches.append(Teaches(teacher=teachers[i], semester=semesters[j], course=courses[i]))
+
+    db.session.add_all(teaches)
+    db.session.commit()
+
+    # CHIEF_DEPARTMENT
+    # =========================================================================
+
+    test_chief_department = User(
+        username="cd",
+        password="cd",
+        realname="Dan Chiorean",
+        email="danchiorean@cd.com",
+        role_id=Role.CHIEF_DEPARTMENT
+    )
+    # ADMIN
+    # =========================================================================
+
+    test_admin = User(
+        username="admin",
+        password="admin",
+        realname="Admin",
+        email="admin@example.com",
+        role_id=Role.ADMIN
+    )
+    # STUDENT
+    # =========================================================================
+    random_names = ["Athena Nettles", "Trinity Studivant", "Shemeka Rolland", "Jaclyn Milera", "Shu Jennison",
+                    "Tomeka Bolten", "Bonita Crose", "Merle Guess", "Tomiko Lape", "Tommie Leclerc",
+                    "Lenita Omar", "Norris Gaut", "Lashawn Puryear", "Jacalyn Chaput", "Susy Tigner",
+                    "Delphine Holbrook", "Celeste Evensen", "Wilburn Lucky", "Perry Ratledge", "Jolanda Orchard",
+                    "Ivory Guidry", "Earlean Odle", "Hilaria Edman", "Lachelle Vanover", "Twila Maine",
+                    "Kam Timoteo", "Audria Lamkin", "Dahlia Donelson", "Ayesha Fessenden", "Linnie Luckett",
+                    "Jason Dynes", "Kyle Snider", "Sena Collins", "Erika Michell", "Misha Moncayo",
+                    "Hilde Nappi", "Susanna Conigliaro", "Kristal Blassingame", "Chantell Paille", "Lakeshia Novy",
+                    "Cassaundra Boudreaux", "Onita Livengood", "Scot Lachermeier", "Jammie River", "Leandra Muse",
+                    "Leia Lunday", "Elvin Cosey", "Christene Formica", "Kassandra Strothers", "Zane Mcgahee",
+                    "Emmett Mazzei", "Aleta Wygant", "Shannon Fausnaught", "Melynda Hornsby", "Dawn Talarico",
+                    "Javier Stallcup", "Rosaline Morein", "Laine Buss", "Roselle Largent", "Claudette Gourd",
+                    "Lino Hynson", "Margeret Prasad", "Sherry Dunaway", "Dorethea Deshaies", "Fredda Mawson",
+                    "Lazaro Rosalez", "Thomasina Lape", "Geoffrey Zylstra", "Dwana Halterman", "Tiffani Hieb",
+                    "Tammy Mackey", "Ninfa Simms", "Drucilla Militello", "Constance Blaylock", "Adrian Forrester",
+                    "Talia Rome", "Amado Vibbert", "Mei Lai", "Gilberte Vassell", "Lesia Brizendine",
+                    "Weldon Grady", "Dian Loo", "Megan Peralta", "Sharan Spight", "Fannie Nath",
+                    "Amber Yarberry", "Gisela Moisan", "Alphonse Brokaw", "Coletta Christen", "Kimi Hildebrandt",
+                    "Brenna Fleischer", "Vilma Yepez", "Delena Tobey", "Darron Alverez", "Darrin Beaudry",
+                    "Ulrike Tann", "Danna Jordan", "Lesli Colas", "Harrison Ahl", "Victor Guan",
+                    "Kymberly Waldeck", "Nola Foss", "Ressie Mancia", "Nita Parm", "Yang Queener",
+                    "Berenice Mingo", "Terina Gentle", "Sarina Manes", "Cherie Lindner", "Jacquelyn Whitfield",
+                    "Jamison Rosenfield", "Corie Haden", "Stefany Petrosky", "Jadwiga Schoenberger", "Ruthe Laxton",
+                    "Lajuana Mcmillian", "Xiao Broome", "Rocio Hendrix", "Emelina Messer", "Diego Yanez",
+                    "Marti Sheaffer", "Domenica Corney", "Sonia Stromain", "Carly Meuser", "Melba Belville",
+                    "Sharika Draughn", "Lorriane Oquinn", "Lucie Fullen", "Iona Simpler", "Hosea Swanberg",
+                    "Ricki Traxler", "Freda Yang", "Maegan Odowd", "Vennie Sapienza", "Michale Quintero",
+                    "Migdalia Kina", "Johanne Sturtevant", "Carolin Brough", "Tarsha Millener", "Chu Mignone",
+                    "Willard Blass", "Douglas Mahi", "Royce Lamson", "Delana Wronski", "Kathleen Balke",
+                    "Enid Gallimore", "Clarine Engberg ", "Francesco Hartline", "Darcey Greeno", "Jada Granato",
+                    "Lucienne Alessi", "Janelle Montalto", "Maynard Farwell", "Saran Kaczynski", "Rigoberto Greco",
+                    "Sherryl Willetts", "Esta Gulbranson", "Malisa Lucier", "Imelda Pray", "Mirella Avant",
+                    "Ozell Story", "Violet Bonilla", "Vonnie Priest", "Micah Fettig", "Bethany Gillins",
+                    "Octavia Rodkey", "Yi Haithcock", "Kathie Depaola", "Khaleesi Steiner", "Stephanie Claflin",
+                    "Salvatore Wisniewski", "Golda Haberle", "Lorri Chastain", "Wan Beisner", "Arden Archey",
+                    "Marylin Ruffo", "Nida Commons", "Tamara Jaillet", "Lilliana Rosenbaum", "Hilario Gregorio",
+                    "Erwin Gaskins", "Michelle Doherty", "Ariane Doolin", "Buford Stjames", "Jame Peaslee",
+                    "Mamie Caplinger", "Lettie Pasquariello", "Rosalind Oesterling", "Carmen Bark", "Orpha Degraff",
+                    "Deloras Pomerleau", "Margaretta Buzbee", "Valda Applebaum", "Niesha Prosperie", "Mildred Hoggard",
+                    "Sybil Dykes", "Daniell Houchin", "Jamila Mass", "Daniella Trevino", "Danica Barriere"]
+
+    test_user = User(
+        username="test",
+        password="test",
+        realname="John Doe",
+        email="test@example.com"
+    )
+    test_user2 = User(
+        username="gabriel",
+        password="gabriel",
+        realname="Cramer Gabriel",
+        email="cramergabriel@gmail.com"
+    )
+
+    students = []
+    for random_name in random_names:
+        credentials = random_name.split(" ")
+        students.append(User(
+            username=credentials[0].lower(),
+            password=credentials[1].lower(),
+            realname=random_name,
+            email=random_name.replace(" ", "").lower() + "@gmail.com"
+
+        ))
+    db.session.add_all([test_user, test_user2])
+    db.session.add_all(students)
+    db.session.commit()
+
+    # GROUP
+    # =========================================================================
+
+    group_names = ["G921", "G922", "G923", "G924", "G925",
+                   "G911", "G912", "G913", "G914", "G915"
+                   # , "G931", "G932", "G933", "G934", "G935"
+                   ]
+    groups = []
+    degree_period_index = 0
+
+    # 5 groups per degree_period (year)
+    group_milestone = 5
+    for i in range(0, len(group_names)):
+        groups.append(Group(
+            name=group_names[i],
+            degree_period=degree_periods[degree_period_index]
+        ))
+        if (i + 1) % group_milestone == 0:
+            degree_period_index += 1
+
+    groups[5].students.append(test_user)
+    groups[5].students.append(test_user2)
+
+    group_index = 0
+    degree_period_index = 0
+    small_milestone = 20
+    big_milestone = 100
+
+    for i in range(0, len(students)):
+        groups[group_index].students.append(students[i])
+        students[i].degree_periods.append(degree_periods[degree_period_index])
+        if (i + 1) % small_milestone == 0:
+            group_index += 1
+        if (i + 1) % big_milestone == 0:
+            degree_period_index += 1
+
+    db.session.add_all(groups)
+
+    # CONTRACT SEMESTER
+    # =========================================================================
+
+    starting_semester_index = 0
+    contract_semester = []
+    for i in range(0, len(students)):
+        for j in range(starting_semester_index, starting_semester_index + 6):
+            contract_semester.append(ContractSemester(
+                student=students[i],
+                semester=semesters[j],
+                degree=test_degree
+            ))
+        if (i + 1) % big_milestone == 0:
+            starting_semester_index += 2
+
+    db.session.add_all(contract_semester)
+    db.session.commit()
+
+    # ENROLLMENT
+    # =========================================================================
+
+    courses_per_semester = 5
+    no_of_students_enrolled = 0
+    no_of_courses_enrolled = 0
+    semester_index = 0
+    # first 100 students will be enrolled in 20 courses, next 100 students only in the first 10.
+    courses_to_enroll = 20
+    enrollments = []
+    for student in students:
+        for course_index in range(0, len(courses) - 1):
+            if course_index < 15:
+                if random.randint(1, 10) > 5:
+                    grade = 10
+                else:
+                    grade = random.randint(3, 10)
+
+                enrollments.append(
+                    Enrollment(student=student, semester=semesters[semester_index], course=courses[course_index],
+                               grade=grade, date_grade=semesters[semester_index].date_end)
+                )
+            else:
+                enrollments.append(
+                    Enrollment(student=student, semester=semesters[semester_index], course=courses[course_index])
+                )
+            no_of_courses_enrolled += 1
+            if no_of_courses_enrolled % courses_per_semester == 0:
+                semester_index += 1
+            if no_of_courses_enrolled == courses_to_enroll:
+                break
+        no_of_courses_enrolled = 0
+        no_of_students_enrolled += 1
+        if no_of_students_enrolled % big_milestone == 0:
+            semester_index = 2
+            courses_to_enroll = 10
+        else:
+            semester_index = 0
+
+    db.session.add_all(enrollments)
+
+    test_chief_department.department_cd.append(test_department)
+    test_teacher.department_teacher.append(test_department)
+    test_teacher.qualification.append(Qualification())
+    test_teacher2.department_teacher.append(test_department)
+    test_teacher2.qualification.append(Qualification())
+
+    db.session.add_all([test_user, test_user2, test_teacher2, test_teacher,
+                        test_chief_department, test_admin])
+
+    # add optional courses
+    course_aop, teaches_aop = test_teacher.add_optional_course("AOP", test_degree.id, semesters[3].id, True)
+    test_teacher.add_optional_course("Security", test_degree.id, semesters[4].id, True)
+    test_teacher2.add_optional_course("Design Patterns", test_degree.id, semesters[4].id, True)
+    # Enroll the first 100 students in aop.
+    enrollments_aop = []
+    for student in students[:100]:
+        enrollments_aop.append(Enrollment(student=student, semester=teaches_aop.semester, course=course_aop))
+
+    enrollments_aop.append(Enrollment(student=test_user, semester=teaches_aop.semester, course=course_aop))
+
+    db.session.add_all(enrollments_aop)
+
+    db.session.commit()
+
+    print('DB initialized')
+
+
+def generate_data_v1():
+    db.drop_all()
+    db.create_all()
 
     # Add department, semester, etc
     test_department = Department(name="Math/Computer Science")

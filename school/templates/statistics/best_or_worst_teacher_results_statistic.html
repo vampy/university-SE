@@ -26,7 +26,7 @@
                     <td>{{ teacher.users_realname }}</td>
                     <td>{{ teacher.courses_name}}</td>
                     <td>{{ teacher.no_of_students }}</td>
-                    <td>{{ teacher.average_mark }}</td>
+                    <td>{{ teacher.average_mark | round(2)}}</td>
                 </tr>
             {% endfor %}
         </table>

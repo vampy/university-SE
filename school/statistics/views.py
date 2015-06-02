@@ -6,7 +6,7 @@ from .forms import SelectStatisticForm, TeacherWBOWROStatisticForm, \
     OrderedStudentsStatisticFrom, \
     TeacherDisciplinesStatisticForm, Statistic
 from school.models import *
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, distinct
 from school.user import User
 
 statistics = Blueprint("statistics", __name__)
@@ -88,7 +88,7 @@ def generate(statistic_id):
         if form.validate_on_submit():
             subquery = db.session.query(User.realname.label("users_realname"),
                                         Course.name.label("courses_name"),
-                                        func.count(User.id).label("no_of_students"),
+                                        func.count(distinct(Enrollment.student_id)).label("no_of_students"),
                                         func.avg(Enrollment.grade).label("average_mark")) \
                 .join(Teaches).join(Course).join(Enrollment).filter(Enrollment.grade > 0) \
                 .join(User, User.id == Enrollment.student_id, aliased=True).group_by(Course.id)
@@ -139,7 +139,7 @@ def generate(statistic_id):
                                                 Degree.name.label("degrees_name"),
                                                 Degree.type_id.label("degrees_type_id"),
                                                 Language.name.label("languages_name"),
-                                                func.count(User.id).label("no_of_students")) \
+                                                func.count(distinct(Enrollment.student_id)).label("no_of_students")) \
                 .group_by(Course.id).join(Teaches).join(Degree).join(DegreePeriod).join(Language) \
                 .join(Enrollment, Enrollment.course_id == Course.id) \
                 .join(User, User.id == Enrollment.student_id) \
