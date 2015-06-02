@@ -3,20 +3,18 @@
 
 {% block body %}
 <div class="col-md-4 col-md-push-4 text-center">
-    <form method="post">
+    <form method="post" action="{{ url_for("course.upload_course_results", course_id=selected_course.id)}}">
         <div class="row">
-            <div class="col-md-6">
-                <select class="form-control" size="1" name="semester_id">
-                    <option value=0>Choose a semester</option>
+            <div class="col-md-6 col-md-offset-3">
+                <select class="form-control" size="1" name="semester_id" onchange="this.form.submit()">
+                    <optgroup label="Choose a semester">
                     {% for semester in semesters %}
                         <option value="{{ semester.id }}" {% if selected_semester == semester %}selected{% endif %}>
                             {{ semester.name }}
                         </option>
                     {% endfor %}
+                    </optgroup>
                 </select>
-            </div>
-            <div class="col-md-1">
-                <input type="submit" class="btn btn-default" value="Select">
             </div>
         </div>
     </form>

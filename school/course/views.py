@@ -84,15 +84,32 @@ def see_courses(semester_id=None):
         return render_template("course/see_courses.html", total=courses_depts, dp=department, courses=courses)
 
 
-@course.route('/upload_course_results/<int:course_id>', methods=['GET', 'POST'])
+@course.route('/upload_course_results/<int:course_id>/<int:semester_id>', methods=['GET', 'POST'])
+@course.route('/upload_course_results/<int:course_id>/', methods=['GET', 'POST'])
 @login_required
-def upload_course_results(course_id):
+@role_required(teacher=True, cd=True)
+def upload_course_results(course_id, semester_id=None):
     selected_course = Course.get_by_id(course_id)
 
+    # form submitted, redirect
     if request.method == 'POST':
-        sem_id = int(request.form['semester_id'])
-        selected_semester = Semester.get_by_id(sem_id)
-        students_enrolled = Enrollment.query.filter_by(course_id=course_id, semester_id=sem_id).all()
+        # validate
+        if 'semester_id' not in request.form:
+            flash("upload_course_results semester_id is missing", FLASH_ERROR)
+            return redirect(url_for('course.see_courses'))
+        if not is_integer(request.form['semester_id']):
+            flash("upload_course_results semester_id is not an integer missing", FLASH_ERROR)
+            return redirect(url_for('course.see_courses'))
+
+        return redirect(url_for('course.upload_course_results',
+                                course_id=selected_course.id,
+                                semester_id=int(request.form['semester_id'])))
+
+    # TODO group students by group
+    # display students and grades
+    if semester_id is not None:
+        selected_semester = Semester.get_by_id(semester_id)
+        students_enrolled = Enrollment.query.filter_by(course_id=course_id, semester_id=semester_id).all()
 
         return render_template("course/upload_course_results.html",
                                students_enrolled=students_enrolled,
@@ -100,21 +117,25 @@ def upload_course_results(course_id):
                                selected_course=selected_course,
                                selected_semester=selected_semester, )
 
-    return render_template("course/upload_course_results.html",
-                           semesters=selected_course.semesters,
-                           selected_semester=[],
-                           selected_course=selected_course)
+    # use default to be first semester
+    if not selected_course.semesters:
+        flash("Selected course does not have any semesters", FLASH_ERROR)
+        return redirect(url_for('course.see_courses'))
+
+    return redirect(url_for('course.upload_course_results',
+                            course_id=selected_course.id,
+                            semester_id=selected_course.semesters[0].id))
 
 
 @course.route('/save_grade/<int:course_id>/<int:semester_id>', methods=['POST'])
 @login_required
 @role_required(teacher=True, cd=True)
 def save_grade(course_id, semester_id):
-    # if "course_id" not in request.form or "semester_id" not in:
     # TODO validate
-
     selected_semester = Semester.get_by_id(semester_id)
     selected_course = Course.get_by_id(course_id)
+    return_path = redirect(
+        url_for('course.upload_course_results', course_id=selected_course.id, semester_id=selected_semester.id))
 
     students_enrolled = Enrollment.query.filter_by(course_id=course_id, semester_id=semester_id).all()
     for enrolled in students_enrolled:
@@ -128,18 +149,10 @@ def save_grade(course_id, semester_id):
             db.session.commit()
         else:
             flash("A grade is invalid", FLASH_ERROR)
-            return render_template("course/upload_course_results.html",
-                                   students_enrolled=students_enrolled,
-                                   semesters=selected_course.semesters,
-                                   selected_course=selected_course,
-                                   selected_semester=selected_semester)
+            return return_path
 
     flash("Grade updated", FLASH_SUCCESS)
-    return render_template("course/upload_course_results.html",
-                           students_enrolled=students_enrolled,
-                           semesters=selected_course.semesters,
-                           selected_course=selected_course,
-                           selected_semester=selected_semester)
+    return return_path
 
 
 @course.route('/contract/start/<int:semester_id>')
