@@ -196,8 +196,11 @@ def contract_action(semester_id, action=None, course_id=None):
 
         # add initial obligatory courses
         obligatory_courses = semester.filter_obligatory_courses(degree)
+        courses_all = [c for e, c in current_user.get_courses_enrolled(degree)]
         for c in obligatory_courses:
-            db.session.add(Enrollment(student=current_user, semester=semester, course=c))
+            # exists = Enrollment.query.filter_by(student=current_user, course=c).first()
+            if c not in courses_all:  # only add course from current year
+                db.session.add(Enrollment(student=current_user, semester=semester, course=c))
         db.session.commit()
 
         flash("Added obligatory courses", FLASH_SUCCESS)
@@ -294,11 +297,21 @@ def contract(semester_id=None):
             packages[c.package].add(c.id)
 
         # auto build check to see if optional course is already in the contract
-        courses_enrolled_first = [x[1] for x in courses_enrolled]
+        courses_enrolled_first = [c for e, c in courses_enrolled]
+        courses_enrolled_all = [c for e, c in current_user.get_courses_enrolled(degree)]
+        remove_list = []
         for i, c in enumerate(courses_semester):
+            # remove from courses_semester if we already seen that course
+            if c in courses_enrolled_all:
+                remove_list.append(c)
+
             courses_semester[i].is_in_contract = False
             if c in courses_enrolled_first:
                 courses_semester[i].is_in_contract = True
+
+        # remove courses not of this semester
+        for c in remove_list:
+            courses_semester.remove(c)
 
     return render_template("course/contract.html",
                            semesters=semesters,

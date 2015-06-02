@@ -30,6 +30,8 @@ def init():
     db.create_all()
     # generate_data_v1()
     generate_data_v2()
+    print('DB initialized')
+
 
 
 def generate_data_v2():
@@ -40,8 +42,7 @@ def generate_data_v2():
     # COURSE
     # =========================================================================
     #                   SEMESTER 1
-    course_names_cs = ["Algebra", "Calculus", "Computer Architecture", "Fundamentals of programming",
-                       "Computational Logic",
+    course_names_cs = ["Algebra", "Calculus", "Computer Architecture", "Fundamentals of programming", "Computational Logic",
                        # SEMESTER 2
                        "OOP", "OS", "Geometry", "Graphs Algorithms", "Data Structures and Algorithms",
                        # SEMESTER 3
@@ -68,18 +69,18 @@ def generate_data_v2():
     semester_names = ["Autumn ", "Spring "]
     years = [2013, 2014, 2015, 2016]
     semesters = []
-    for i in range(0, len(years)):
+    for year in years:
         semesters.append(Semester(
-            name=semester_names[0] + years[i].__str__(),
-            year=years[i],
-            date_start=date(years[i], 10, 1),
-            date_end=date(years[i] + 1, 2, 15)
+            name=semester_names[0] + str(year),
+            year=year,
+            date_start=date(year, 10, 1),
+            date_end=date(year + 1, 2, 15)
         ))
         semesters.append(Semester(
-            name=semester_names[1] + (years[i] + 1).__str__(),
-            year=years[i],
-            date_start=date(years[i] + 1, 2, 20),
-            date_end=date(years[i] + 1, 6, 15)
+            name=semester_names[1] + str(year + 1),
+            year=year,
+            date_start=date(year + 1, 2, 20),
+            date_end=date(year + 1, 6, 15)
         ))
 
     db.session.add_all(semesters)
@@ -89,15 +90,18 @@ def generate_data_v2():
     # =========================================================================
 
     first = True
-    for semester in semesters:
+    for i, semester in enumerate(semesters):
         if first:
             semester.courses.extend(courses[0:5])
             semester.courses.extend(courses[10:15])
             first = False
-        else:
+        else:  # second semester
             semester.courses.extend(courses[5:10])
             semester.courses.extend(courses[15:20])
             first = True
+
+        if i == 4:  # semester 5
+            semester.courses.extend(courses[20:])
 
     # LANGUAGE
     # =========================================================================
@@ -378,7 +382,6 @@ def generate_data_v2():
                 semester_index += 1
         semester_index = 2
 
-
     db.session.add_all(enrollments)
 
     test_chief_department.department_cd.append(test_department)
@@ -402,8 +405,6 @@ def generate_data_v2():
     db.session.add_all(enrollments_aop)
 
     db.session.commit()
-
-    print('DB initialized')
 
 
 def generate_data_v1():
@@ -583,7 +584,6 @@ def generate_data_v1():
     # print(test_user.degree_periods.first().degree)
     # print(test_user.get_semesters_for_period(test_user.get_default_period()))
     # print(Semester.get_semesters(date(2013, 10, 1), date(2015, 2, 15)))
-    print('DB initialized')
 
 
 if __name__ == "__main__":
