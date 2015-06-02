@@ -1,0 +1,7 @@
+language: python
+python:
+  - "3.4"
+  - "nightly"
+install: "pip install -r requirements.txt"
+before_script: "cp school/config.EXAMPLE.py school/config.py"
+script: "python manage.py init
