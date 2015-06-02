@@ -148,13 +148,13 @@ def save_grade(course_id, semester_id):
 
     students_enrolled = Enrollment.query.filter_by(course_id=course_id, semester_id=semester_id).all()
     for enrolled in students_enrolled:
-
-        if str(enrolled.student_id) not in request.form:
+        student_id_str = str(enrolled.student_id)
+        if student_id_str not in request.form:
             flash("save_grade missing argument", FLASH_ERROR)
             return return_path
 
-        if request.form[str(enrolled.student_id)].isnumeric():
-            grade = int(request.form[str(enrolled.student_id)])
+        if request.form[student_id_str].isnumeric():
+            grade = int(request.form[student_id_str])
             if 0 <= grade <= 10:  # save new grade
                 enrolled.grade = grade
                 db.session.add(enrolled)
@@ -198,7 +198,6 @@ def contract_action(semester_id, action=None, course_id=None):
         obligatory_courses = semester.filter_obligatory_courses(degree)
         courses_all = [c for e, c in current_user.get_courses_enrolled(degree)]
         for c in obligatory_courses:
-            # exists = Enrollment.query.filter_by(student=current_user, course=c).first()
             if c not in courses_all:  # only add course from current year
                 db.session.add(Enrollment(student=current_user, semester=semester, course=c))
         db.session.commit()

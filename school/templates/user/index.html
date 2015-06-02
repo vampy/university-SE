@@ -10,10 +10,12 @@
                 <a href="{{ url_for('course.contract') }}" class="list-group-item">Choose courses (contract)</a>
             {% else %}
                 <a href="{{ url_for('course.see_courses') }}" class="list-group-item">See courses</a>
-                <a href="{{ url_for('course.establish_courses') }}" class="list-group-item">Establish courses</a>
                 {% if current_user.is_chief_department() or current_user.is_admin() %}
+                    <a href="{{ url_for('course.establish_courses') }}" class="list-group-item">Manage optional courses</a>
                     <a href="{{ url_for('statistics.see_statistics') }}" class="list-group-item">See statistics</a>
                     <a href="{{ url_for('user.users') }}" class="list-group-item">Edit users</a></li>
+                {% else %}
+                    <a href="{{ url_for('course.establish_courses') }}" class="list-group-item">Add optional course</a>
                 {% endif %}
             {% endif %}
         </div>

@@ -3,7 +3,7 @@
 
 {% block body %}
 <div class="col-md-4 col-md-push-4 text-center">
-    <form method="post" action="{{ url_for("course.upload_course_results", course_id=selected_course.id)}}">
+    <form method="post" action="{{ url_for("course.upload_course_results", course_id=selected_course.id) }}">
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
                 <select class="form-control" size="1" name="semester_id" onchange="this.form.submit()">
@@ -27,7 +27,6 @@
     {% if students_enrolled %}
     <form method="post" action="{{ url_for("course.save_grade", course_id=selected_course.id, semester_id=selected_semester.id) }}">
         <table class="table table-bordered">
-
             {% for group in groups %}
             <tr>
                 <th>Name</th>
