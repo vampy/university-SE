@@ -106,7 +106,8 @@ class Qualification(db.Model):
     teacher_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     type_id = Column(SmallInteger, default=QualificationType.LECTURER)
 
-    teacher = db.relationship("User", backref=db.backref("qualification", lazy="dynamic"))
+    teacher = db.relationship("User", backref=db.backref("qualification", lazy="dynamic",
+                                                         cascade="save-update, merge, delete, delete-orphan"))
 
     def is_lecturer(self):
         return self.type_id == QualificationType.LECTURER
