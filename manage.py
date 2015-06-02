@@ -358,7 +358,8 @@ def generate_data_v2():
             semester_index = 0
 
     db.session.add_all(enrollments)
-
+    test_user.degree_periods.append(degree_periods[0])
+    test_user2.degree_periods.append(degree_periods[0])
     test_chief_department.department_cd.append(test_department)
     test_teacher.department_teacher.append(test_department)
     test_teacher.qualification.append(Qualification())
