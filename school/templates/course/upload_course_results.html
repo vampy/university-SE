@@ -27,17 +27,23 @@
     {% if students_enrolled %}
     <form method="post" action="{{ url_for("course.save_grade", course_id=selected_course.id, semester_id=selected_semester.id) }}">
         <table class="table table-bordered">
+
+            {% for group in groups %}
             <tr>
                 <th>Name</th>
                 <th>Grade</th>
+                <th>{{ group.name }}</th>
             </tr>
-            {% for enrolled in students_enrolled %}
-                <tr>
-                    <td>{{ enrolled.student.realname }}</td>
-                    <td>
-                        <input type="text" class="form-control" name="{{ enrolled.student.id }}" placeholder="Grade" value="{{ enrolled.grade }}">
-                    </td>
-                </tr>
+                {% for enrolled in students_enrolled %}
+                    {% if enrolled.student in group.students %}
+                        <tr>
+                            <td>{{ enrolled.student.realname }} </td>
+                            <td>
+                                <input type="text" class="form-control" name="{{ enrolled.student.id }}" placeholder="Grade" value="{{ enrolled.grade }}">
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
         </table>
         <input type="submit" class="btn btn-primary" value="Save">

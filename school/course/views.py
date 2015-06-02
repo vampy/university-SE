@@ -98,24 +98,32 @@ def upload_course_results(course_id, semester_id=None):
             flash("upload_course_results semester_id is missing", FLASH_ERROR)
             return redirect(url_for('course.see_courses'))
         if not is_integer(request.form['semester_id']):
-            flash("upload_course_results semester_id is not an integer missing", FLASH_ERROR)
+            flash("upload_course_results semester_id is not an integer", FLASH_ERROR)
             return redirect(url_for('course.see_courses'))
 
         return redirect(url_for('course.upload_course_results',
                                 course_id=selected_course.id,
                                 semester_id=int(request.form['semester_id'])))
 
-    # TODO group students by group
     # display students and grades
     if semester_id is not None:
         selected_semester = Semester.get_by_id(semester_id)
         students_enrolled = Enrollment.query.filter_by(course_id=course_id, semester_id=semester_id).all()
 
+        seen_groups = set()
+        groups = []
+        for se in students_enrolled:
+            g = se.student.get_group(se.student.get_default_period())
+            if g not in seen_groups:
+                seen_groups.add(g)
+                groups.append(g)
+
         return render_template("course/upload_course_results.html",
                                students_enrolled=students_enrolled,
                                semesters=selected_course.semesters,
                                selected_course=selected_course,
-                               selected_semester=selected_semester, )
+                               selected_semester=selected_semester,
+                               groups=groups, )
 
     # use default to be first semester
     if not selected_course.semesters:
@@ -131,6 +139,7 @@ def upload_course_results(course_id, semester_id=None):
 @login_required
 @role_required(teacher=True, cd=True)
 def save_grade(course_id, semester_id):
+
     # TODO validate
     selected_semester = Semester.get_by_id(semester_id)
     selected_course = Course.get_by_id(course_id)
@@ -140,15 +149,21 @@ def save_grade(course_id, semester_id):
     students_enrolled = Enrollment.query.filter_by(course_id=course_id, semester_id=semester_id).all()
     for enrolled in students_enrolled:
 
-        # TODO validate
-        grade = int(request.form[str(enrolled.student_id)])
+        if str(enrolled.student_id) not in request.form:
+            flash("save_grade missing argument", FLASH_ERROR)
+            return return_path
 
-        if 0 <= grade <= 10:  # save new grade
-            enrolled.grade = grade
-            db.session.add(enrolled)
-            db.session.commit()
+        if request.form[str(enrolled.student_id)].isnumeric():
+            grade = int(request.form[str(enrolled.student_id)])
+            if 0 <= grade <= 10:  # save new grade
+                enrolled.grade = grade
+                db.session.add(enrolled)
+                db.session.commit()
+            else:
+                flash("A grade should be between 0 and 10", FLASH_ERROR)
+                return return_path
         else:
-            flash("A grade is invalid", FLASH_ERROR)
+            flash("A grade should be numeric", FLASH_ERROR)
             return return_path
 
     flash("Grade updated", FLASH_SUCCESS)
