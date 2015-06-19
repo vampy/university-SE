@@ -432,6 +432,45 @@ def edit_optional_course(course_id):
                            teaches=teaches,
                            form=form)
 
+@course.route('/assign_optional_courses/', methods=["GET"])
+@login_required
+@role_required(cd=True)
+def assign_optional_courses():
+    return_path = redirect(url_for("course.establish_courses"))
+    year = date.today().year
+    department = current_user.get_department_cd()
+    optional_teaches = Teaches.get_optional_courses_department(department, year)
+    message = ""
+
+    valid_teaches = []
+    valid_courses = [teach.course for teach in optional_teaches]
+    for teach in optional_teaches:
+        course_id = teach.course.id
+
+        # assumes only one optional course, meaning if you have AOP in 2 consecutive years, you have 2 id's in he courses table
+        enrollments = Enrollment.query.filter_by(course_id=course_id).all()
+        if len(enrollments) < 20:  # remove courses with less than 20 followers
+            flash("Course " + teach.course.name + " does not have 20 students enrolled.", FLASH_SUCCESS)
+
+            # find courses in the same package
+            same_package = []
+            for c in valid_courses:
+                if c.package == teach.course.package:
+                    same_package.append(c)
+
+            # assign to new found courses
+            for enrolled in enrollments:
+                pass
+
+            # remove from required
+            # db.session.delete(teach.course.semesters[0])
+            # # remove student contracts
+            # db.session.delete_all(enrollments)
+        else:
+            valid_teaches.append(teach)
+
+    flash(message, FLASH_SUCCESS)
+    return return_path
 
 @course.route('/establish_courses', methods=["GET", "POST"])
 @login_required
