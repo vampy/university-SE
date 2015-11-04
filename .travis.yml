@@ -1,7 +1,7 @@
 language: python
 python:
   - "3.4"
-  - "nightly"
+  - "3.5"
 install: "pip install -r requirements.txt"
 before_script: "cp school/config.EXAMPLE.py school/config.py"
 script: "python manage.py init"
